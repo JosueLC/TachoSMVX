@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Types.PlcStruct ID="0">
+    <AttributeList>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="None">
+    <Member Name="Cmds" Datatype="&quot;EM_Input&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Comandos estÃ¡ndar de la unidad (Start, Stop, Hold, Reset, Auto, etc.)</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="CtrlMode" Datatype="Int">
+      <Comment>
+        <MultiLanguageText Lang="en-US">0=Off, 1=Local PID, 2=External PID (SeedMaster), 3=Water Injection</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="SelectedValveIndex" Datatype="Int">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Ãndice de la vÃ¡lvula On/Off a activar (1..N)</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="OpenThreshold" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Umbral % de apertura de la vÃ¡lvula proporcional para abrir la On/Off</MultiLanguageText>
+      </Comment>
+      <StartValue>5.0</StartValue>
+    </Member>
+    <Member Name="CloseThreshold" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Umbral % de apertura de la vÃ¡lvula proporcional para cerrar la On/Off</MultiLanguageText>
+      </Comment>
+      <StartValue>3.0</StartValue>
+    </Member>
+    <Member Name="FeedSP" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Setpoint de nivel del tacho para modo local</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="WashSP" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Setpoint de nivel del tacho para lavado</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="MinLevelPermit" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Interbloqueo de nivel mÃ­nimo en tacho (LT-112)</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="FeedSMMV" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Variable manipulada enviada desde SeedMaster (0..100%)</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="WashMode" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">CtrlMode 3: TRUE=Lavado, FALSE=Pausa (agua segÃºn PidL)</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="StableBand" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Banda de estabilizaciÃ³n alrededor del SP (unidades de PV)</MultiLanguageText>
+      </Comment>
+      <StartValue>2.0</StartValue>
+    </Member>
+    <Member Name="StableTime" Datatype="Time">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Tiempo dentro de banda para declarar COMPLETED</MultiLanguageText>
+      </Comment>
+      <StartValue>T#10S</StartValue>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <Name>EM03_Input</Name>
+      <Namespace />
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Types.PlcStruct>
+</Document>

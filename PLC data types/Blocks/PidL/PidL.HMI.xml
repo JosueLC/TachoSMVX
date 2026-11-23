@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Types.PlcStruct ID="0">
+    <AttributeList>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="None">
+    <Member Name="identName" Datatype="String" />
+    <Member Name="comment" Datatype="String" />
+    <Member Name="AutModOp" Datatype="Bool" />
+    <Member Name="ManModOp" Datatype="Bool" />
+    <Member Name="LocModOp" Datatype="Bool" />
+    <Member Name="OosModOp" Datatype="Bool" />
+    <Member Name="ResetOp" Datatype="Bool" />
+    <Member Name="MonitorOn" Datatype="Bool" />
+    <Member Name="ExtModOp" Datatype="Bool" />
+    <Member Name="IntModOp" Datatype="Bool" />
+    <Member Name="SpInt" Datatype="Real" />
+    <Member Name="Man" Datatype="Real" />
+    <Member Name="PermissionLog" Datatype="&quot;PidL.Permission&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Status" Datatype="&quot;PidL.Status&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="PIDConfig" Datatype="&quot;PidL.PIDConfig&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Alarms" Datatype="&quot;AnaMon.HMI&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <Name>PidL.HMI</Name>
+      <Namespace />
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Types.PlcStruct>
+</Document>

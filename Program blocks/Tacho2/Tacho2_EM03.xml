@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Blocks.InstanceDB ID="0">
+    <AttributeList>
+      <HeaderVersion>1.0</HeaderVersion>
+      <InstanceOfName>EM03_Alimentacion</InstanceOfName>
+      <InstanceOfType>FB</InstanceOfType>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="In" Datatype="&quot;EM03_Input&quot;">
+      <Sections>
+        <Section Name="None">
+          <Member Name="FeedSP" Datatype="Real">
+            <StartValue>50.0</StartValue>
+          </Member>
+          <Member Name="WashSP" Datatype="Real">
+            <StartValue>20.0</StartValue>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="FeedPV" Datatype="Real" />
+  </Section>
+  <Section Name="Output">
+    <Member Name="Out" Datatype="&quot;EM03_Output&quot;" />
+    <Member Name="CM_PIC_MV" Datatype="Real" />
+    <Member Name="CM_Vlv_MP_Out" Datatype="Array[1..2] of Bool" />
+    <Member Name="CM_Agua_Out" Datatype="Real" />
+    <Member Name="SensorAlarm" Datatype="Bool" />
+    <Member Name="CMAlarm" Datatype="Bool" />
+  </Section>
+  <Section Name="InOut" />
+  <Section Name="Static">
+    <Member Name="State" Datatype="Int" />
+    <Member Name="ActiveAction" Datatype="Int" />
+    <Member Name="AlarmLatched" Datatype="Bool" />
+    <Member Name="FaultCode" Datatype="Int" />
+    <Member Name="TimerStable" Datatype="TON_TIME" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="TrigStart" Datatype="R_TRIG" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="TrigStop" Datatype="R_TRIG" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="TrigHold" Datatype="R_TRIG" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="TrigAbort" Datatype="R_TRIG" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="TrigReset" Datatype="R_TRIG" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="CM_PIC_Feed" Datatype="&quot;PidL&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="DataHMI" Datatype="&quot;PidL.HMI_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="identName" Datatype="String">
+                  <StartValue>'LCV-212'</StartValue>
+                </Member>
+                <Member Name="comment" Datatype="String">
+                  <StartValue>'Nivel'</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+        <Section Name="Output" />
+        <Section Name="InOut" />
+        <Section Name="Static" />
+      </Sections>
+    </Member>
+    <Member Name="CM_Vlv_MateriaPrima" Datatype="Array[1..2] of &quot;VlvL&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="DataHMI" Datatype="&quot;VlvL.HMI&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="identName" Datatype="String">
+                  <Subelement Path="1">
+                    <StartValue>'XSV112A'</StartValue>
+                  </Subelement>
+                  <Subelement Path="2">
+                    <StartValue>'XSV112B'</StartValue>
+                  </Subelement>
+                </Member>
+                <Member Name="comment" Datatype="String">
+                  <Subelement Path="1">
+                    <StartValue>'Melad.Clara'</StartValue>
+                  </Subelement>
+                  <Subelement Path="2">
+                    <StartValue>'Melad.Cruda'</StartValue>
+                  </Subelement>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+        <Section Name="Output" />
+        <Section Name="InOut" />
+        <Section Name="Static" />
+      </Sections>
+    </Member>
+    <Member Name="CM_Vlv_Agua" Datatype="&quot;OpAn&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <Name>Tacho2_EM03</Name>
+      <Namespace />
+      <Number>4</Number>
+      <ProgrammingLanguage>DB</ProgrammingLanguage>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.InstanceDB>
+</Document>

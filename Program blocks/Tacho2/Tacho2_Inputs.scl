@@ -1,0 +1,137 @@
+﻿FUNCTION "Tacho2_Inputs" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+      LT_112_range : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+      LT_112_unit : Int;
+      PT_110_range : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+      PT_110_unit : Int;
+      PT_113_range : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+      PT_113_unit : Int;
+      TT_114_range : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+      TT_114_unit : Int;
+      TT_115_range : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+      TT_115_unit : Int;
+      AT_112_range : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+      AT_112_unit : Int;
+      LT_116_range : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+      LT_116_unit : Int;
+   END_VAR
+
+   VAR CONSTANT 
+      ID_SLURRY : Int := 1;
+      ID_SEMILLA : Int := 2;
+      ID_CORTE_T3 : Int := 3;
+      ID_MEL_CLARA : Int := 1;
+      ID_MEL_CRUD : Int := 2;
+   END_VAR
+
+
+BEGIN
+	REGION Rangos de entradas analogicas
+	    // Nivel Tacho [%]
+	    #"LT_112_range".High := 100.0;
+	    #"LT_112_range".Low := 0.0;
+	    #"LT_112_unit" := 1342;
+	    // Presion de vacio del Cuerpo [mbar]
+	    #"PT_110_range".High := 2000.0;
+	    #"PT_110_range".Low := 0.0;
+	    #"PT_110_unit" := 1138;
+	    // Presion de la calandria [psig]
+	    #"PT_113_range".High := 30.0;
+	    #"PT_113_range".Low := -15.0;
+	    #"PT_113_unit" := 1143;
+	    // Temperatura del cuerpo [°C]
+	    #"TT_114_range".High := 200.0;
+	    #"TT_114_range".Low := 0.0;
+	    #"TT_114_unit" := 1001;
+	    // Temperatura de la calandria [°C]
+	    #"TT_115_range".High := 200.0;
+	    #"TT_115_range".Low := 0.0;
+	    #"TT_115_unit" := 1001;
+	    // Brix de la masa [ºBrix]
+	    #"AT_112_range".High := 100.0;
+	    #"AT_112_range".Low := 50.0;
+	    #"AT_112_unit" := 1426;
+	    // Nivel del recibidor de masa [%]
+	    #"LT_116_range".High := 100.0;
+	    #"LT_116_range".Low := 0.0;
+	    #"LT_116_unit" := 1342;
+	    
+	END_REGION
+	REGION Lecturas de entradas analogicas
+	    "AnInDrv"(In := "LT-112",
+	              PVRange := #"LT_112_range",
+	              Bipolar := FALSE,
+	              PVunit := #"LT_112_unit",
+	              PV => "Tacho2_Values".LT_112);
+	    "AnInDrv"(In := "PT-110",
+	              PVRange := #"PT_110_range",
+	              Bipolar := FALSE,
+	              PVunit := #"PT_110_unit",
+	              PV => "Tacho2_Values".PT_110);
+	    "AnInDrv"(In := "PT-113",
+	              PVRange := #"PT_113_range",
+	              Bipolar := FALSE,
+	              PVunit := #"PT_113_unit",
+	              PV => "Tacho2_Values".PT_113);
+	    "AnInDrv"(In := "TT-114",
+	              PVRange := #"TT_114_range",
+	              Bipolar := FALSE,
+	              PVunit := #"TT_114_unit",
+	              PV => "Tacho2_Values".TT_114);
+	    "AnInDrv"(In := "TT-115",
+	              PVRange := #"TT_115_range",
+	              Bipolar := FALSE,
+	              PVunit := #"TT_115_unit",
+	              PV => "Tacho2_Values".TT_115);
+	    "AnInDrv"(In := "AT-112",
+	              PVRange := #"AT_112_range",
+	              Bipolar := FALSE,
+	              PVunit := #"AT_112_unit",
+	              PV => "Tacho2_Values".AT_112);
+	    "AnInDrv"(In := "LT-116",
+	              PVRange := #"LT_116_range",
+	              Bipolar := FALSE,
+	              PVunit := #"LT_116_unit",
+	              PV => "Tacho2_Values".LT_116);
+	END_REGION
+	REGION Lecturas de entradas digitales
+	    "Tacho2_Values".ZSO_112B := "ZSO-112B";
+	    "Tacho2_Values".ZSO_112A := "ZSO-112A";
+	    "Tacho2_Values".ZSO_105 := "ZSO-105";
+	    "Tacho2_Values".ZSO_103 := "ZSO-103";
+	    "Tacho2_Values".ZSO_109 := "ZSO-109";
+	    "Tacho2_Values".ZSO_104 := "ZSO-104";
+	    "Tacho2_Values".ZSO_108 := "ZSO-108";
+	    "Tacho2_Values".YI_101 := "YI-101";
+	    "Tacho2_Values".YI_102 := "YI-102";
+	    "Tacho2_Values".YT_101 := "YT-101";
+	    "Tacho2_Values".ZSO_102 := "ZSO-102";
+	END_REGION
+	REGION Lecturas desde el Seedmaster
+	    "Tacho2_Values".SM_Values := "Tacho2_SM_Input";
+	END_REGION
+END_FUNCTION
+

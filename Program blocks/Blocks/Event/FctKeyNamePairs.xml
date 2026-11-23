@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Blocks.GlobalDB ID="0">
+    <AttributeList>
+      <AutoNumber>false</AutoNumber>
+      <DBAccessibleFromOPCUA>false</DBAccessibleFromOPCUA>
+      <DBAccessibleFromWebserver>false</DBAccessibleFromWebserver>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Static">
+    <Member Name="VlvL" Datatype="Array[0..10] of &quot;FctKeyParName&quot;">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Key" Datatype="UInt">
+            <Subelement Path="0">
+              <StartValue>0</StartValue>
+            </Subelement>
+            <Subelement Path="1">
+              <StartValue>1</StartValue>
+            </Subelement>
+            <Subelement Path="2">
+              <StartValue>2</StartValue>
+            </Subelement>
+            <Subelement Path="3">
+              <StartValue>3</StartValue>
+            </Subelement>
+            <Subelement Path="4">
+              <StartValue>4</StartValue>
+            </Subelement>
+            <Subelement Path="5">
+              <StartValue>5</StartValue>
+            </Subelement>
+            <Subelement Path="6">
+              <StartValue>6</StartValue>
+            </Subelement>
+            <Subelement Path="7">
+              <StartValue>7</StartValue>
+            </Subelement>
+          </Member>
+          <Member Name="Name" Datatype="String">
+            <Subelement Path="0">
+              <StartValue>'SETLINK'</StartValue>
+            </Subelement>
+            <Subelement Path="1">
+              <StartValue>'SETOPR'</StartValue>
+            </Subelement>
+            <Subelement Path="2">
+              <StartValue>'SETAUTO'</StartValue>
+            </Subelement>
+            <Subelement Path="3">
+              <StartValue>'SETMAN'</StartValue>
+            </Subelement>
+            <Subelement Path="4">
+              <StartValue>'SETOPEN'</StartValue>
+            </Subelement>
+            <Subelement Path="5">
+              <StartValue>'SETCLOSE'</StartValue>
+            </Subelement>
+            <Subelement Path="6">
+              <StartValue>'GETAUTO'</StartValue>
+            </Subelement>
+            <Subelement Path="7">
+              <StartValue>'GETOPEN'</StartValue>
+            </Subelement>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="PidL" Datatype="Array[0..10] of &quot;FctKeyParName&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="Key" Datatype="UInt">
+            <Subelement Path="0">
+              <StartValue>0</StartValue>
+            </Subelement>
+            <Subelement Path="1">
+              <StartValue>1</StartValue>
+            </Subelement>
+            <Subelement Path="2">
+              <StartValue>2</StartValue>
+            </Subelement>
+            <Subelement Path="3">
+              <StartValue>3</StartValue>
+            </Subelement>
+            <Subelement Path="4">
+              <StartValue>4</StartValue>
+            </Subelement>
+            <Subelement Path="5">
+              <StartValue>5</StartValue>
+            </Subelement>
+            <Subelement Path="6">
+              <StartValue>6</StartValue>
+            </Subelement>
+            <Subelement Path="7">
+              <StartValue>7</StartValue>
+            </Subelement>
+          </Member>
+          <Member Name="Name" Datatype="String">
+            <Subelement Path="0">
+              <StartValue>'SETLINK'</StartValue>
+            </Subelement>
+            <Subelement Path="1">
+              <StartValue>'SETOPR'</StartValue>
+            </Subelement>
+            <Subelement Path="2">
+              <StartValue>'SETINT'</StartValue>
+            </Subelement>
+            <Subelement Path="3">
+              <StartValue>'SETEXT'</StartValue>
+            </Subelement>
+            <Subelement Path="4">
+              <StartValue>'SETAUTO'</StartValue>
+            </Subelement>
+            <Subelement Path="5">
+              <StartValue>'SETMAN'</StartValue>
+            </Subelement>
+            <Subelement Path="6">
+              <StartValue>'SETTRACK'</StartValue>
+            </Subelement>
+            <Subelement Path="7">
+              <StartValue>'RSTTRACK'</StartValue>
+            </Subelement>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="MotL" Datatype="Array[0..10] of &quot;FctKeyParName&quot;">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Key" Datatype="UInt">
+            <Subelement Path="0">
+              <StartValue>0</StartValue>
+            </Subelement>
+            <Subelement Path="1">
+              <StartValue>1</StartValue>
+            </Subelement>
+            <Subelement Path="2">
+              <StartValue>2</StartValue>
+            </Subelement>
+            <Subelement Path="3">
+              <StartValue>3</StartValue>
+            </Subelement>
+            <Subelement Path="4">
+              <StartValue>4</StartValue>
+            </Subelement>
+            <Subelement Path="5">
+              <StartValue>5</StartValue>
+            </Subelement>
+            <Subelement Path="6">
+              <StartValue>6</StartValue>
+            </Subelement>
+            <Subelement Path="7">
+              <StartValue>7</StartValue>
+            </Subelement>
+          </Member>
+          <Member Name="Name" Datatype="String">
+            <Subelement Path="0">
+              <StartValue>'SETLINK'</StartValue>
+            </Subelement>
+            <Subelement Path="1">
+              <StartValue>'SETOPR'</StartValue>
+            </Subelement>
+            <Subelement Path="2">
+              <StartValue>'SETAUTO'</StartValue>
+            </Subelement>
+            <Subelement Path="3">
+              <StartValue>'SETMAN'</StartValue>
+            </Subelement>
+            <Subelement Path="4">
+              <StartValue>'START'</StartValue>
+            </Subelement>
+            <Subelement Path="5">
+              <StartValue>'STOP'</StartValue>
+            </Subelement>
+            <Subelement Path="6">
+              <StartValue>'GETAUTO'</StartValue>
+            </Subelement>
+            <Subelement Path="7">
+              <StartValue>'STATUS'</StartValue>
+            </Subelement>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="OpAn" Datatype="Array[0..10] of &quot;FctKeyParName&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="Key" Datatype="UInt">
+            <Subelement Path="0">
+              <StartValue>0</StartValue>
+            </Subelement>
+            <Subelement Path="1">
+              <StartValue>1</StartValue>
+            </Subelement>
+            <Subelement Path="2">
+              <StartValue>2</StartValue>
+            </Subelement>
+            <Subelement Path="3">
+              <StartValue>3</StartValue>
+            </Subelement>
+            <Subelement Path="4">
+              <StartValue>4</StartValue>
+            </Subelement>
+            <Subelement Path="5">
+              <StartValue>5</StartValue>
+            </Subelement>
+          </Member>
+          <Member Name="Name" Datatype="String">
+            <Subelement Path="0">
+              <StartValue>'SETLINK'</StartValue>
+            </Subelement>
+            <Subelement Path="1">
+              <StartValue>'SETOPR'</StartValue>
+            </Subelement>
+            <Subelement Path="2">
+              <StartValue>'SETINT'</StartValue>
+            </Subelement>
+            <Subelement Path="3">
+              <StartValue>'SETEXT'</StartValue>
+            </Subelement>
+            <Subelement Path="4">
+              <StartValue>'SETOPEN'</StartValue>
+            </Subelement>
+            <Subelement Path="5">
+              <StartValue>'SETCLOSE'</StartValue>
+            </Subelement>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <MemoryReserve>100</MemoryReserve>
+      <Name>FctKeyNamePairs</Name>
+      <Namespace />
+      <Number>2000</Number>
+      <ProgrammingLanguage>DB</ProgrammingLanguage>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.GlobalDB>
+</Document>

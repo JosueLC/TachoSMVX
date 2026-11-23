@@ -1,0 +1,300 @@
+﻿FUNCTION_BLOCK "EM04_Insumos"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+// Modulo ISA-88 para inyeccion de slurry y carga de semilla/corte por nivel.
+   VAR_INPUT 
+      In : "EM04_Input";
+      LevelPV : Real;
+   END_VAR
+
+   VAR_OUTPUT 
+      Out : "EM04_Output";
+      CM_Vlv_Cristal_Out : Array[1..#NUM_VLV] of Bool;
+      TimeoutAlarm : Bool;
+      SensorAlarm : Bool;
+      CMAlarm : Bool;
+   END_VAR
+
+   VAR 
+      State : Int;
+      ActiveAction : Int;
+      ActiveValveIndex : Int;
+      ElapsedPrev : Time;
+      InjectionDone : Bool;
+      AlarmLatched : Bool;
+      FaultCode : Int;
+      TimerInjection {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TimerLevel {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TimerTimeout {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TrigStart {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigStop {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigHold {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigAbort {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigReset {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      CM_Vlv_Cristal : Array[1..#NUM_VLV] of "VlvL";
+   END_VAR
+
+   VAR_TEMP 
+      i : Int;
+      ModeCount : Int;
+      AutoModeRequest : Bool;
+      ManualModeRequest : Bool;
+      MaintModeRequest : Bool;
+      ActionValid : Bool;
+      ParamsValid : Bool;
+      AutoModeOk : Bool;
+      ValveOpenRequest : Bool;
+      ValveClosed : Bool;
+      ResetAccepted : Bool;
+      LevelReached : Bool;
+      StateForCM : Int;
+      RemainingTime : Time;
+      FaultNew : Int;
+   END_VAR
+
+   VAR CONSTANT 
+      NUM_VLV : Int := 3;
+      ST_IDLE : Int := 0;
+      ST_RUNNING : Int := 1;
+      ST_COMPLETED : Int := 2;
+      ST_HOLDING : Int := 3;
+      ST_HELD : Int := 4;
+      ST_STOPPING : Int := 5;
+      ST_STOPPED : Int := 6;
+      ST_ABORTING : Int := 7;
+      ST_ABORTED : Int := 8;
+   END_VAR
+
+
+BEGIN
+	// --- Fase 1: comandos, modos y validacion ---
+	#TrigStart(CLK := #In.Cmds.Start);
+	#TrigStop(CLK := #In.Cmds.Stop);
+	#TrigHold(CLK := #In.Cmds.Hold);
+	#TrigAbort(CLK := #In.Cmds.Abort);
+	#TrigReset(CLK := #In.Cmds.Reset);
+	
+	#ModeCount := BOOL_TO_INT(#In.Cmds.Auto) + BOOL_TO_INT(#In.Cmds.Manual)
+	+ BOOL_TO_INT(#In.Cmds.Maintenance);
+	#AutoModeRequest := #In.Cmds.Auto AND (#ModeCount = 1);
+	#ManualModeRequest := #In.Cmds.Manual AND (#ModeCount = 1);
+	#MaintModeRequest := #In.Cmds.Maintenance AND (#ModeCount = 1);
+	#ActionValid := (#In.CtrlMode = 1) OR (#In.CtrlMode = 2);
+	#ParamsValid := #ActionValid AND (#In.SelectedValveIndex >= 1)
+	AND (#In.SelectedValveIndex <= #NUM_VLV);
+	IF #ParamsValid AND (#In.CtrlMode = 1) THEN
+	    #ParamsValid := #In.InjectionTime > T#0s;
+	ELSIF #ParamsValid AND (#In.CtrlMode = 2) THEN
+	    #ParamsValid := (#In.LevelFilter > T#0s) AND (#In.LevelTimeout > T#0s);
+	END_IF;
+	#FaultNew := 0;
+	
+	// --- Fase 2: secuencia ISA-88 ---
+	#StateForCM := #State;
+	#ResetAccepted := #TrigReset.Q AND ((#State = #ST_IDLE) OR (#State = #ST_COMPLETED)
+	OR (#State = #ST_STOPPED) OR (#State = #ST_ABORTED));
+	
+	IF NOT #AutoModeRequest THEN
+	    #StateForCM := #ST_IDLE;
+	    #ActiveAction := 0;
+	    #ActiveValveIndex := 0;
+	    #ElapsedPrev := T#0s;
+	    #InjectionDone := FALSE;
+	ELSE
+	    IF #ResetAccepted THEN
+	        #StateForCM := #ST_IDLE;
+	        #ActiveAction := 0;
+	        #ActiveValveIndex := 0;
+	        #ElapsedPrev := T#0s;
+	        #InjectionDone := FALSE;
+	    END_IF;
+	    
+	    IF #TrigAbort.Q AND (#StateForCM <> #ST_ABORTING) AND (#StateForCM <> #ST_ABORTED) THEN
+	        #StateForCM := #ST_ABORTING;
+	    ELSIF #TrigStop.Q AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)
+	        OR (#StateForCM = #ST_HOLDING) OR (#StateForCM = #ST_HELD)) THEN
+	        #StateForCM := #ST_STOPPING;
+	    ELSIF #TrigHold.Q AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)) THEN
+	        IF (#ActiveAction = 1) AND (#StateForCM = #ST_RUNNING) THEN
+	            #ElapsedPrev := #ElapsedPrev + #TimerInjection.ET;
+	        END_IF;
+	        #StateForCM := #ST_HOLDING;
+	    END_IF;
+	    
+	    CASE #StateForCM OF
+	        #ST_IDLE:
+	            IF #TrigStart.Q AND NOT #ResetAccepted THEN
+	                IF NOT #ParamsValid THEN
+	                    #FaultNew := 1;
+	                ELSIF (#In.CtrlMode = 2) AND NOT #In.LevelValid THEN
+	                    #FaultNew := 2;
+	                ELSE
+	                    #ActiveAction := #In.CtrlMode;
+	                    #ActiveValveIndex := #In.SelectedValveIndex;
+	                    #ElapsedPrev := T#0s;
+	                    #InjectionDone := FALSE;
+	                    #StateForCM := #ST_RUNNING;
+	                END_IF;
+	            END_IF;
+	            
+	        #ST_HELD:
+	            IF #TrigStart.Q THEN
+	                IF #ParamsValid AND (#In.CtrlMode = #ActiveAction)
+	                    AND (#In.SelectedValveIndex = #ActiveValveIndex)
+	                    AND ((#ActiveAction <> 2) OR #In.LevelValid) THEN
+	                    #StateForCM := #ST_RUNNING;
+	                ELSE
+	                    #FaultNew := 1;
+	                END_IF;
+	            END_IF;
+	            
+	        #ST_RUNNING, #ST_COMPLETED:
+	            IF NOT #ParamsValid THEN
+	                #FaultNew := 1;
+	                #StateForCM := #ST_STOPPING;
+	            ELSIF (#ActiveAction = 2) AND NOT #In.LevelValid THEN
+	                #FaultNew := 2;
+	                #StateForCM := #ST_ABORTING;
+	            END_IF;
+	    END_CASE;
+	END_IF;
+	
+	// --- Fase 3: valvulas mutuamente excluyentes e interbloqueo ---
+	#ValveOpenRequest := #AutoModeRequest AND (#StateForCM = #ST_RUNNING)
+	AND NOT #In.LevelInterlock
+	AND (((#ActiveAction = 1) AND NOT #InjectionDone)
+	OR ((#ActiveAction = 2) AND NOT #TimerLevel.Q
+	AND #In.LevelValid));
+	FOR #i := 1 TO #NUM_VLV DO
+	    #CM_Vlv_Cristal[#i].ModLiOp := TRUE;
+	    #CM_Vlv_Cristal[#i].ManModLi := #ManualModeRequest OR #MaintModeRequest;
+	    #CM_Vlv_Cristal[#i].AutModLi := #AutoModeRequest;
+	    #CM_Vlv_Cristal[#i].OosModLi := NOT (#ManualModeRequest OR #MaintModeRequest
+	    OR #AutoModeRequest);
+	    #CM_Vlv_Cristal[#i].LocModLi := FALSE;
+	    #CM_Vlv_Cristal[#i].ResetLi := #In.Cmds.Reset;
+	    #CM_Vlv_Cristal[#i].OpenAut := #ValveOpenRequest AND (#i = #ActiveValveIndex);
+	    #CM_Vlv_Cristal[#i].CloseAut := NOT #CM_Vlv_Cristal[#i].OpenAut;
+	    #CM_Vlv_Cristal[#i].SafePos := FALSE;
+	    #CM_Vlv_Cristal[#i].Permit := (NOT #In.LevelInterlock AND #AutoModeRequest AND (#i = #ActiveValveIndex)) OR #ManualModeRequest OR #MaintModeRequest;
+	    #CM_Vlv_Cristal[#i].Intlock := (NOT #In.LevelInterlock AND #AutoModeRequest AND (#i = #ActiveValveIndex)) OR #ManualModeRequest OR #MaintModeRequest;
+	    #CM_Vlv_Cristal[#i].Protect := TRUE;
+	    #CM_Vlv_Cristal[#i]();
+	    #CM_Vlv_Cristal_Out[#i] := #CM_Vlv_Cristal[#i].cmd;
+	END_FOR;
+	
+	#ValveClosed := TRUE;
+	FOR #i := 1 TO #NUM_VLV DO
+	    #ValveClosed := #ValveClosed AND #CM_Vlv_Cristal[#i].Closed;
+	END_FOR;
+	#AutoModeOk := #AutoModeRequest;
+	
+	// --- Fase 4: temporizadores de inyeccion, nivel y timeout ---
+	IF #ElapsedPrev >= #In.InjectionTime THEN
+	    #RemainingTime := T#0s;
+	ELSE
+	    #RemainingTime := #In.InjectionTime - #ElapsedPrev;
+	END_IF;
+	#TimerInjection(IN := #ValveOpenRequest AND (#ActiveAction = 1),
+	                PT := #RemainingTime);
+	IF #TimerInjection.Q THEN
+	    #InjectionDone := TRUE;
+	END_IF;
+	
+	#LevelReached := #AutoModeRequest AND (#StateForCM = #ST_RUNNING)
+	AND (#ActiveAction = 2) AND #In.LevelValid
+	AND (#LevelPV >= #In.TargetLevelSP);
+	#TimerLevel(IN := #LevelReached,
+	            PT := #In.LevelFilter);
+	#TimerTimeout(IN := #AutoModeOk AND (#StateForCM = #ST_RUNNING)
+	              AND (#ActiveAction = 2) AND NOT #TimerLevel.Q,
+	              PT := #In.LevelTimeout);
+	
+	// --- Fase 5: alarmas; el timeout solo notifica y no cambia el estado ---
+	#SensorAlarm := #AutoModeRequest AND (#ActiveAction = 2)
+	AND ((#State = #ST_RUNNING) OR (#StateForCM = #ST_RUNNING)
+	OR (#StateForCM = #ST_ABORTING)) AND NOT #In.LevelValid;
+	#CMAlarm := FALSE;
+	FOR #i := 1 TO #NUM_VLV DO
+	    #CMAlarm := #CMAlarm OR #CM_Vlv_Cristal[#i].AlarmError;
+	END_FOR;
+	IF #TimerTimeout.Q THEN
+	    #TimeoutAlarm := TRUE;
+	END_IF;
+	
+	IF #TrigReset.Q AND NOT #SensorAlarm AND NOT #CMAlarm AND NOT #TimerTimeout.Q THEN
+	    #TimeoutAlarm := FALSE;
+	    #AlarmLatched := FALSE;
+	    #FaultCode := 0;
+	END_IF;
+	
+	IF #SensorAlarm THEN
+	    #FaultNew := 2;
+	    #StateForCM := #ST_ABORTING;
+	ELSIF #CMAlarm THEN
+	    #FaultNew := 5;
+	    #StateForCM := #ST_ABORTING;
+	ELSIF #TimerTimeout.Q THEN
+	    #FaultNew := 3;
+	END_IF;
+	IF #FaultNew <> 0 THEN
+	    #AlarmLatched := TRUE;
+	    #FaultCode := #FaultNew;
+	END_IF;
+	
+	// --- Fase 6: transiciones confirmadas por feedback de cierre ---
+	IF #AutoModeOk THEN
+	    #State := #StateForCM;
+	    CASE #StateForCM OF
+	        #ST_RUNNING:
+	            IF (((#ActiveAction = 1) AND #InjectionDone)
+	                OR ((#ActiveAction = 2) AND #TimerLevel.Q)) AND #ValveClosed THEN
+	                #State := #ST_COMPLETED;
+	            END_IF;
+	        #ST_HOLDING:
+	            IF #ValveClosed THEN
+	                #State := #ST_HELD;
+	            END_IF;
+	        #ST_STOPPING:
+	            IF #ValveClosed THEN
+	                #State := #ST_STOPPED;
+	                #ActiveAction := 0;
+	                #ActiveValveIndex := 0;
+	                #ElapsedPrev := T#0s;
+	            END_IF;
+	        #ST_ABORTING:
+	            IF #ValveClosed THEN
+	                #State := #ST_ABORTED;
+	                #ActiveAction := 0;
+	                #ActiveValveIndex := 0;
+	                #ElapsedPrev := T#0s;
+	            END_IF;
+	    END_CASE;
+	ELSE
+	    #State := #ST_IDLE;
+	END_IF;
+	
+	// --- Fase 7: publicacion del estado del EM ---
+	#Out.Status.State := #State;
+	#Out.Status.Idle := (#State = #ST_IDLE);
+	#Out.Status.Running := (#State = #ST_RUNNING);
+	#Out.Status.Completed := (#State = #ST_COMPLETED);
+	#Out.Status.Holding := (#State = #ST_HOLDING);
+	#Out.Status.Held := (#State = #ST_HELD);
+	#Out.Status.Stopping := (#State = #ST_STOPPING);
+	#Out.Status.Stopped := (#State = #ST_STOPPED);
+	#Out.Status.Aborting := (#State = #ST_ABORTING);
+	#Out.Status.Aborted := (#State = #ST_ABORTED);
+	#Out.Status.Fault := #AlarmLatched OR #TimeoutAlarm OR #SensorAlarm OR #CMAlarm;
+	#Out.Status.FaultCode := #FaultCode;
+	#Out.Status.ModeMan := #CM_Vlv_Cristal[1].ManAct;
+	#Out.Status.ModeAuto := #AutoModeRequest AND #CM_Vlv_Cristal[1].AutAct;
+	#Out.Status.ModeMaint := #MaintModeRequest AND #CM_Vlv_Cristal[1].ManAct;
+	FOR #i := 2 TO #NUM_VLV DO
+	    #Out.Status.ModeMan := #Out.Status.ModeMan AND #CM_Vlv_Cristal[#i].ManAct;
+	    #Out.Status.ModeAuto := #Out.Status.ModeAuto AND #CM_Vlv_Cristal[#i].AutAct;
+	    #Out.Status.ModeMaint := #Out.Status.ModeMaint AND #CM_Vlv_Cristal[#i].ManAct;
+	END_FOR;
+	#Out.Status.ModeConflict := (#ModeCount > 1) OR (#In.Cmds.Auto AND NOT #ActionValid);
+END_FUNCTION_BLOCK
+

@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Types.PlcStruct ID="0">
+    <AttributeList>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="None">
+    <Member Name="ZSO_112B" Datatype="Bool" />
+    <Member Name="ZSO_112A" Datatype="Bool" />
+    <Member Name="ZSO_105" Datatype="Bool" />
+    <Member Name="ZSO_103" Datatype="Bool" />
+    <Member Name="ZSO_109" Datatype="Bool" />
+    <Member Name="ZSO_104" Datatype="Bool" />
+    <Member Name="ZSO_108" Datatype="Bool" />
+    <Member Name="YI_101" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Agitador en marcha</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="YT_101" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Disparo del agitador</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="ZSO_102" Datatype="Bool" />
+    <Member Name="ZSO_113" Datatype="Bool" />
+    <Member Name="YI_102" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Bomba de vacÃ­o en marcha Entradas analÃ³gicas: RAW 0..27648</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="LT_112_RAW" Datatype="Int" />
+    <Member Name="PT_110_RAW" Datatype="Int" />
+    <Member Name="PT_113_RAW" Datatype="Int" />
+    <Member Name="TT_114_RAW" Datatype="Int" />
+    <Member Name="TT_115_RAW" Datatype="Int" />
+    <Member Name="AT_112_RAW" Datatype="Int" />
+    <Member Name="LT_116_RAW" Datatype="Int" />
+    <Member Name="AT_112X_RAW" Datatype="Int" />
+  </Section>
+</Sections></Interface>
+      <Name>UDT_TachoDT_I</Name>
+      <Namespace />
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Types.PlcStruct>
+</Document>

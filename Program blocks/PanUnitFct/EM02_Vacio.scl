@@ -1,0 +1,331 @@
+﻿FUNCTION_BLOCK "EM02_Vacio"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+//MÃ³dulo de equipo de vacÃ­o con control continuo local/externo y secuencia de ruptura de vacÃ­o.
+   VAR_INPUT 
+      In : "EM02_Input";
+      VacuumPV : Real;   // PresiÃ³n absoluta en mbar, rango 0..2000
+      PumpFbkRun : Bool;   // Estado de la bomba de vacio
+   END_VAR
+
+   VAR_OUTPUT 
+      Out : "EM02_Output";
+      CM_PIC_MV : Real;   // SeÃ±al en porcentaje a la vÃ¡lvula de agua del condensador
+      CM_MotL_Out : Bool;   // Comando a la bomba de vacÃ­o
+      CM_Bk_Out : Bool;   // Comando a la vÃ¡lvula rompe-vacÃ­o
+      TimeoutAlarm : Bool;   // Timeout local enclavado; no detiene el control
+      SensorAlarm : Bool;
+      CMAlarm : Bool;
+   END_VAR
+
+   VAR 
+      State : Int;
+      ActiveAction : Int;   // 1=PID local, 2=PID externo, 3=rompe-vacÃ­o
+      AlarmLatched : Bool;
+      FaultCode : Int;   // 1=selecciÃ³n/parÃ¡metro invÃ¡lido 2=sensor 3=timeout 4=alarma CM 5=MV externa
+      TimerReachedSP {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TimerTimeout {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TrigStart {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigStop {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigHold {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigAbort {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigReset {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      CM_PIC_Vacuum : "PidL";
+      CM_MotL : "MotL";
+      CM_Vlv_Break : "VlvL";
+   END_VAR
+
+   VAR_TEMP 
+      ModeCount : Int;
+      AutoModeRequest : Bool;
+      ManualModeRequest : Bool;
+      MaintModeRequest : Bool;
+      ActionValid : Bool;
+      VacuumActive : Bool;
+      BreakActive : Bool;
+      BreakPermit : Bool;
+      ResetAccepted : Bool;
+      StateForCM : Int;
+      FaultNew : Int;
+   END_VAR
+
+   VAR CONSTANT 
+      ST_IDLE : Int := 0;
+      ST_RUNNING : Int := 1;
+      ST_COMPLETED : Int := 2;
+      ST_HOLDING : Int := 3;
+      ST_HELD : Int := 4;
+      ST_STOPPING : Int := 5;
+      ST_STOPPED : Int := 6;
+      ST_ABORTING : Int := 7;
+      ST_ABORTED : Int := 8;
+   END_VAR
+
+
+BEGIN
+	        // --- Fase 1: captura de comandos y validaciÃ³n de selecciones ---
+	        #TrigStart(CLK := #In.Cmds.Start);
+	        #TrigStop(CLK := #In.Cmds.Stop);
+	        #TrigHold(CLK := #In.Cmds.Hold);
+	        #TrigAbort(CLK := #In.Cmds.Abort);
+	        #TrigReset(CLK := #In.Cmds.Reset);
+	        
+	        #ModeCount := BOOL_TO_INT(#In.Cmds.Auto) + BOOL_TO_INT(#In.Cmds.Manual)
+	        + BOOL_TO_INT(#In.Cmds.Maintenance);
+	        #AutoModeRequest := #In.Cmds.Auto AND (#ModeCount = 1);
+	        #ManualModeRequest := #In.Cmds.Manual AND (#ModeCount = 1);
+	        #MaintModeRequest := #In.Cmds.Maintenance AND (#ModeCount = 1);
+	        #ActionValid := (#In.CtrlMode >= 1) AND (#In.CtrlMode <= 3);
+	        #FaultNew := 0;
+	        
+	        // --- Fase 2: cÃ¡lculo de la secuencia de equipo antes de mandar Ã³rdenes ---
+	        #StateForCM := #State;
+	        #ResetAccepted := #TrigReset.Q AND ((#State = #ST_IDLE) OR (#State = #ST_STOPPED)
+	        OR (#State = #ST_ABORTED));
+	        
+	        IF NOT #AutoModeRequest THEN
+	            #StateForCM := #ST_IDLE;
+	            #ActiveAction := 0;
+	        ELSE
+	            IF #ResetAccepted THEN
+	                #StateForCM := #ST_IDLE;
+	                #ActiveAction := 0;
+	            END_IF;
+	            
+	            IF #TrigAbort.Q AND (#StateForCM <> #ST_ABORTING) AND (#StateForCM <> #ST_ABORTED) THEN
+	                #StateForCM := #ST_ABORTING;
+	            ELSIF #TrigStop.Q AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)
+	                OR (#StateForCM = #ST_HOLDING) OR (#StateForCM = #ST_HELD)) THEN
+	                #StateForCM := #ST_STOPPING;
+	            ELSIF #TrigHold.Q AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)) THEN
+	                #StateForCM := #ST_HOLDING;
+	            END_IF;
+	            
+	            CASE #StateForCM OF
+	                #ST_IDLE:
+	                    IF #TrigStart.Q AND NOT #ResetAccepted THEN
+	                        IF NOT #ActionValid THEN
+	                            #FaultNew := 1;
+	                        ELSIF #In.VaccumFilter <= T#0s THEN
+	                            #FaultNew := 1;
+	                        ELSIF (#In.CtrlMode = 1) AND ((#In.VaccumTimeout <= T#0s)
+	                            OR (#In.VaccumBand < 0.0)
+	                            OR (#In.VaccumSP < 0.0)
+	                            OR (#In.VaccumSP > 2000.0)) THEN
+	                            #FaultNew := 1;
+	                        ELSE
+	                            #ActiveAction := #In.CtrlMode;
+	                            #StateForCM := #ST_RUNNING;
+	                        END_IF;
+	                    END_IF;
+	                    
+	                #ST_HELD:
+	                    IF #TrigStart.Q THEN
+	                        #StateForCM := #ST_RUNNING;
+	                    END_IF;
+	                    
+	                #ST_RUNNING, #ST_COMPLETED:
+	                    IF NOT #ActionValid THEN
+	                        #FaultNew := 1;
+	                        #StateForCM := #ST_STOPPING;
+	                    ELSIF (#ActiveAction = 1) AND ((#In.VaccumSP < 0.0)
+	                        OR (#In.VaccumSP > 2000.0)
+	                        OR (#In.VaccumFilter <= T#0s)
+	                        OR (#In.VaccumBand < 0.0)
+	                        OR (#In.VaccumTimeout <= T#0s)) THEN
+	                        #FaultNew := 1;
+	                        #StateForCM := #ST_STOPPING;
+	                    ELSIF (#In.CtrlMode = 2) OR (#In.CtrlMode = 3) THEN
+	                        #ActiveAction := #In.CtrlMode;
+	                    END_IF;
+	            END_CASE;
+	        END_IF;
+	        
+	        #VacuumActive := #AutoModeRequest
+	        AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED))
+	        AND ((#ActiveAction = 1) OR (#ActiveAction = 2));
+	        #BreakActive := #AutoModeRequest AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED))
+	        AND (#ActiveAction = 3);
+	        
+	        // --- Fase 3: configuraciÃ³n y ejecuciÃ³n del PID ---
+	        #CM_PIC_Vacuum.ModLiOp := TRUE;
+	        #CM_PIC_Vacuum.ManModLi := #ManualModeRequest OR #MaintModeRequest;
+	        #CM_PIC_Vacuum.AutModLi := #AutoModeRequest AND #VacuumActive;
+	        #CM_PIC_Vacuum.OosModLi := NOT (#ManualModeRequest OR #MaintModeRequest
+	        OR (#AutoModeRequest AND #VacuumActive));
+	        #CM_PIC_Vacuum.LocModLi := FALSE;
+	        #CM_PIC_Vacuum.ResetLi := #In.Cmds.Reset;
+	        #CM_PIC_Vacuum.SPModLiOp := NOT (#ManualModeRequest OR #MaintModeRequest);
+	        #CM_PIC_Vacuum.IntModLi := TRUE;
+	        #CM_PIC_Vacuum.ExtModLi := FALSE;
+	        #CM_PIC_Vacuum.PV := LIMIT(MN := 0.0, IN := #VacuumPV, MX := 2000.0);
+	        #CM_PIC_Vacuum.PV_Norm.High := 2000.0;
+	        #CM_PIC_Vacuum.PV_Norm.Low := 0.0;
+	        #CM_PIC_Vacuum.PV_Scale.High := 2000.0;
+	        #CM_PIC_Vacuum.PV_Scale.Low := 0.0;
+	        #CM_PIC_Vacuum.MV_Norm.High := 100.0;
+	        #CM_PIC_Vacuum.MV_Norm.Low := 0.0;
+	        #CM_PIC_Vacuum.SP_HiLim := 2000.0;
+	        #CM_PIC_Vacuum.SP_LoLim := 0.0;
+	        #CM_PIC_Vacuum.MV_HiLim := 100.0;
+	        #CM_PIC_Vacuum.MV_LoLim := 0.0;
+	        IF (#ActiveAction = 1) THEN
+	            #CM_PIC_Vacuum.DataHMI.SpInt := #In.VaccumSP;
+	        ELSIF (#ActiveAction = 2) THEN
+	            #CM_PIC_Vacuum.DataHMI.SpInt := #CM_PIC_Vacuum.PV;
+	        END_IF;
+	        #CM_PIC_Vacuum.TrackOn := (#ActiveAction = 2) AND #VacuumActive;
+	        #CM_PIC_Vacuum.TrackVal := LIMIT(MN := 0.0, IN := #In.VaccumSMMV, MX := 100.0);
+	        #CM_PIC_Vacuum.OosSafeMV := 0.0;
+	        #CM_PIC_Vacuum.Permit := #MaintModeRequest OR #CM_Vlv_Break.Closed;
+	        #CM_PIC_Vacuum.Intlock := #MaintModeRequest OR #CM_Vlv_Break.Closed;
+	        #CM_PIC_Vacuum.Protect := TRUE;
+	        #CM_PIC_Vacuum();
+	        
+	        // --- Fase 4: configuraciÃ³n y ejecuciÃ³n de la bomba ---
+	        #CM_MotL.ModLiOp := TRUE;
+	        #CM_MotL.ManModLi := #ManualModeRequest OR #MaintModeRequest;
+	        #CM_MotL.AutModLi := #AutoModeRequest;
+	        #CM_MotL.OosModLi := NOT (#ManualModeRequest OR #MaintModeRequest OR #AutoModeRequest);
+	        #CM_MotL.LocModLi := FALSE;
+	        #CM_MotL.ResetLi := #In.Cmds.Reset;
+	        #CM_MotL.StartAut := #VacuumActive AND #CM_Vlv_Break.Closed;
+	        #CM_MotL.StopAut := NOT #CM_MotL.StartAut;
+	        #CM_MotL.FbkRun := #PumpFbkRun;
+	        #CM_MotL.Permit := #MaintModeRequest OR #CM_Vlv_Break.Closed;
+	        #CM_MotL.Intlock := #MaintModeRequest OR #CM_Vlv_Break.Closed;
+	        #CM_MotL.Protect := TRUE;
+	        #CM_MotL();
+	        
+	        // --- Fase 5: ejecuciÃ³n de la rompe-vacÃ­o con enclavamiento mutuo ---
+	        #BreakPermit := NOT #VacuumActive AND #CM_MotL.Stop AND NOT #CM_MotL.Start
+	        AND (#CM_PIC_Vacuum.MV <= 0.0);
+	        #CM_Vlv_Break.ModLiOp := TRUE;
+	        #CM_Vlv_Break.ManModLi := #ManualModeRequest OR #MaintModeRequest;
+	        #CM_Vlv_Break.AutModLi := #AutoModeRequest;
+	        #CM_Vlv_Break.OosModLi := NOT (#ManualModeRequest OR #MaintModeRequest OR #AutoModeRequest);
+	        #CM_Vlv_Break.LocModLi := FALSE;
+	        #CM_Vlv_Break.ResetLi := #In.Cmds.Reset;
+	        #CM_Vlv_Break.OpenAut := #BreakActive AND #BreakPermit;
+	        #CM_Vlv_Break.CloseAut := NOT #CM_Vlv_Break.OpenAut;
+	        #CM_Vlv_Break.SafePos := FALSE;
+	        #CM_Vlv_Break.Permit := #MaintModeRequest OR #BreakPermit;
+	        #CM_Vlv_Break.Intlock := #MaintModeRequest OR #BreakPermit;
+	        #CM_Vlv_Break.Protect := TRUE;
+	        #CM_Vlv_Break();
+	        
+	        // --- Fase 6: temporizaciÃ³n y evaluaciÃ³n de alarmas con estados actuales ---
+	        #TimerReachedSP(IN := #VacuumActive AND #In.VaccumValid
+	                        AND (ABS(#VacuumPV - #In.VaccumSP) <= #In.VaccumBand),
+	                        PT := #In.VaccumFilter);
+	        #TimerTimeout(IN := #VacuumActive AND (#ActiveAction = 1)
+	                      AND NOT #TimerReachedSP.Q,
+	                      PT := #In.VaccumTimeout);
+	        
+	        #SensorAlarm := #VacuumActive AND (NOT #In.VaccumValid OR (#VacuumPV < 0.0)
+	        OR (#VacuumPV > 2000.0));
+	        #CMAlarm := #CM_PIC_Vacuum.AlarmError OR #CM_MotL.AlarmError
+	        OR #CM_Vlv_Break.AlarmError;
+	        IF #TimerTimeout.Q THEN
+	            #TimeoutAlarm := TRUE;
+	        END_IF;
+	        IF #VacuumActive AND (#ActiveAction = 2)
+	            AND ((#In.VaccumSMMV < 0.0) OR (#In.VaccumSMMV > 100.0)) THEN
+	            #FaultNew := 5;
+	        END_IF;
+	        
+	        IF #TrigReset.Q THEN
+	            IF NOT #SensorAlarm AND NOT #CMAlarm AND NOT #TimerTimeout.Q THEN
+	                #TimeoutAlarm := FALSE;
+	                #AlarmLatched := FALSE;
+	                #FaultCode := 0;
+	            END_IF;
+	        END_IF;
+	        
+	        IF #FaultNew <> 0 THEN
+	            #AlarmLatched := TRUE;
+	            #FaultCode := #FaultNew;
+	        ELSIF #SensorAlarm OR #CMAlarm OR #TimerTimeout.Q THEN
+	            #AlarmLatched := TRUE;
+	            IF #SensorAlarm THEN
+	                #FaultCode := 2;
+	            ELSIF #TimerTimeout.Q THEN
+	                #FaultCode := 3;
+	            ELSE
+	                #FaultCode := 4;
+	            END_IF;
+	        END_IF;
+	        
+	        // --- Fase 7: transiciones confirmadas por el resultado de los CMs ---
+	        IF #AutoModeRequest THEN
+	            #State := #StateForCM;
+	            CASE #StateForCM OF
+	                #ST_RUNNING:
+	                    IF #VacuumActive AND #TimerReachedSP.Q THEN
+	                        // TransiciÃ³n a completado cuando se alcanza el setpoint de vacÃ­o
+	                        #State := #ST_COMPLETED;
+	                    ELSIF #BreakActive AND (#VacuumPV >= #In.AtmPressure) THEN
+	                        // TransiciÃ³n a completado cuando la vÃ¡lvula de ruptura estÃ¡ activa y la presiÃ³n alcanza la atmosfÃ©rica
+	                        #State := #ST_COMPLETED;
+	                    END_IF;
+	                    
+	                #ST_HOLDING:
+	                    IF #CM_MotL.Stop AND (#CM_PIC_Vacuum.MV <= 0.0)
+	                        AND #CM_Vlv_Break.Closed THEN
+	                        #State := #ST_HELD;
+	                    END_IF;
+	                    
+	                #ST_STOPPING:
+	                    IF #CM_MotL.Stop AND (#CM_PIC_Vacuum.MV <= 0.0)
+	                        AND #CM_Vlv_Break.Closed THEN
+	                        #State := #ST_STOPPED;
+	                        #ActiveAction := 0;
+	                    END_IF;
+	                    
+	                #ST_ABORTING:
+	                    IF #CM_MotL.Stop AND (#CM_PIC_Vacuum.MV <= 0.0)
+	                        AND #CM_Vlv_Break.Closed THEN
+	                        #State := #ST_ABORTED;
+	                        #ActiveAction := 0;
+	                    END_IF;
+	            END_CASE;
+	        ELSE
+	            #State := #ST_IDLE;
+	        END_IF;
+	        
+	        IF (#State = #ST_HELD) OR (#State = #ST_STOPPED) OR (#State = #ST_ABORTED)
+	            OR (#State = #ST_IDLE) THEN
+	            IF NOT #AutoModeRequest THEN
+	                #ActiveAction := 0;
+	            END_IF;
+	        END_IF;
+	        
+	        // --- Fase 8: publicaciÃ³n de comandos y estados del EM ---
+	        #CM_PIC_MV := #CM_PIC_Vacuum.MV;
+	        #CM_MotL_Out := #CM_MotL.Start;
+	        #CM_Bk_Out := #CM_Vlv_Break.cmd;
+	        #Out.VacuumActive := #CM_PIC_Vacuum.MV > 0.0 OR #CM_MotL.Run;
+	        #Out.VacuumBroken := #BreakActive AND (#VacuumPV >= #In.AtmPressure);
+	        #Out.Status.State := #State;
+	        #Out.Status.Idle := (#State = #ST_IDLE);
+	        #Out.Status.Running := (#State = #ST_RUNNING);
+	        #Out.Status.Completed := (#State = #ST_COMPLETED);
+	        #Out.Status.Holding := (#State = #ST_HOLDING);
+	        #Out.Status.Held := (#State = #ST_HELD);
+	        #Out.Status.Stopping := (#State = #ST_STOPPING);
+	        #Out.Status.Stopped := (#State = #ST_STOPPED);
+	        #Out.Status.Aborting := (#State = #ST_ABORTING);
+	        #Out.Status.Aborted := (#State = #ST_ABORTED);
+	        #Out.Status.Fault := #AlarmLatched OR #TimeoutAlarm OR #SensorAlarm OR #CMAlarm;
+	        #Out.Status.FaultCode := #FaultCode;
+	        #Out.Status.ModeMan := #CM_PIC_Vacuum.ManAct AND #CM_MotL.ManAct AND #CM_Vlv_Break.ManAct;
+	        #Out.Status.ModeAuto := #AutoModeRequest AND #CM_MotL.AutAct AND #CM_Vlv_Break.AutAct
+	        AND (#CM_PIC_Vacuum.AutAct OR #CM_PIC_Vacuum.OosAct);
+	        #Out.Status.ModeMaint := #MaintModeRequest AND #CM_PIC_Vacuum.ManAct
+	        AND #CM_MotL.ManAct AND #CM_Vlv_Break.ManAct;
+	        #Out.Status.ModeConflict := (#ModeCount > 1)
+	        OR (#In.Cmds.Auto AND NOT #ActionValid)
+	        OR ((#In.Cmds.Manual OR #In.Cmds.Maintenance)
+	        AND (#In.CtrlMode <> 0));
+END_FUNCTION_BLOCK
+

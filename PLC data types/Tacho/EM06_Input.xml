@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Types.PlcStruct ID="0">
+    <AttributeList>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="None">
+    <Member Name="Cmds" Datatype="&quot;EM_Input&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="CtrlMode" Datatype="Int">
+      <Comment>
+        <MultiLanguageText Lang="en-US">0=Off, 1=Descarga de masa, 2=Desague de lavado</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="NivelDescargaOn" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Nivel del recibidor para iniciar descarga</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="NivelDescargaOff" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Nivel del recibidor para pausar descarga</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="NivelDescargaFin" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Nivel de tacho considerado vacio</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="EmptyFilter" Datatype="Time">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Permanencia bajo nivel de fin para completar</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="DrainTime" Datatype="Time">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Tiempo de apertura del desague</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="VacuumBrokenPermit" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Permiso para descargar masa con vacio roto</MultiLanguageText>
+      </Comment>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <Name>EM06_Input</Name>
+      <Namespace />
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Types.PlcStruct>
+</Document>

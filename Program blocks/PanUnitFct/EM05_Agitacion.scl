@@ -1,0 +1,216 @@
+﻿FUNCTION_BLOCK "EM05_Agitacion"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+// Modulo ISA-88 de agitacion para acoples superior e inferior.
+// 
+// La decision de no bloquear el agitador inferior cuando no se cumple el nivel mÃ­nimo se toma
+// por aspectos mecÃ¡nicos, ya que el agitador inferior no tiene problemas de desbalanceo por girar
+// en vacio.
+   VAR_INPUT 
+      In : "EM05_Input";
+      MotorFbkRun : Bool;
+      MotorTrip : Bool;
+   END_VAR
+
+   VAR_OUTPUT 
+      Out : "EM05_Output";
+      CM_Mot_Agitador_Out : Bool;
+      CMAlarm : Bool;
+   END_VAR
+
+   VAR 
+      State : Int;
+      ActiveAgitatorType : Int;
+      AlarmLatched : Bool;
+      FaultCode : Int;
+      TrigStart {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigStop {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigHold {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigAbort {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigReset {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      CM_Mot_Agitador : "MotL";
+   END_VAR
+
+   VAR_TEMP 
+      ModeCount : Int;
+      AutoModeRequest : Bool;
+      ManualModeRequest : Bool;
+      MaintModeRequest : Bool;
+      AgitatorTypeValid : Bool;
+      LevelPermit : Bool;
+      ResetAccepted : Bool;
+      StateForCM : Int;
+      FaultNew : Int;
+   END_VAR
+
+   VAR CONSTANT 
+      ST_IDLE : Int := 0;
+      ST_RUNNING : Int := 1;
+      ST_COMPLETED : Int := 2;
+      ST_HOLDING : Int := 3;
+      ST_HELD : Int := 4;
+      ST_STOPPING : Int := 5;
+      ST_STOPPED : Int := 6;
+      ST_ABORTING : Int := 7;
+      ST_ABORTED : Int := 8;
+   END_VAR
+
+
+BEGIN
+	// --- Fase 1: captura de comandos y validacion de configuracion ---
+	#TrigStart(CLK := #In.Cmds.Start);
+	#TrigStop(CLK := #In.Cmds.Stop);
+	#TrigHold(CLK := #In.Cmds.Hold);
+	#TrigAbort(CLK := #In.Cmds.Abort);
+	#TrigReset(CLK := #In.Cmds.Reset);
+	
+	#ModeCount := BOOL_TO_INT(#In.Cmds.Auto) + BOOL_TO_INT(#In.Cmds.Manual)
+	+ BOOL_TO_INT(#In.Cmds.Maintenance);
+	#AutoModeRequest := #In.Cmds.Auto AND (#ModeCount = 1);
+	#ManualModeRequest := #In.Cmds.Manual AND (#ModeCount = 1);
+	#MaintModeRequest := #In.Cmds.Maintenance AND (#ModeCount = 1);
+	#AgitatorTypeValid := (#In.AgitatorType = 1) OR (#In.AgitatorType = 2);
+	#LevelPermit := (#In.AgitatorType = 2) OR #In.MinLevelPermit;
+	#FaultNew := 0;
+	
+	// --- Fase 2: secuencia ISA-88 ---
+	#StateForCM := #State;
+	#ResetAccepted := #TrigReset.Q AND ((#State = #ST_IDLE) OR (#State = #ST_STOPPED)
+	OR (#State = #ST_ABORTED));
+	IF NOT #AutoModeRequest THEN
+	    #StateForCM := #ST_IDLE;
+	    #ActiveAgitatorType := 0;
+	ELSE
+	    IF #ResetAccepted THEN
+	        #StateForCM := #ST_IDLE;
+	        #ActiveAgitatorType := 0;
+	    END_IF;
+	    
+	    IF #TrigAbort.Q AND (#StateForCM <> #ST_ABORTING) AND (#StateForCM <> #ST_ABORTED) THEN
+	        #StateForCM := #ST_ABORTING;
+	    ELSIF #TrigStop.Q AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)
+	        OR (#StateForCM = #ST_HOLDING) OR (#StateForCM = #ST_HELD)) THEN
+	        #StateForCM := #ST_STOPPING;
+	    ELSIF #TrigHold.Q AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)) THEN
+	        #StateForCM := #ST_HOLDING;
+	    END_IF;
+	    
+	    CASE #StateForCM OF
+	        #ST_IDLE:
+	            IF #TrigStart.Q AND NOT #ResetAccepted THEN
+	                IF NOT #AgitatorTypeValid THEN
+	                    #FaultNew := 1;
+	                ELSIF (#In.AgitatorType = 1) AND NOT #In.MinLevelPermit THEN
+	                    ;
+	                ELSIF #MotorTrip THEN
+	                    #FaultNew := 3;
+	                ELSE
+	                    #ActiveAgitatorType := #In.AgitatorType;
+	                    #StateForCM := #ST_RUNNING;
+	                END_IF;
+	            END_IF;
+	            
+	        #ST_HELD:
+	            IF #TrigStart.Q AND (#In.AgitatorType = #ActiveAgitatorType)
+	                AND #AgitatorTypeValid AND #LevelPermit AND NOT #MotorTrip THEN
+	                #StateForCM := #ST_RUNNING;
+	            END_IF;
+	            
+	        #ST_RUNNING, #ST_COMPLETED:
+	            IF NOT #AgitatorTypeValid OR (#In.AgitatorType <> #ActiveAgitatorType) THEN
+	                #FaultNew := 1;
+	                #StateForCM := #ST_STOPPING;
+	            ELSIF (#ActiveAgitatorType = 1)
+	                AND (NOT #In.MinLevelPermit OR #MotorTrip OR #CM_Mot_Agitador.AlarmError) THEN
+	                #StateForCM := #ST_HOLDING;
+	            END_IF;
+	    END_CASE;
+	END_IF;
+	
+	// --- Fase 3: mando y protecciones del CM del motor ---
+	#CM_Mot_Agitador.ModLiOp := TRUE;
+	#CM_Mot_Agitador.ManModLi := #ManualModeRequest OR #MaintModeRequest;
+	#CM_Mot_Agitador.AutModLi := #AutoModeRequest;
+	#CM_Mot_Agitador.OosModLi := NOT (#ManualModeRequest OR #MaintModeRequest
+	OR #AutoModeRequest);
+	#CM_Mot_Agitador.LocModLi := FALSE;
+	#CM_Mot_Agitador.ResetLi := #In.Cmds.Reset;
+	#CM_Mot_Agitador.Trip := #MotorTrip;
+	#CM_Mot_Agitador.FbkRun := #MotorFbkRun;
+	#CM_Mot_Agitador.StartAut := #AutoModeRequest AND (#StateForCM = #ST_RUNNING
+	OR #StateForCM = #ST_COMPLETED) AND #LevelPermit
+	AND NOT (#In.AgitatorType = 1 AND #MotorTrip);
+	#CM_Mot_Agitador.StopAut := NOT #CM_Mot_Agitador.StartAut;
+	#CM_Mot_Agitador.Permit := #AgitatorTypeValid AND #LevelPermit;
+	#CM_Mot_Agitador.Intlock := #AgitatorTypeValid AND #LevelPermit;
+	#CM_Mot_Agitador.Protect := TRUE;
+	#CM_Mot_Agitador();
+	
+	// --- Fase 4: alarmas y respuesta segun tipo de acoplamiento ---
+	#CMAlarm := #MotorTrip OR #CM_Mot_Agitador.AlarmError;
+	IF #CMAlarm THEN
+	    #AlarmLatched := TRUE;
+	    #FaultCode := 3;
+	    IF #AutoModeRequest AND (#ActiveAgitatorType = 1)
+	        AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)) THEN
+	        #StateForCM := #ST_HOLDING;
+	    END_IF;
+	ELSIF #FaultNew <> 0 THEN
+	    #AlarmLatched := TRUE;
+	    #FaultCode := #FaultNew;
+	ELSIF #TrigReset.Q AND NOT #MotorTrip THEN
+	    #AlarmLatched := FALSE;
+	    #FaultCode := 0;
+	END_IF;
+	
+	// --- Fase 5: transiciones confirmadas por el estado del motor ---
+	IF #AutoModeRequest THEN
+	    #State := #StateForCM;
+	    CASE #StateForCM OF
+	        #ST_RUNNING:
+	            IF #CM_Mot_Agitador.Run THEN
+	                #State := #ST_COMPLETED;
+	            END_IF;
+	        #ST_HOLDING:
+	            IF NOT #CM_Mot_Agitador.Run THEN
+	                #State := #ST_HELD;
+	            END_IF;
+	        #ST_STOPPING:
+	            IF NOT #CM_Mot_Agitador.Run THEN
+	                #State := #ST_STOPPED;
+	                #ActiveAgitatorType := 0;
+	            END_IF;
+	        #ST_ABORTING:
+	            IF NOT #CM_Mot_Agitador.Run THEN
+	                #State := #ST_ABORTED;
+	                #ActiveAgitatorType := 0;
+	            END_IF;
+	    END_CASE;
+	ELSE
+	    #State := #ST_IDLE;
+	    #ActiveAgitatorType := 0;
+	END_IF;
+	
+	// --- Fase 6: publicacion de estado y comandos ---
+	#CM_Mot_Agitador_Out := #CM_Mot_Agitador.Start;
+	#Out.AgitatorActive := #CM_Mot_Agitador.Run;
+	#Out.LevelInterlock := #AutoModeRequest AND (#In.AgitatorType = 1)
+	AND NOT #In.MinLevelPermit;
+	#Out.Status.State := #State;
+	#Out.Status.Idle := (#State = #ST_IDLE);
+	#Out.Status.Running := (#State = #ST_RUNNING);
+	#Out.Status.Completed := (#State = #ST_COMPLETED);
+	#Out.Status.Holding := (#State = #ST_HOLDING);
+	#Out.Status.Held := (#State = #ST_HELD);
+	#Out.Status.Stopping := (#State = #ST_STOPPING);
+	#Out.Status.Stopped := (#State = #ST_STOPPED);
+	#Out.Status.Aborting := (#State = #ST_ABORTING);
+	#Out.Status.Aborted := (#State = #ST_ABORTED);
+	#Out.Status.Fault := #AlarmLatched OR #CMAlarm OR (#FaultNew <> 0);
+	#Out.Status.FaultCode := #FaultCode;
+	#Out.Status.ModeMan := #CM_Mot_Agitador.ManAct;
+	#Out.Status.ModeAuto := #AutoModeRequest AND #CM_Mot_Agitador.AutAct;
+	#Out.Status.ModeMaint := #MaintModeRequest AND #CM_Mot_Agitador.ManAct;
+	#Out.Status.ModeConflict := #ModeCount > 1 OR (#In.Cmds.Auto AND NOT #AgitatorTypeValid);
+END_FUNCTION_BLOCK
+

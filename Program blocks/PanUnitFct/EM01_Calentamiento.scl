@@ -1,0 +1,379 @@
+﻿FUNCTION_BLOCK "EM01_Calentamiento"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+//MÃ³dulo de equipo de calentamiento (ISA-88). SegÃºn CtrlMode controla la vÃ¡lvula On/Off VlvL (temperatura/tiempo) o el PidL de calandria (concentraciÃ³n local/externa).
+//Estados: Idle, Running, Completed, Holding, Held, Stopping, Stopped, Aborting, Aborted.
+//Los estados transitorios de Resetting y Restarting se simplifican: Reset va directo a Idle y Start desde Held reanuda en Running.
+   VAR_INPUT 
+      In : "EM01_Input";
+      TempPV : Real;
+      TempValid : Bool := TRUE;   // Calidad del sensor de temperatura
+      ConcPV : Real;   // ConcentraciÃ³n/Brix de la masa cocida, rango 0..100
+      ConcValid : Bool := TRUE;   // Calidad del sensor de concentraciÃ³n
+   END_VAR
+
+   VAR_OUTPUT 
+      Out : "EM01_Output";
+      CM_Out : Bool;
+      CM_Pid_MV : Real;   // Apertura en % de la vÃ¡lvula proporcional de calandria
+   END_VAR
+
+   VAR 
+      State : Int;
+      FaultLatched : Bool;
+      FaultCode : Int;
+      ActiveMode : Int;   // CtrlMode activo; 0 = sin ejecuciÃ³n
+      ElapsedPrev : Time;
+      TimerConc {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TimerTemp {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TimerTime {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TimerFault {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TimerOpen {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TimerClose {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TrigStart {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigStop {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigHold {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigAbort {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigReset {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      CM_Vlv_Cal : "VlvL";
+      CM_Pid_CalandriaVapor : "PidL";
+   END_VAR
+
+   VAR_TEMP 
+      ContPrev : Bool;
+      ContMode : Bool;
+      OnOffMode : Bool;
+      PidRun : Bool;
+      PidHold : Bool;
+      PidPermit : Bool;
+      HoldEff : Real;
+      HoldReached : Bool;
+      ConcInBand : Bool;
+      ModeCount : Int;
+      ManModeOk : Bool;
+      AutoModeOk : Bool;
+      MaintModeOk : Bool;
+      AutoModeRequest : Bool;
+      ResetAccepted : Bool;
+      StateForCM : Int;
+      TempMode : Bool;
+      TimeMode : Bool;
+      CfgValid : Bool;
+      Remaining : Time;
+      FaultNew : Int;
+   END_VAR
+
+   VAR CONSTANT 
+      ST_IDLE : Int := 0;
+      ST_RUNNING : Int := 1;
+      ST_COMPLETED : Int := 2;
+      ST_HOLDING : Int := 3;
+      ST_HELD : Int := 4;
+      ST_STOPPING : Int := 5;
+      ST_STOPPED : Int := 6;
+      ST_ABORTING : Int := 7;
+      ST_ABORTED : Int := 8;
+   END_VAR
+
+
+BEGIN
+	        // --- Fase 1: captura de comandos y preparaciÃ³n de entradas del CM ---
+	        #TrigStart(CLK := #In.Cmds.Start);
+	        #TrigStop(CLK := #In.Cmds.Stop);
+	        #TrigHold(CLK := #In.Cmds.Hold);
+	        #TrigAbort(CLK := #In.Cmds.Abort);
+	        #TrigReset(CLK := #In.Cmds.Reset);
+	        
+	        // --- SelecciÃ³n de modo hacia el CM (solo se acepta un modo a la vez) ---
+	        #ModeCount := BOOL_TO_INT(#In.Cmds.Auto) + BOOL_TO_INT(#In.Cmds.Manual) + BOOL_TO_INT(#In.Cmds.Maintenance);
+	        #AutoModeRequest := #In.Cmds.Auto AND (#ModeCount = 1);
+	        #CM_Vlv_Cal.ModLiOp := (#ModeCount = 1);
+	        #CM_Vlv_Cal.AutModLi := #AutoModeRequest;
+	        #CM_Vlv_Cal.ManModLi := (#In.Cmds.Manual OR #In.Cmds.Maintenance) AND (#ModeCount = 1);
+	        
+	        IF #In.Cmds.Maintenance AND (#ModeCount = 1) THEN
+	            // En mantenimiento no se consideran interlocks
+	            #CM_Vlv_Cal.Permit := TRUE;
+	            #CM_Vlv_Cal.Intlock := TRUE;
+	            #CM_Vlv_Cal.Protect := TRUE;
+	        ELSE
+	            // Pendiente definir condiciones de proceso para Manual y AutomÃ¡tico
+	            #CM_Vlv_Cal.Permit := TRUE;   // AND <condiciÃ³n de permiso de proceso>;
+	            #CM_Vlv_Cal.Intlock := TRUE;  // AND <condiciÃ³n de enclavamiento de proceso>;
+	            #CM_Vlv_Cal.Protect := TRUE;  // AND <condiciÃ³n de protecciÃ³n de proceso>;
+	        END_IF;
+	        #CM_Vlv_Cal.ResetLi := #In.Cmds.Reset;
+	        
+	        #CfgValid := (#In.CtrlMode >= 1) AND (#In.CtrlMode <= 5) AND (#In.ValveTime > T#0s);
+	        IF #In.CtrlMode = 1 THEN
+	            #CfgValid := #CfgValid AND (#In.Timeout > T#0s) AND (#In.TempFilter > T#0s);
+	        ELSIF (#In.CtrlMode = 4) OR (#In.CtrlMode = 5) THEN
+	            #CfgValid := #CfgValid AND (#In.TimeSP > T#0s);
+	        ELSIF (#In.CtrlMode = 2) OR (#In.CtrlMode = 3) THEN
+	            #CfgValid := #CfgValid AND (#In.ConcentrationSP >= 0.0) AND (#In.ConcentrationSP <= 100.0)
+	            AND (#In.ConcStableBand >= 0.0) AND (#In.ConcStableTime > T#0s)
+	            AND (#In.HoldPosition >= 0.0) AND (#In.HoldPosition <= 100.0);
+	        END_IF;
+	        
+	        // --- Fase 2: determinaciÃ³n del estado y los comandos que recibirÃ¡ el CM ---
+	        #StateForCM := #State;
+	        #FaultNew := 0;
+	        #ContPrev := (#ActiveMode = 2) OR (#ActiveMode = 3) OR (#ActiveMode = 5);
+	        #ResetAccepted := #TrigReset.Q AND ((#State = #ST_IDLE) OR ((#State = #ST_COMPLETED) AND NOT #ContPrev)
+	        OR (#State = #ST_STOPPED) OR (#State = #ST_ABORTED));
+	        IF #ResetAccepted THEN
+	            #StateForCM := #ST_IDLE;
+	            #ActiveMode := 0;
+	        END_IF;
+	        
+	        IF NOT #AutoModeRequest THEN
+	            #StateForCM := #ST_IDLE;
+	            #ActiveMode := 0;
+	        ELSE
+	            IF #TrigAbort.Q AND (#StateForCM <> #ST_ABORTING) AND (#StateForCM <> #ST_ABORTED) THEN
+	                #StateForCM := #ST_ABORTING;
+	            ELSIF #TrigStop.Q AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_HOLDING)
+	                OR (#StateForCM = #ST_HELD)
+	                OR ((#StateForCM = #ST_COMPLETED) AND #ContPrev)) THEN
+	                #StateForCM := #ST_STOPPING;
+	            ELSIF #TrigHold.Q AND ((#StateForCM = #ST_RUNNING)
+	                OR ((#StateForCM = #ST_COMPLETED) AND #ContPrev)) THEN
+	                #ElapsedPrev := #ElapsedPrev + #TimerTime.ET;
+	                #StateForCM := #ST_HOLDING;
+	            END_IF;
+	            
+	            IF ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED))
+	                AND (#In.CtrlMode <> #ActiveMode) THEN
+	                IF #CfgValid THEN
+	                    #ActiveMode := #In.CtrlMode;
+	                ELSE
+	                    #FaultNew := 1;
+	                    #StateForCM := #ST_ABORTING;
+	                END_IF;
+	            END_IF;
+	            
+	            CASE #StateForCM OF
+	                #ST_IDLE:
+	                    IF #TrigStart.Q AND (NOT #FaultLatched OR #ResetAccepted) THEN
+	                        IF NOT #CfgValid THEN
+	                            #FaultNew := 1;
+	                            #StateForCM := #ST_ABORTING;
+	                        ELSIF (#In.CtrlMode = 1) AND NOT #TempValid THEN
+	                            #FaultNew := 2;
+	                            #StateForCM := #ST_ABORTING;
+	                        ELSIF (#In.CtrlMode = 2) AND NOT #ConcValid THEN
+	                            #FaultNew := 2;
+	                            #StateForCM := #ST_ABORTING;
+	                        ELSIF #CM_Vlv_Cal.AlarmError OR #CM_Pid_CalandriaVapor.AlarmError THEN
+	                            #FaultNew := 5;
+	                            #StateForCM := #ST_ABORTING;
+	                        ELSE
+	                            #ElapsedPrev := T#0s;
+	                            #ActiveMode := #In.CtrlMode;
+	                            #StateForCM := #ST_RUNNING;
+	                        END_IF;
+	                    END_IF;
+	                    
+	                #ST_HELD:
+	                    IF #TrigStart.Q AND (NOT #FaultLatched OR #ResetAccepted)
+	                        AND NOT #CM_Vlv_Cal.AlarmError AND NOT #CM_Pid_CalandriaVapor.AlarmError THEN
+	                        IF #In.CtrlMode = #ActiveMode THEN
+	                            #StateForCM := #ST_RUNNING;
+	                        ELSE
+	                            #FaultNew := 1;
+	                            #StateForCM := #ST_ABORTING;
+	                        END_IF;
+	                    END_IF;
+	                    
+	                #ST_RUNNING, #ST_COMPLETED:
+	                    IF (#In.CtrlMode = 2) OR (#In.CtrlMode = 3) THEN
+	                        #ActiveMode := #In.CtrlMode;
+	                    END_IF;
+	            END_CASE;
+	        END_IF;
+	        
+	        #TempMode := (#ActiveMode = 1);
+	        #TimeMode := (#ActiveMode = 4) OR (#ActiveMode = 5);
+	        #OnOffMode := (#ActiveMode = 4);
+	        #ContMode := (#ActiveMode = 2) OR (#ActiveMode = 3);
+	        
+	        // --- Fase 3: ejecuciÃ³n Ãºnica de los CMs ---
+	        // VÃ¡lvula On/Off: abierta solo en RUNNING de los modos 1 y 4; en cualquier otro caso cerrada
+	        #CM_Vlv_Cal.OpenAut := (#StateForCM = #ST_RUNNING) AND (#TempMode XOR #OnOffMode);
+	        #CM_Vlv_Cal.CloseAut := NOT #CM_Vlv_Cal.OpenAut;
+	        #CM_Vlv_Cal();
+	        
+	        // PID de calandria: regula en RUNNING/COMPLETED, posiciÃ³n fija en HOLDING/HELD, OOS (MV = 0) en el resto
+	        #PidRun := #AutoModeRequest AND (#ContMode OR (#ActiveMode = 5))
+	        AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED));
+	        #PidHold := #AutoModeRequest AND #ContMode
+	        AND ((#StateForCM = #ST_HOLDING) OR (#StateForCM = #ST_HELD));
+	        #PidPermit := #In.MinLevelPermit AND NOT #In.DischargeInterlock;
+	        IF #PidPermit THEN
+	            #HoldEff := LIMIT(MN := 0.0, IN := #In.HoldPosition, MX := 100.0);
+	        ELSE
+	            #HoldEff := 0.0;
+	        END_IF;
+	        #CM_Pid_CalandriaVapor.ModLiOp := (#ModeCount = 1);
+	        #CM_Pid_CalandriaVapor.ManModLi := (#In.Cmds.Manual OR #In.Cmds.Maintenance) AND (#ModeCount = 1);
+	        #CM_Pid_CalandriaVapor.AutModLi := #PidRun OR #PidHold;
+	        #CM_Pid_CalandriaVapor.OosModLi := NOT (#CM_Pid_CalandriaVapor.ManModLi OR #PidRun OR #PidHold);
+	        #CM_Pid_CalandriaVapor.LocModLi := FALSE;
+	        #CM_Pid_CalandriaVapor.ResetLi := #In.Cmds.Reset;
+	        #CM_Pid_CalandriaVapor.SPModLiOp := NOT #CM_Pid_CalandriaVapor.ManModLi;
+	        #CM_Pid_CalandriaVapor.IntModLi := TRUE;
+	        #CM_Pid_CalandriaVapor.ExtModLi := FALSE;
+	        #CM_Pid_CalandriaVapor.PV := LIMIT(MN := 0.0, IN := #ConcPV, MX := 100.0);
+	        #CM_Pid_CalandriaVapor.PV_Norm.High := 100.0;
+	        #CM_Pid_CalandriaVapor.PV_Norm.Low := 0.0;
+	        #CM_Pid_CalandriaVapor.PV_Scale.High := 100.0;
+	        #CM_Pid_CalandriaVapor.PV_Scale.Low := 0.0;
+	        #CM_Pid_CalandriaVapor.MV_Norm.High := 100.0;
+	        #CM_Pid_CalandriaVapor.MV_Norm.Low := 0.0;
+	        #CM_Pid_CalandriaVapor.SP_HiLim := 100.0;
+	        #CM_Pid_CalandriaVapor.SP_LoLim := 0.0;
+	        #CM_Pid_CalandriaVapor.MV_HiLim := 100.0;
+	        #CM_Pid_CalandriaVapor.MV_LoLim := 0.0;
+	        IF #PidRun AND ((#ActiveMode = 2) OR (#ActiveMode = 5)) THEN
+	            #CM_Pid_CalandriaVapor.DataHMI.SpInt := #In.ConcentrationSP;
+	        ELSIF #PidRun OR #PidHold THEN
+	            // Modo 3 y Hold: SP seguidor del PV para retorno sin salto
+	            #CM_Pid_CalandriaVapor.DataHMI.SpInt := #CM_Pid_CalandriaVapor.PV;
+	        END_IF;
+	        #CM_Pid_CalandriaVapor.TrackOn := #PidHold OR (#PidRun AND (#ActiveMode = 3));
+	        IF #PidHold THEN
+	            #CM_Pid_CalandriaVapor.TrackVal := #HoldEff;
+	        ELSE
+	            #CM_Pid_CalandriaVapor.TrackVal := LIMIT(MN := 0.0, IN := #In.ConcSMMV, MX := 100.0);
+	        END_IF;
+	        #CM_Pid_CalandriaVapor.OosSafeMV := 0.0;
+	        // Nivel mÃ­nimo y descarga fuerzan la salida a 0 % (bloqueo del PidL); en mantenimiento no se aplican
+	        #CM_Pid_CalandriaVapor.Permit := (#In.Cmds.Maintenance AND (#ModeCount = 1)) OR #In.MinLevelPermit;
+	        #CM_Pid_CalandriaVapor.Intlock := (#In.Cmds.Maintenance AND (#ModeCount = 1)) OR NOT #In.DischargeInterlock;
+	        #CM_Pid_CalandriaVapor.Protect := TRUE;
+	        #CM_Pid_CalandriaVapor();
+	        
+	        // --- Fase 4: evaluaciÃ³n de feedback y temporizadores con salidas actuales del CM ---
+	        #ManModeOk := #CM_Vlv_Cal.ManAct AND #CM_Pid_CalandriaVapor.ManAct AND #In.Cmds.Manual AND (#ModeCount = 1);
+	        #AutoModeOk := #CM_Vlv_Cal.AutAct AND #AutoModeRequest
+	        AND (#CM_Pid_CalandriaVapor.AutAct OR #CM_Pid_CalandriaVapor.OosAct);
+	        #MaintModeOk := #CM_Vlv_Cal.ManAct AND #CM_Pid_CalandriaVapor.ManAct AND #In.Cmds.Maintenance AND (#ModeCount = 1);
+	        
+	        #HoldReached := ABS(#CM_Pid_CalandriaVapor.MV - #HoldEff) <= 1.0;
+	        #ConcInBand := #ConcValid AND (ABS(#ConcPV - #In.ConcentrationSP) <= #In.ConcStableBand);
+	        IF #ElapsedPrev >= #In.TimeSP THEN
+	            #Remaining := T#0s;
+	        ELSE
+	            #Remaining := #In.TimeSP - #ElapsedPrev;
+	        END_IF;
+	        
+	        #TimerTemp(IN := #AutoModeOk AND (#StateForCM = #ST_RUNNING) AND #TempMode
+	                   AND #TempValid AND (#TempPV >= #In.TempSP),
+	                   PT := #In.TempFilter);
+	        #TimerTime(IN := #AutoModeOk AND (#StateForCM = #ST_RUNNING) AND #TimeMode,
+	                   PT := #Remaining);
+	        #TimerFault(IN := #AutoModeOk AND (#StateForCM = #ST_RUNNING) AND #TempMode,
+	                    PT := #In.Timeout);
+	        #TimerOpen(IN := #AutoModeOk AND (#StateForCM = #ST_RUNNING) AND #OnOffMode AND NOT #CM_Vlv_Cal.Opened,
+	                   PT := #In.ValveTime);
+	        #TimerConc(IN := #AutoModeOk AND (#StateForCM = #ST_RUNNING) AND #ContMode
+	                   AND #PidPermit AND #ConcInBand,
+	                   PT := #In.ConcStableTime);
+	        #TimerClose(IN := #AutoModeOk
+	                    AND (((#StateForCM = #ST_HOLDING) OR (#StateForCM = #ST_STOPPING)
+	                    OR (#StateForCM = #ST_ABORTING) OR (#StateForCM = #ST_COMPLETED))
+	                    AND NOT #CM_Vlv_Cal.Closed
+	                    OR ((#StateForCM = #ST_STOPPING) OR (#StateForCM = #ST_ABORTING))
+	                    AND (#CM_Pid_CalandriaVapor.MV > 0.0)),
+	                    PT := #In.ValveTime);
+	        
+	        // --- Fase 5: actualizaciÃ³n del estado a partir de los resultados del CM ---
+	        IF #ResetAccepted THEN
+	            #FaultLatched := FALSE;
+	            #FaultCode := 0;
+	        END_IF;
+	        
+	        IF #AutoModeOk AND NOT #FaultLatched THEN
+	            IF #FaultNew = 0
+	                AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_HOLDING)
+	                OR (#StateForCM = #ST_HELD) OR (#StateForCM = #ST_STOPPING)
+	                OR ((#StateForCM = #ST_COMPLETED) AND #ContMode)) THEN
+	                IF #CM_Vlv_Cal.AlarmError OR #CM_Pid_CalandriaVapor.AlarmError THEN
+	                    #FaultNew := 5;
+	                END_IF;
+	            END_IF;
+	            IF #FaultNew = 0 AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)) THEN
+	                IF (#TempMode AND NOT #TempValid) AND (#StateForCM = #ST_RUNNING) THEN
+	                    #FaultNew := 2;
+	                ELSIF (#ActiveMode = 2) AND NOT #ConcValid THEN
+	                    #FaultNew := 2;
+	                ELSIF (#ActiveMode = 3) AND ((#In.ConcSMMV < 0.0) OR (#In.ConcSMMV > 100.0)) THEN
+	                    #FaultNew := 7;
+	                ELSIF (#StateForCM = #ST_RUNNING) AND #TimerFault.Q THEN
+	                    #FaultNew := 3;
+	                ELSIF (#StateForCM = #ST_RUNNING) AND #TimerOpen.Q THEN
+	                    #FaultNew := 4;
+	                END_IF;
+	            END_IF;
+	            IF #FaultNew = 0 AND #TimerClose.Q THEN
+	                #FaultNew := 6;
+	            END_IF;
+	        END_IF;
+	        
+	        IF NOT #AutoModeOk THEN
+	            #State := #ST_IDLE;
+	        ELSE
+	            #State := #StateForCM;
+	            CASE #StateForCM OF
+	                #ST_RUNNING:
+	                    // En modos 2 y 3 COMPLETED indica estabilizaciÃ³n; el PID sigue regulando
+	                    IF (#TempMode AND #TimerTemp.Q) OR (#TimeMode AND #TimerTime.Q) OR (#ContMode AND #TimerConc.Q) THEN
+	                        #State := #ST_COMPLETED;
+	                    END_IF;
+	                    
+	                #ST_HOLDING:
+	                    IF #CM_Vlv_Cal.Closed AND (NOT #ContMode OR #HoldReached) THEN
+	                        #State := #ST_HELD;
+	                    END_IF;
+	                    
+	                #ST_STOPPING:
+	                    IF #CM_Vlv_Cal.Closed AND (#CM_Pid_CalandriaVapor.MV <= 0.0) THEN
+	                        #State := #ST_STOPPED;
+	                    END_IF;
+	                    
+	                #ST_ABORTING:
+	                    IF #CM_Vlv_Cal.Closed AND (#CM_Pid_CalandriaVapor.MV <= 0.0) THEN
+	                        #State := #ST_ABORTED;
+	                    END_IF;
+	            END_CASE;
+	            
+	            IF (#FaultNew <> 0) AND NOT #FaultLatched THEN
+	                #FaultLatched := TRUE;
+	                #FaultCode := #FaultNew;
+	                #State := #ST_ABORTING;
+	            END_IF;
+	        END_IF;
+	        
+	        // --- Fase 6: publicaciÃ³n de estados y feedback del CM ---
+	        #Out.Status.State := #State;
+	        #Out.Status.Idle := (#State = #ST_IDLE);
+	        #Out.Status.Running := (#State = #ST_RUNNING);
+	        #Out.Status.Completed := (#State = #ST_COMPLETED);
+	        #Out.Status.Holding := (#State = #ST_HOLDING);
+	        #Out.Status.Held := (#State = #ST_HELD);
+	        #Out.Status.Stopping := (#State = #ST_STOPPING);
+	        #Out.Status.Stopped := (#State = #ST_STOPPED);
+	        #Out.Status.Aborting := (#State = #ST_ABORTING);
+	        #Out.Status.Aborted := (#State = #ST_ABORTED);
+	        #Out.Status.Fault := #FaultLatched;
+	        #Out.Status.FaultCode := #FaultCode;
+	        #Out.Status.ModeMan := #ManModeOk;
+	        #Out.Status.ModeAuto := #AutoModeOk;
+	        #Out.Status.ModeMaint := #MaintModeOk;
+	        #Out.Status.ModeConflict := (#ModeCount > 1);
+	        #Out.BlowingActive := #CM_Vlv_Cal.Opened;
+	        #Out.CalandriaActive := #CM_Pid_CalandriaVapor.MV > 0.0;
+	        #CM_Out := #CM_Vlv_Cal.cmd;
+	        #CM_Pid_MV := #CM_Pid_CalandriaVapor.MV;
+END_FUNCTION_BLOCK
+

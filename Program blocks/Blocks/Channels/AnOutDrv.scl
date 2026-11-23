@@ -1,0 +1,42 @@
+﻿FUNCTION "AnOutDrv" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      PV : Real;
+      PVRange : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+      Bipolar : Bool;
+   END_VAR
+
+   VAR_OUTPUT 
+      Out : Int;
+   END_VAR
+
+   VAR_TEMP 
+      Kmin : Real;
+      OutCalc : Int;
+   END_VAR
+
+   VAR CONSTANT 
+      Kmax : Real := 27648.0;
+   END_VAR
+
+
+BEGIN
+	REGION Seleccion de valor minimo
+	    IF #Bipolar THEN
+	        #Kmin := -27648.0;
+	    ELSE
+	        #Kmin := 0.0;
+	    END_IF;
+	END_REGION
+	REGION Calculo PV
+	    #OutCalc := REAL_TO_INT(#Kmin + (((#PV - #PVRange.Low) / (#PVRange.High - #PVRange.Low)) * (#Kmax - #Kmin)));
+	END_REGION
+	REGION Actualizacion de salidas
+	    #Out := #OutCalc;
+	END_REGION
+END_FUNCTION
+

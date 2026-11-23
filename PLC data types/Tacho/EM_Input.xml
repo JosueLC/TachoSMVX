@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Types.PlcStruct ID="0">
+    <AttributeList>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="None">
+    <Member Name="Start" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Comando por flanco: inicia desde Idle o reanuda desde Held</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Stop" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Comando por flanco: detiene de forma ordenada</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Hold" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Comando por flanco: pausa la ejecuciÃ³n</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Abort" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Comando por flanco: aborta (mÃ¡xima prioridad)</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Reset" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Comando por flanco: limpia fallos y regresa a Idle</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Manual" Datatype="Bool" />
+    <Member Name="Auto" Datatype="Bool" />
+    <Member Name="Maintenance" Datatype="Bool" />
+  </Section>
+</Sections></Interface>
+      <Name>EM_Input</Name>
+      <Namespace />
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Types.PlcStruct>
+</Document>

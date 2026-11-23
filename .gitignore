@@ -1,0 +1,37 @@
+# Archivos del sistema operativo (Windows)
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Archivos temporales y de editores / IDEs
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+.DS_Store
+.vscode/
+.vs/
+*.user
+
+# Logs y reportes temporales si se generan en el workspace
+*.log
+
+# Evitar subir archivos de proyecto TIA o archivos comprimidos accidentales
+# (El proyecto .apXX / .zapXX suele mantenerse fuera del workspace o en respaldos/LFS)
+*.ap16
+*.ap17
+*.ap18
+*.ap19
+*.ap20
+*.ap21
+*.zap16
+*.zap17
+*.zap18
+*.zap19
+*.zap20
+*.zap21

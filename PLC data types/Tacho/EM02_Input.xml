@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Types.PlcStruct ID="0">
+    <AttributeList>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="None">
+    <Member Name="Cmds" Datatype="&quot;EM_Input&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="CtrlMode" Datatype="Int">
+      <Comment>
+        <MultiLanguageText Lang="en-US">0=Off, 1=PID local, 2=PID externo (SeedMaster), 3=Ruptura de vacÃ­o</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="VaccumSP" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Setpoint en mbar para control Local</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="AtmPressure" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">PresiÃ³n atmosfÃ©rica en mbar</MultiLanguageText>
+      </Comment>
+      <StartValue>1013.25</StartValue>
+    </Member>
+    <Member Name="VaccumValid" Datatype="Bool">
+      <StartValue>TRUE</StartValue>
+    </Member>
+    <Member Name="VaccumFilter" Datatype="Time">
+      <StartValue>T#3S</StartValue>
+    </Member>
+    <Member Name="VaccumBand" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Banda de validez alrededor del SP en mbar (|PV - SP| &lt;= banda)</MultiLanguageText>
+      </Comment>
+      <StartValue>10.0</StartValue>
+    </Member>
+    <Member Name="VaccumTimeout" Datatype="Time" />
+    <Member Name="VaccumSMMV" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Variable manipulada externa en porcentaje, rango 0..100</MultiLanguageText>
+      </Comment>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <Name>EM02_Input</Name>
+      <Namespace />
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Types.PlcStruct>
+</Document>

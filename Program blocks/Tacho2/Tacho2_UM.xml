@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Blocks.InstanceDB ID="0">
+    <AttributeList>
+      <HeaderVersion>1.0</HeaderVersion>
+      <InstanceOfName>UM_Principal</InstanceOfName>
+      <InstanceOfType>FB</InstanceOfType>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="UM_Ctrl" Datatype="&quot;EM_Input&quot;" />
+    <Member Name="Recipe" Datatype="Int" />
+    <Member Name="SelMeladura" Datatype="Int" />
+    <Member Name="NivelTacho" Datatype="Real" />
+    <Member Name="SobreSaturacion" Datatype="Real" />
+    <Member Name="ControlExtOk" Datatype="Bool" />
+    <Member Name="ConcSMMV" Datatype="Real" />
+    <Member Name="VaccumSMMV" Datatype="Real" />
+    <Member Name="FeedSMMV" Datatype="Real" />
+    <Member Name="EM01_Estado" Datatype="&quot;EM01_Output&quot;" />
+    <Member Name="EM02_Estado" Datatype="&quot;EM02_Output&quot;" />
+    <Member Name="EM03_Estado" Datatype="&quot;EM03_Output&quot;" />
+    <Member Name="EM04_Estado" Datatype="&quot;EM04_Output&quot;" />
+    <Member Name="EM05_Estado" Datatype="&quot;EM05_Output&quot;" />
+    <Member Name="EM06_Estado" Datatype="&quot;EM06_Output&quot;" />
+    <Member Name="ParametrosDeControlGeneral" Datatype="Struct">
+      <Member Name="SPTemperaturaCalentamiento" Datatype="Real" />
+      <Member Name="TimeoutCalentamiento" Datatype="Time" />
+      <Member Name="SPVacioCuerpo" Datatype="Real" />
+      <Member Name="TimeoutVacio" Datatype="Time" />
+      <Member Name="BandaVacio" Datatype="Real" />
+      <Member Name="SPConcentracionStrike" Datatype="Real" />
+      <Member Name="BandaConcentracion" Datatype="Real" />
+      <Member Name="TiempoEstabConcentracion" Datatype="Time" />
+      <Member Name="PosicionHoldCalandria" Datatype="Real" />
+      <Member Name="NivelRunAgitador" Datatype="Real" />
+      <Member Name="NivelAbrirDescarga" Datatype="Real" />
+      <Member Name="NivelCerrarDescarga" Datatype="Real" />
+      <Member Name="NivelFinDescarga" Datatype="Real" />
+      <Member Name="PurezaSemilla" Datatype="Real" />
+      <Member Name="PurezaCorte" Datatype="Real" />
+      <Member Name="PurezasInsumos" Datatype="Array[1..2] of Real" />
+    </Member>
+    <Member Name="ParametrosDeControlSlurry" Datatype="Struct">
+      <Member Name="SPNivelPieInicial" Datatype="Real" />
+      <Member Name="SP_SS_Preaviso" Datatype="Real" />
+      <Member Name="SP_SS_Siembra" Datatype="Real" />
+      <Member Name="SP_TiempoSiembra" Datatype="Time" />
+      <Member Name="SP_TiempoMaduracion" Datatype="Time" />
+      <Member Name="SP_Nivel_Final_Coccion" Datatype="Real" />
+      <Member Name="SP_Brix_Final_Coccion" Datatype="Real" />
+      <Member Name="SP_Brix_Final_Secado" Datatype="Real" />
+      <Member Name="SP_VacioPausa" Datatype="Real" />
+    </Member>
+    <Member Name="BrixMasaActual" Datatype="Real" />
+    <Member Name="BrixLicorActual" Datatype="Real" />
+  </Section>
+  <Section Name="Output">
+    <Member Name="UM_State" Datatype="&quot;EM_Output&quot;" />
+    <Member Name="Seed_Advice" Datatype="Bool" />
+    <Member Name="ExternalControlCmds" Datatype="Struct">
+      <Member Name="Purity_P1" Datatype="Real" />
+      <Member Name="Purity_P2" Datatype="Real" />
+      <Member Name="Purity_P3" Datatype="Real" />
+      <Member Name="Purity_Selector" Datatype="UInt" />
+      <Member Name="Final_Mass_Solid_Prog1" Datatype="Real" />
+      <Member Name="Final_Mass_Solid_Prog2" Datatype="Real" />
+      <Member Name="Final_Mass_Solid_Prog3" Datatype="Real" />
+      <Member Name="Final_Mass_Solid_Selector" Datatype="UInt" />
+      <Member Name="Strike_Active" Datatype="Bool" />
+      <Member Name="Seeded" Datatype="Bool" />
+    </Member>
+    <Member Name="EM01_Comandos" Datatype="&quot;EM01_Input&quot;" />
+    <Member Name="EM02_Comandos" Datatype="&quot;EM02_Input&quot;" />
+    <Member Name="EM03_Comandos" Datatype="&quot;EM03_Input&quot;" />
+    <Member Name="EM04_Comandos" Datatype="&quot;EM04_Input&quot;" />
+    <Member Name="EM05_Comandos" Datatype="&quot;EM05_Input&quot;" />
+    <Member Name="EM06_Comandos" Datatype="&quot;EM06_Input&quot;" />
+  </Section>
+  <Section Name="InOut" />
+  <Section Name="Static">
+    <Member Name="State" Datatype="Int" />
+    <Member Name="Step" Datatype="Int" />
+    <Member Name="RecipeActiva" Datatype="Int" />
+    <Member Name="MeladuraActiva" Datatype="Int" />
+    <Member Name="ConfigFault" Datatype="Int" />
+    <Member Name="NivelAgitadorOk" Datatype="Bool" />
+    <Member Name="StartEM05Prev" Datatype="Bool" />
+    <Member Name="SeedStartIssued" Datatype="Bool" />
+    <Member Name="MaturationElapsed" Datatype="Time" />
+    <Member Name="ModoExt" Datatype="Bool" />
+    <Member Name="NivelCocicionInicial" Datatype="Real" />
+    <Member Name="BrixMasaInicial" Datatype="Real" />
+    <Member Name="BrixLicorInicial" Datatype="Real" />
+    <Member Name="CocicionEnPausa" Datatype="Bool" />
+    <Member Name="ModoExtCocicion" Datatype="Bool" />
+    <Member Name="TimerMaduracion" Datatype="TON_TIME" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="TrigStart" Datatype="R_TRIG" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="TrigStop" Datatype="R_TRIG" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="TrigHold" Datatype="R_TRIG" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="TrigAbort" Datatype="R_TRIG" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="TrigReset" Datatype="R_TRIG" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="PurezaP1_Value" Datatype="Real" />
+    <Member Name="PurezaP2_Value" Datatype="Real" />
+    <Member Name="PurezaP3_Value" Datatype="Real" />
+    <Member Name="PurezasValoresLatcheadas" Datatype="Bool" />
+  </Section>
+</Sections></Interface>
+      <Name>Tacho2_UM</Name>
+      <Namespace />
+      <Number>1</Number>
+      <ProgrammingLanguage>DB</ProgrammingLanguage>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.InstanceDB>
+</Document>

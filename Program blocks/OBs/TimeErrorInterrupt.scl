@@ -1,0 +1,7 @@
+﻿ORGANIZATION_BLOCK "TimeErrorInterrupt"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+BEGIN
+END_ORGANIZATION_BLOCK
+

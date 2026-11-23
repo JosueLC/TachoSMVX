@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Types.PlcStruct ID="0">
+    <AttributeList>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="None">
+    <Member Name="Cmds" Datatype="Struct">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Comandos</MultiLanguageText>
+      </Comment>
+      <Member Name="ManMode" Datatype="Bool">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Modo manual</MultiLanguageText>
+        </Comment>
+      </Member>
+      <Member Name="AutoMode" Datatype="Bool">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Modo automatico</MultiLanguageText>
+        </Comment>
+      </Member>
+      <Member Name="MaintenanceMode" Datatype="Bool">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Modo de mantenimiento</MultiLanguageText>
+        </Comment>
+      </Member>
+      <Member Name="Task" Datatype="UInt">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Codigo de tarea</MultiLanguageText>
+        </Comment>
+      </Member>
+      <Member Name="Execute" Datatype="Bool">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Ejecutar</MultiLanguageText>
+        </Comment>
+      </Member>
+      <Member Name="Reset" Datatype="Bool">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Reiniciar</MultiLanguageText>
+        </Comment>
+      </Member>
+      <Member Name="Hold" Datatype="Bool">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Retener</MultiLanguageText>
+        </Comment>
+      </Member>
+    </Member>
+    <Member Name="Status" Datatype="Struct">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Estado del EM</MultiLanguageText>
+      </Comment>
+      <Member Name="ActiveTask" Datatype="UInt">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Tarea activa</MultiLanguageText>
+        </Comment>
+      </Member>
+      <Member Name="Ready" Datatype="Bool" />
+      <Member Name="Busy" Datatype="Bool" />
+      <Member Name="Done" Datatype="Bool" />
+      <Member Name="Held" Datatype="Bool" />
+      <Member Name="Error" Datatype="Bool" />
+      <Member Name="ErrorID" Datatype="UInt" />
+      <Member Name="AutAct" Datatype="Bool" />
+      <Member Name="ManAct" Datatype="Bool" />
+      <Member Name="Maintenance" Datatype="Bool" />
+    </Member>
+    <Member Name="Params" Datatype="Struct">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Parametros</MultiLanguageText>
+      </Comment>
+      <Member Name="ParamsReal" Datatype="Array[0..8] of Real" />
+      <Member Name="ParamsInt" Datatype="Array[0..8] of Int" />
+      <Member Name="ParamsBool" Datatype="Array[0..8] of Bool" />
+    </Member>
+  </Section>
+</Sections></Interface>
+      <Name>EM_Interface</Name>
+      <Namespace />
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Types.PlcStruct>
+</Document>

@@ -1,0 +1,13 @@
+﻿ORGANIZATION_BLOCK "Startup"
+TITLE = "Complete Restart"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+BEGIN
+	REGION Inicializacion de bloques
+	    REGION Tacho2
+	
+	    END_REGION
+	END_REGION
+END_ORGANIZATION_BLOCK
+

@@ -1,0 +1,646 @@
+﻿FUNCTION_BLOCK "UM_Principal"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+// Secuencia de estados de la Unidad. Para Recipe = 1: calentamiento -> vacio -> pie inicial
+// -> strike/siembra -> maduracion -> cocimiento. Recetas > 1 siguen pendientes.
+   VAR_INPUT 
+      UM_Ctrl : "EM_Input";
+      Recipe : Int;   // Receta seleccionada: 1 = Slurry
+      SelMeladura : Int := 1;   // Producto de alimentacion (indice de valvula EM03): 1 = meladura clara, 2 = meladura cruda
+      NivelTacho : Real;   // Nivel del tacho [%] (LT-112)
+      SobreSaturacion : Real;   // Calculo de la sobre saturacion del tacho enviado por el SeedMaster
+      ControlExtOk : Bool := TRUE;   // FALSE = control externo (SeedMaster) no disponible: los EM operan en modo local
+      ConcSMMV : Real;   // MV del SeedMaster para EM01 (calandria) [%]
+      VaccumSMMV : Real;   // MV del SeedMaster para EM02 (vacio) [%]
+      FeedSMMV : Real;   // MV del SeedMaster para EM03 (alimentacion) [%]
+      EM01_Estado : "EM01_Output";
+      EM02_Estado : "EM02_Output";
+      EM03_Estado : "EM03_Output";
+      EM04_Estado : "EM04_Output";
+      EM05_Estado : "EM05_Output";
+      EM06_Estado : "EM06_Output";
+      ParametrosDeControlGeneral : Struct
+         SPTemperaturaCalentamiento : Real := 90.0;
+         TimeoutCalentamiento : Time := T#30M;
+         SPVacioCuerpo : Real := 200.0;
+         TimeoutVacio : Time := T#30M;
+         BandaVacio : Real := 10.0;   // Banda de validez alrededor de SPVacioCuerpo [mbar]
+         SPConcentracionStrike : Real := 82.0;   // SP de concentracion de EM01 (modo local de respaldo)
+         BandaConcentracion : Real := 2.0;
+         TiempoEstabConcentracion : Time := T#3S;
+         PosicionHoldCalandria : Real := 5.0;   // % de calandria en Hold
+         NivelRunAgitador : Real := 20.0;
+         NivelAbrirDescarga : Real := 10.0;
+         NivelCerrarDescarga : Real := 80.0;
+         NivelFinDescarga : Real := 10.0;
+         PurezaSemilla : Real;
+         PurezaCorte : Real;
+         PurezasInsumos : Array[1..#NUM_INSUMOS] of Real;
+      END_STRUCT;
+      ParametrosDeControlSlurry : Struct
+         SPNivelPieInicial : Real := 50.0;
+         SP_SS_Preaviso : Real := 1.1;
+         SP_SS_Siembra : Real := 1.12;
+         SP_TiempoSiembra : Time := T#5S;
+         SP_TiempoMaduracion : Time := T#5M;
+         SP_Nivel_Final_Coccion : Real := 85.0;
+         SP_Brix_Final_Coccion : Real := 90.0;
+         SP_Brix_Final_Secado : Real := 91.0;
+         SP_VacioPausa : Real := 150.0;   // Vacío durante pausa en cocimiento (mbar)
+      END_STRUCT;
+      BrixMasaActual : Real;   // Brix de masa cocida (sensor) durante cocimiento
+      BrixLicorActual : Real;   // Brix de licor durante cocimiento
+   END_VAR
+
+   VAR_OUTPUT 
+      UM_State : "EM_Output";
+      Seed_Advice : Bool;   // Hacia el HMI para notificar al operador que se aproxima el momento de la siembra
+      ExternalControlCmds : Struct
+         Purity_P1 : Real;
+         Purity_P2 : Real;
+         Purity_P3 : Real;
+         Purity_Selector : UInt;
+         Final_Mass_Solid_Prog1 : Real;
+         Final_Mass_Solid_Prog2 : Real;
+         Final_Mass_Solid_Prog3 : Real;
+         Final_Mass_Solid_Selector : UInt;
+         Strike_Active : Bool;   // Hacia el SeedMaster: activo en la fase de strike (Running)
+         Seeded : Bool;   // Hacia el SeedMaster: activo cuando se ha realizado la siembra
+      END_STRUCT;
+      EM01_Comandos : "EM01_Input";
+      EM02_Comandos : "EM02_Input";
+      EM03_Comandos : "EM03_Input";
+      EM04_Comandos : "EM04_Input";
+      EM05_Comandos : "EM05_Input";
+      EM06_Comandos : "EM06_Input";
+   END_VAR
+
+   VAR 
+      State : Int := 0;
+      Step : Int := 0;   // Fase activa (constantes STP_*)
+      RecipeActiva : Int;   // Receta y producto latcheados al iniciar; cambios en marcha no aplican
+      MeladuraActiva : Int;
+      ConfigFault : Int;   // 0=OK, 1=receta invalida, 2=meladura invalida, 3=parametros slurry invalidos
+      NivelAgitadorOk : Bool;   // Nivel suficiente para agitar, con histeresis
+      StartEM05Prev : Bool;
+      SeedStartIssued : Bool := FALSE;
+      MaturationElapsed : Time := T#0MS;
+      ModoExt : Bool := TRUE;   // ControlExtOk latcheado; solo se actualiza en Running/Completed para no cambiar de modo en Hold
+      NivelCocicionInicial : Real;   // Nivel del tacho al entrar en COCIMIENTO
+      BrixMasaInicial : Real;   // Brix de masa cocida al entrar en COCIMIENTO
+      BrixLicorInicial : Real;   // Brix de licor al entrar en COCIMIENTO
+      CocicionEnPausa : Bool;   // Flag: cocimiento pausado (Hold)
+      ModoExtCocicion : Bool;   // Modo activo durante cocimiento (latcheado en entrada a COCIMIENTO)
+      TimerMaduracion {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TrigStart {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigStop {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigHold {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigAbort {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigReset {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      PurezaP1_Value : Real;   // Valor de P1 latcheado en STRIKE
+      PurezaP2_Value : Real;   // Valor de P2 latcheado en STRIKE
+      PurezaP3_Value : Real;   // Valor de P3 latcheado en STRIKE
+      PurezasValoresLatcheadas : Bool;   // Flag: valores de pureza ya establecidos
+   END_VAR
+
+   VAR_TEMP 
+      ModeCount : Int;
+      AutoModeRequest : Bool;
+      ManualModeRequest : Bool;
+      MaintModeRequest : Bool;
+      ResetAccepted : Bool;
+      StateForEM : Int;
+      StepOld : Int;
+      ResumeRequest : Bool;
+      StartPulse : Bool;
+      AbortInterno : Bool;
+      SeqActive : Bool;
+      ActEM01 : Bool;
+      ActEM02 : Bool;
+      ActEM03 : Bool;
+      ActEM04 : Bool;
+      ActEM05 : Bool;
+      StartEM04 : Bool;
+      ResetEM01 : Bool;
+      TiempoMaduracionRestante : Time;
+      AllHeld : Bool;
+      AllStopped : Bool;
+      AllAborted : Bool;
+      EMFault : Bool;
+      ComandosUnidad : "EM_Input";
+   END_VAR
+
+   VAR CONSTANT 
+      NUM_INSUMOS : Int := 2;
+      NUM_MELADURAS : Int := 2;   // Debe coincidir con NUM_VLV de EM03
+      HIST_NIVEL : Real := 2.0;   // Histeresis del nivel de agitador [%]
+      STP_NONE : Int := 0;
+      STP_CALENTAMIENTO : Int := 1;   // EM01 modo temperatura
+      STP_VACIO : Int := 2;   // EM02 PID local; punto de bifurcacion por receta
+      STP_PIE_INICIAL : Int := 3;   // Slurry: EM03 llena a pie inicial + EM05 agitador
+      STP_STRIKE : Int := 4;   // Slurry: Strike_Active y EM01/EM02/EM03 en PID externo (SeedMaster)
+      STP_MADURACION : Int := 5;   // Espera de maduracion despues de la siembra
+      STP_COCIMIENTO : Int := 6;   // Siguiente fase despues de la maduracion
+      ST_IDLE : Int := 0;
+      ST_RUNNING : Int := 1;
+      ST_COMPLETED : Int := 2;
+      ST_HOLDING : Int := 3;
+      ST_HELD : Int := 4;
+      ST_STOPPING : Int := 5;
+      ST_STOPPED : Int := 6;
+      ST_ABORTING : Int := 7;
+      ST_ABORTED : Int := 8;
+   END_VAR
+
+
+BEGIN
+	    // --- Captura de comandos y validacion del modo ---
+	    #TrigStart(CLK := #UM_Ctrl.Start);
+	    #TrigStop(CLK := #UM_Ctrl.Stop);
+	    #TrigHold(CLK := #UM_Ctrl.Hold);
+	    #TrigAbort(CLK := #UM_Ctrl.Abort);
+	    #TrigReset(CLK := #UM_Ctrl.Reset);
+	    
+	    #ModeCount := BOOL_TO_INT(#UM_Ctrl.Auto) + BOOL_TO_INT(#UM_Ctrl.Manual)
+	    + BOOL_TO_INT(#UM_Ctrl.Maintenance);
+	    #AutoModeRequest := #UM_Ctrl.Auto AND (#ModeCount = 1);
+	    #ManualModeRequest := #UM_Ctrl.Manual AND (#ModeCount = 1);
+	    #MaintModeRequest := #UM_Ctrl.Maintenance AND (#ModeCount = 1);
+	    
+	    // Nivel suficiente para el agitador superior (con histeresis para evitar rebotes)
+	    IF #NivelTacho >= #ParametrosDeControlGeneral.NivelRunAgitador THEN
+	        #NivelAgitadorOk := TRUE;
+	    ELSIF #NivelTacho < (#ParametrosDeControlGeneral.NivelRunAgitador - #HIST_NIVEL) THEN
+	        #NivelAgitadorOk := FALSE;
+	    END_IF;
+	    
+	    IF #TrigReset.Q THEN
+	        #ConfigFault := 0;
+	    END_IF;
+	    
+	    // Con la secuencia en fases posteriores al calentamiento, EM01 queda en Completed
+	    // (valvula cerrada) y no responde a Hold; se considera pausado.
+	    #AllHeld := (#EM01_Estado.Status.Held OR #EM01_Estado.Status.Idle
+	    OR (#EM01_Estado.Status.Completed AND (#Step >= #STP_VACIO)))
+	    AND (#EM02_Estado.Status.Held OR #EM02_Estado.Status.Idle)
+	    AND (#EM03_Estado.Status.Held OR #EM03_Estado.Status.Idle)
+	    AND (#EM04_Estado.Status.Held OR #EM04_Estado.Status.Idle)
+	    AND (#EM05_Estado.Status.Held OR #EM05_Estado.Status.Idle)
+	    AND (#EM06_Estado.Status.Held OR #EM06_Estado.Status.Idle);
+	    #AllStopped := (#EM01_Estado.Status.Stopped OR #EM01_Estado.Status.Idle)
+	    AND (#EM02_Estado.Status.Stopped OR #EM02_Estado.Status.Idle)
+	    AND (#EM03_Estado.Status.Stopped OR #EM03_Estado.Status.Idle)
+	    AND (#EM04_Estado.Status.Stopped OR #EM04_Estado.Status.Idle)
+	    AND (#EM05_Estado.Status.Stopped OR #EM05_Estado.Status.Idle)
+	    AND (#EM06_Estado.Status.Stopped OR #EM06_Estado.Status.Idle);
+	    #AllAborted := (#EM01_Estado.Status.Aborted OR #EM01_Estado.Status.Idle)
+	    AND (#EM02_Estado.Status.Aborted OR #EM02_Estado.Status.Idle)
+	    AND (#EM03_Estado.Status.Aborted OR #EM03_Estado.Status.Idle)
+	    AND (#EM04_Estado.Status.Aborted OR #EM04_Estado.Status.Idle)
+	    AND (#EM05_Estado.Status.Aborted OR #EM05_Estado.Status.Idle)
+	    AND (#EM06_Estado.Status.Aborted OR #EM06_Estado.Status.Idle);
+	    #EMFault := #EM01_Estado.Status.Fault OR #EM02_Estado.Status.Fault
+	    OR #EM03_Estado.Status.Fault OR #EM04_Estado.Status.Fault
+	    OR #EM05_Estado.Status.Fault OR #EM06_Estado.Status.Fault;
+	    
+	    // --- Maquina de estados ISA-88 de la Unidad ---
+	    #StateForEM := #State;
+	    #StepOld := #Step;
+	    #ResumeRequest := FALSE;
+	    #AbortInterno := FALSE;
+	    #ResetAccepted := #TrigReset.Q AND ((#State = #ST_IDLE)
+	    OR (#State = #ST_STOPPED) OR (#State = #ST_ABORTED));
+	    
+	    IF NOT #AutoModeRequest THEN
+	        // Al igual que en los EM, la secuencia de la Unidad solo opera en Auto.
+	        #StateForEM := #ST_IDLE;
+	    ELSE
+	        IF #ResetAccepted THEN
+	            #StateForEM := #ST_IDLE;
+	        END_IF;
+	        
+	        IF #TrigAbort.Q AND (#StateForEM <> #ST_ABORTING)
+	            AND (#StateForEM <> #ST_ABORTED) THEN
+	            #StateForEM := #ST_ABORTING;
+	        ELSIF #TrigStop.Q AND ((#StateForEM = #ST_RUNNING)
+	            OR (#StateForEM = #ST_COMPLETED) OR (#StateForEM = #ST_HOLDING)
+	            OR (#StateForEM = #ST_HELD)) THEN
+	            #StateForEM := #ST_STOPPING;
+	        ELSIF #TrigHold.Q AND (#StateForEM = #ST_RUNNING) THEN
+	            #StateForEM := #ST_HOLDING;
+	        END_IF;
+	        
+	        CASE #StateForEM OF
+	            #ST_IDLE:
+	                IF #TrigStart.Q AND NOT #ResetAccepted AND NOT #EMFault THEN
+	                    IF #Recipe < 1 THEN
+	                        #ConfigFault := 1;
+	                    ELSIF (#Recipe = 1) AND ((#SelMeladura < 1)
+	                        OR (#SelMeladura > #NUM_MELADURAS)) THEN
+	                        #ConfigFault := 2;
+	                    ELSIF (#Recipe = 1) AND
+	                        ((#ParametrosDeControlSlurry.SP_TiempoSiembra <= T#0s)
+	                        OR (#ParametrosDeControlSlurry.SP_TiempoMaduracion <= T#0s)
+	                        OR (#ParametrosDeControlSlurry.SP_SS_Preaviso
+	                        > #ParametrosDeControlSlurry.SP_SS_Siembra)) THEN
+	                        #ConfigFault := 3;
+	                    ELSE
+	                        #ConfigFault := 0;
+	                        #RecipeActiva := #Recipe;
+	                        #MeladuraActiva := #SelMeladura;
+	                        #SeedStartIssued := FALSE;
+	                        #MaturationElapsed := T#0s;
+	                        #StateForEM := #ST_RUNNING;
+	                        #Step := #STP_CALENTAMIENTO;
+	                    END_IF;
+	                END_IF;
+	            #ST_HELD:
+	                IF #TrigStart.Q THEN
+	                    #StateForEM := #ST_RUNNING;
+	                    #ResumeRequest := TRUE;
+	                END_IF;
+	            #ST_RUNNING, #ST_COMPLETED:
+	                // Avance de fases. La receta solo influye al salir del vacio: es el unico
+	                // punto de bifurcacion; las ramas futuras se agregan como nuevas fases STP_*.
+	                CASE #Step OF
+	                    #STP_CALENTAMIENTO:
+	                        IF #EM01_Estado.Status.Completed THEN
+	                            #Step := #STP_VACIO;
+	                        END_IF;
+	                    #STP_VACIO:
+	                        IF #EM02_Estado.Status.Completed THEN
+	                            IF #RecipeActiva = 1 THEN
+	                                #Step := #STP_PIE_INICIAL;
+	                            END_IF;
+	                            // Recetas > 1: ramas pendientes; la Unidad permanece en esta fase
+	                        END_IF;
+	                    #STP_PIE_INICIAL:
+	                        IF #EM03_Estado.Status.Completed AND #EM05_Estado.Status.Completed THEN
+	                            // Pie inicial estabilizado y agitador en marcha
+	                            #Step := #STP_STRIKE;
+	                        END_IF;
+	                    #STP_STRIKE:
+	                        IF (#RecipeActiva = 1) AND #EM04_Estado.Status.Completed THEN
+	                            #Step := #STP_MADURACION;
+	                            #MaturationElapsed := T#0s;
+	                        END_IF;
+	                    #STP_MADURACION:
+	                        IF #TimerMaduracion.Q THEN
+	                            #Step := #STP_COCIMIENTO;
+	                            #NivelCocicionInicial := #NivelTacho;
+	                            #BrixMasaInicial := #BrixMasaActual;
+	                            #BrixLicorInicial := #BrixLicorActual;
+	                            #CocicionEnPausa := FALSE;
+	                            #ModoExtCocicion := #ControlExtOk;
+	                        END_IF;
+	                    #STP_COCIMIENTO:
+	                        IF (#RecipeActiva = 1)
+	                            AND (#NivelTacho >= #ParametrosDeControlSlurry.SP_Nivel_Final_Coccion)
+	                            AND (#BrixMasaActual >= #ParametrosDeControlSlurry.SP_Brix_Final_Coccion) THEN
+	                            #Step := #STP_NONE;
+	                        END_IF;
+	                END_CASE;
+	            #ST_HOLDING:
+	                IF #AllHeld THEN
+	                    #StateForEM := #ST_HELD;
+	                END_IF;
+	            #ST_STOPPING:
+	                IF #AllStopped THEN
+	                    #StateForEM := #ST_STOPPED;
+	                END_IF;
+	            #ST_ABORTING:
+	                IF #AllAborted THEN
+	                    #StateForEM := #ST_ABORTED;
+	                END_IF;
+	        END_CASE;
+	    END_IF;
+	    IF (#StateForEM = #ST_IDLE) OR (#StateForEM = #ST_STOPPED)
+	        OR (#StateForEM = #ST_ABORTED) THEN
+	        #Step := #STP_NONE;
+	        #PurezasValoresLatcheadas := FALSE;
+	        #PurezaP1_Value := 0.0;
+	        #PurezaP2_Value := 0.0;
+	        #PurezaP3_Value := 0.0;
+	        #CocicionEnPausa := FALSE;
+	        #NivelCocicionInicial := 0.0;
+	        #BrixMasaInicial := 0.0;
+	        #BrixLicorInicial := 0.0;
+	    END_IF;
+	    IF #TrigHold.Q AND (#StepOld = #STP_MADURACION) THEN
+	        #MaturationElapsed := #MaturationElapsed + #TimerMaduracion.ET;
+	    END_IF;
+	    IF #TrigHold.Q AND (#StepOld = #STP_COCIMIENTO) THEN
+	        #CocicionEnPausa := TRUE;
+	    END_IF;
+	    IF #Step = #STP_NONE THEN
+	        #SeedStartIssued := FALSE;
+	        #MaturationElapsed := T#0s;
+	    END_IF;
+	    
+	    // Latching de valores de pureza EN STRIKE (antes de cocimiento)
+	    IF #Step = #STP_STRIKE AND NOT #PurezasValoresLatcheadas THEN
+	        IF #RecipeActiva = 1 THEN
+	            // Slurry: solo P1 (pureza del insumo seleccionado)
+	            #PurezaP1_Value := #ParametrosDeControlGeneral.PurezasInsumos[#MeladuraActiva];
+	            #PurezaP2_Value := 0.0;
+	            #PurezaP3_Value := 0.0;
+	            // ELSIF #RecipeActiva = 2 THEN
+	            //     // Receta 2: P1 en llenado, P2 en cocimiento
+	            //     #PurezaP1_Value := #ParametrosDeControlGeneral.PurezasInsumos[#MeladuraActiva];
+	            //     #PurezaP2_Value := <tu_valor_P2>;
+	            //     #PurezaP3_Value := 0.0;
+	            // ELSIF #RecipeActiva = 3 THEN
+	            //     // Receta 3: P1 en llenado, P2 y P3 en cocimiento
+	            //     #PurezaP1_Value := #ParametrosDeControlGeneral.PurezasInsumos[#MeladuraActiva];
+	            //     #PurezaP2_Value := <tu_valor_P2>;
+	            //     #PurezaP3_Value := <tu_valor_P3>;
+	        END_IF;
+	        #PurezasValoresLatcheadas := TRUE;
+	    END_IF;
+	    
+	    // Los EM de regulacion permanecen activos desde Strike hasta Cocimiento.
+	    #ActEM01 := FALSE;
+	    #ActEM02 := FALSE;
+	    #ActEM03 := FALSE;
+	    #ActEM04 := FALSE;
+	    #ActEM05 := FALSE;
+	    CASE #Step OF
+	        #STP_CALENTAMIENTO:
+	            #ActEM01 := TRUE;
+	        #STP_VACIO:
+	            #ActEM02 := TRUE;
+	        #STP_PIE_INICIAL:
+	            #ActEM02 := TRUE;
+	            #ActEM03 := TRUE;
+	            #ActEM05 := TRUE;
+	        #STP_STRIKE:
+	            #ActEM01 := TRUE;
+	            #ActEM02 := TRUE;
+	            #ActEM03 := TRUE;
+	            #ActEM05 := TRUE;
+	        #STP_MADURACION, #STP_COCIMIENTO:
+	            #ActEM01 := TRUE;
+	            #ActEM02 := TRUE;
+	            #ActEM03 := TRUE;
+	            #ActEM05 := TRUE;
+	    END_CASE;
+	    #ActEM04 := (#RecipeActiva = 1)
+	    AND (((#Step = #STP_STRIKE) AND
+	    (#SeedStartIssued OR
+	    (#SobreSaturacion >= #ParametrosDeControlSlurry.SP_SS_Siembra)))
+	    OR ((#Step >= #STP_MADURACION) AND #SeedStartIssued));
+	    
+	    // Supervision: un EM de la fase que aborta, o que rechaza su arranque (Idle con falla),
+	    // aborta la Unidad; el Abort se propaga a los demas EM en marcha.
+	    IF (#StateForEM = #ST_RUNNING) OR (#StateForEM = #ST_COMPLETED) THEN
+	        IF ((#Step > #STP_NONE) AND (#EM01_Estado.Status.Aborting OR #EM01_Estado.Status.Aborted))
+	            OR (#ActEM02 AND (#EM02_Estado.Status.Aborting OR #EM02_Estado.Status.Aborted
+	            OR (#EM02_Estado.Status.Idle AND #EM02_Estado.Status.Fault)))
+	            OR (#ActEM03 AND (#EM03_Estado.Status.Aborting OR #EM03_Estado.Status.Aborted
+	            OR (#EM03_Estado.Status.Idle AND #EM03_Estado.Status.Fault)))
+	            OR (#ActEM04 AND (#EM04_Estado.Status.Aborting OR #EM04_Estado.Status.Aborted
+	            OR (#EM04_Estado.Status.Idle AND #EM04_Estado.Status.Fault)))
+	            OR (#ActEM05 AND (#EM05_Estado.Status.Aborting OR #EM05_Estado.Status.Aborted
+	            OR (#EM05_Estado.Status.Idle AND #EM05_Estado.Status.Fault))) THEN
+	            #StateForEM := #ST_ABORTING;
+	            #AbortInterno := TRUE;
+	        END_IF;
+	    END_IF;
+	    #State := #StateForEM;
+	    
+	    // --- Propagacion de comandos globales ---
+	    // El Start no se propaga a todos los EM: solo se entrega al EM de la fase activa
+	    // (ver mas abajo) para no arrancar equipos fuera de fase.
+	    #ComandosUnidad.Start := FALSE;
+	    #ComandosUnidad.Stop := #TrigStop.Q;
+	    #ComandosUnidad.Hold := #TrigHold.Q;
+	    #ComandosUnidad.Abort := #TrigAbort.Q OR #AbortInterno;
+	    #ComandosUnidad.Reset := #UM_Ctrl.Reset;
+	    #ComandosUnidad.Manual := #ManualModeRequest;
+	    #ComandosUnidad.Auto := #AutoModeRequest;
+	    #ComandosUnidad.Maintenance := #MaintModeRequest;
+	    
+	    #EM01_Comandos.Cmds := #ComandosUnidad;
+	    #EM02_Comandos.Cmds := #ComandosUnidad;
+	    #EM03_Comandos.Cmds := #ComandosUnidad;
+	    #EM04_Comandos.Cmds := #ComandosUnidad;
+	    #EM05_Comandos.Cmds := #ComandosUnidad;
+	    #EM06_Comandos.Cmds := #ComandosUnidad;
+	    
+	    // El Start/Resume se entrega solo a los EM de la fase activa; los demas EM no se
+	    // arrancan. Un EM que ya esta en marcha (p. ej. EM02 en la fase de pie inicial) ignora
+	    // el Start, por lo que el pulso puede enviarse a todos los EM de la fase.
+	    // En modo temperatura EM01 solo acepta Reset estando en Completed, por lo que
+	    // un Stop de la Unidad en ese estado se traduce en un Reset de EM01.
+	    #StartPulse := #ResumeRequest OR (#Step <> #StepOld);
+	    #SeqActive := #AutoModeRequest AND ((#StateForEM = #ST_RUNNING) OR (#StateForEM = #ST_COMPLETED)
+	    OR (#StateForEM = #ST_HOLDING) OR (#StateForEM = #ST_HELD)
+	    OR (#StateForEM = #ST_STOPPING) OR (#StateForEM = #ST_ABORTING));
+	    
+	    // El modo externo se latchea en entrada a Cocimiento y se mantiene hasta fin de fase.
+	    // Durante pausa, reanudación recupera el modo latcheado.
+	    IF (#Step >= #STP_COCIMIENTO) THEN
+	        #ModoExtCocicion := #ControlExtOk;
+	    END_IF;
+	    IF #ResumeRequest AND (#Step = #STP_COCIMIENTO) THEN
+	        #CocicionEnPausa := FALSE;
+	    END_IF;
+	    
+	    // External controls
+	    #ExternalControlCmds.Strike_Active := (#Step >= #STP_STRIKE) AND #ModoExt
+	    AND ((#StateForEM = #ST_RUNNING) OR (#StateForEM = #ST_COMPLETED));
+	    #ExternalControlCmds.Seeded := (#RecipeActiva = 1)
+	    AND ((#Step = #STP_MADURACION) OR (#Step = #STP_COCIMIENTO));
+	    
+	    // Determinar Purity_Selector según receta y fase actual
+	    IF #RecipeActiva = 1 THEN
+	        // Slurry: P1 desde STRIKE hasta fin COCIMIENTO
+	        IF #Step < #STP_STRIKE THEN
+	            #ExternalControlCmds.Purity_Selector := 0;
+	        ELSE
+	            #ExternalControlCmds.Purity_Selector := 1;
+	        END_IF;
+	        // ELSIF #RecipeActiva = 2 THEN
+	        //     // Receta 2: P1 en STRIKE/PIE_INICIAL, P2 en COCIMIENTO
+	        //     IF #Step < #STP_STRIKE THEN
+	        //         #ExternalControlCmds.Purity_Selector := 0;
+	        //     ELSIF #Step < #STP_COCIMIENTO THEN
+	        //         #ExternalControlCmds.Purity_Selector := 1;
+	        //     ELSE
+	        //         #ExternalControlCmds.Purity_Selector := 2;
+	        //     END_IF;
+	        // ELSIF #RecipeActiva = 3 THEN
+	        //     // Receta 3: P1 en llenado, P2 en cocimiento, P3 en cocimiento/secado
+	        //     IF #Step < #STP_STRIKE THEN
+	        //         #ExternalControlCmds.Purity_Selector := 0;
+	        //     ELSIF #Step < #STP_COCIMIENTO THEN
+	        //         #ExternalControlCmds.Purity_Selector := 1;
+	        //     ELSIF #Step < #STP_SECADO THEN
+	        //         #ExternalControlCmds.Purity_Selector := 2;
+	        //     ELSE
+	        //         #ExternalControlCmds.Purity_Selector := 3;
+	        //     END_IF;
+	    ELSE
+	        #ExternalControlCmds.Purity_Selector := 0;
+	    END_IF;
+	    
+	    // Asignar valores de pureza (siempre los valores latcheados en STRIKE)
+	    #ExternalControlCmds.Purity_P1 := #PurezaP1_Value;
+	    #ExternalControlCmds.Purity_P2 := #PurezaP2_Value;
+	    #ExternalControlCmds.Purity_P3 := #PurezaP3_Value;
+	    
+	    // Selectores de masa sólida (no cambian, siempre P1)
+	    #ExternalControlCmds.Final_Mass_Solid_Prog1 := #ParametrosDeControlSlurry.SP_Brix_Final_Coccion;
+	    #ExternalControlCmds.Final_Mass_Solid_Prog2 := 0.0;
+	    #ExternalControlCmds.Final_Mass_Solid_Prog3 := 0.0;
+	    #ExternalControlCmds.Final_Mass_Solid_Selector := 1;
+	    
+	    // EM01: calentamiento por temperatura; desde Strike regula concentracion hasta Cocimiento.
+	    #EM01_Comandos.Cmds.Start := #StartPulse AND #ActEM01;
+	    #ResetEM01 := #UM_Ctrl.Reset OR ((#StateForEM = #ST_STOPPING) AND #EM01_Estado.Status.Completed
+	    AND (#Step < #STP_STRIKE));
+	    #EM01_Comandos.Cmds.Reset := #ResetEM01;
+	    IF NOT #SeqActive THEN
+	        #EM01_Comandos.CtrlMode := 0;
+	    ELSIF #CocicionEnPausa THEN
+	        // Pausa en cocimiento: mantener vapor a posición fija
+	        #EM01_Comandos.CtrlMode := 2;
+	    ELSIF (#Step >= #STP_STRIKE) AND #ModoExtCocicion THEN
+	        #EM01_Comandos.CtrlMode := 3;
+	    ELSIF #Step >= #STP_STRIKE THEN
+	        #EM01_Comandos.CtrlMode := 2;
+	    ELSE
+	        #EM01_Comandos.CtrlMode := 1;
+	    END_IF;
+	    #EM01_Comandos.TempSP := #ParametrosDeControlGeneral.SPTemperaturaCalentamiento;
+	    #EM01_Comandos.Timeout := #ParametrosDeControlGeneral.TimeoutCalentamiento;
+	    #EM01_Comandos.ConcentrationSP := #ParametrosDeControlGeneral.SPConcentracionStrike;
+	    #EM01_Comandos.ConcStableBand := #ParametrosDeControlGeneral.BandaConcentracion;
+	    #EM01_Comandos.ConcStableTime := #ParametrosDeControlGeneral.TiempoEstabConcentracion;
+	    #EM01_Comandos.HoldPosition := #ParametrosDeControlGeneral.PosicionHoldCalandria;
+	    #EM01_Comandos.ConcSMMV := #ConcSMMV;
+	    // El nivel ya alcanzo el pie inicial al entrar en la fase de strike
+	    #EM01_Comandos.MinLevelPermit := (#Step >= #STP_STRIKE);
+	    
+	    // EM02: vacio en PID local; desde Strike mantiene control externo si esta disponible.
+	    #EM02_Comandos.Cmds.Start := #StartPulse AND #ActEM02;
+	    IF NOT (#SeqActive AND #ActEM02) THEN
+	        #EM02_Comandos.CtrlMode := 0;
+	    ELSIF #CocicionEnPausa THEN
+	        // Pausa en cocimiento: mantener vacío a SP de pausa
+	        #EM02_Comandos.CtrlMode := 1;
+	    ELSIF (#Step >= #STP_STRIKE) AND #ModoExtCocicion THEN
+	        #EM02_Comandos.CtrlMode := 2;
+	    ELSE
+	        #EM02_Comandos.CtrlMode := 1;
+	    END_IF;
+	    IF #CocicionEnPausa THEN
+	        #EM02_Comandos.VaccumSP := #ParametrosDeControlSlurry.SP_VacioPausa;
+	    ELSE
+	        #EM02_Comandos.VaccumSP := #ParametrosDeControlGeneral.SPVacioCuerpo;
+	    END_IF;
+	    #EM02_Comandos.VaccumTimeout := #ParametrosDeControlGeneral.TimeoutVacio;
+	    #EM02_Comandos.VaccumBand := #ParametrosDeControlGeneral.BandaVacio;
+	    #EM02_Comandos.VaccumSMMV := #VaccumSMMV;
+	    
+	    // EM03: alimentacion local hasta pie inicial; desde Strike mantiene el modo externo si esta disponible.
+	    #EM03_Comandos.Cmds.Start := #StartPulse AND #ActEM03;
+	    IF NOT (#SeqActive AND #ActEM03) THEN
+	        #EM03_Comandos.CtrlMode := 0;
+	    ELSIF #CocicionEnPausa THEN
+	        // Pausa en cocimiento: agua sin alimentación (CtrlMode=3 es agua/pausa)
+	        #EM03_Comandos.CtrlMode := 3;
+	    ELSIF (#Step >= #STP_STRIKE) AND #ModoExtCocicion THEN
+	        #EM03_Comandos.CtrlMode := 2;
+	    ELSE
+	        #EM03_Comandos.CtrlMode := 1;
+	    END_IF;
+	    #EM03_Comandos.FeedSMMV := #FeedSMMV;
+	    #EM03_Comandos.SelectedValveIndex := #MeladuraActiva;
+	    #EM03_Comandos.FeedSP := #ParametrosDeControlSlurry.SPNivelPieInicial;
+	    #EM03_Comandos.WashMode := FALSE;   // Durante pausa: agua de pausa, no lavado
+	    // El permiso de nivel minimo no aplica: esta alimentacion es la que sube el nivel
+	    #EM03_Comandos.MinLevelPermit := TRUE;
+	    
+	    // EM05: el Start depende del nivel, por lo que se emite como pulso (flanco) cada
+	    // dos ciclos mientras el EM siga esperando, y no se reintenta si tiene falla.
+	    #EM05_Comandos.Cmds.Start := #ActEM05 AND #NivelAgitadorOk AND NOT #StartEM05Prev
+	    AND (#EM05_Estado.Status.Idle OR #EM05_Estado.Status.Held)
+	    AND NOT #EM05_Estado.Status.Fault
+	    AND ((#StateForEM = #ST_RUNNING) OR (#StateForEM = #ST_COMPLETED));
+	    #StartEM05Prev := #EM05_Comandos.Cmds.Start;
+	    #EM05_Comandos.MinLevelPermit := #NivelAgitadorOk;
+	    #EM05_Comandos.AgitatorType := 1;
+	    #EM04_Comandos.CtrlMode := 0;
+	    #EM04_Comandos.Cmds.Start := FALSE;
+	    #StartEM04 := FALSE;
+	    IF #ActEM04 THEN
+	        #EM04_Comandos.CtrlMode := 1;
+	    END_IF;
+	    IF #ActEM04
+	        AND ((#StateForEM = #ST_RUNNING) OR (#StateForEM = #ST_COMPLETED)) THEN
+	        #StartEM04 := (#ResumeRequest AND #EM04_Estado.Status.Held)
+	        OR ((#Step = #STP_STRIKE)
+	        AND (#SobreSaturacion >= #ParametrosDeControlSlurry.SP_SS_Siembra)
+	        AND NOT #SeedStartIssued);
+	        #EM04_Comandos.Cmds.Start := #StartEM04;
+	        IF #StartEM04 THEN
+	            #SeedStartIssued := TRUE;
+	        END_IF;
+	    END_IF;
+	    #EM04_Comandos.SelectedValveIndex := 1;
+	    #EM04_Comandos.InjectionTime := #ParametrosDeControlSlurry.SP_TiempoSiembra;
+	    #EM04_Comandos.LevelInterlock := FALSE;
+	    #EM06_Comandos.CtrlMode := 0;
+	    
+	    IF #MaturationElapsed >= #ParametrosDeControlSlurry.SP_TiempoMaduracion THEN
+	        #TiempoMaduracionRestante := T#0s;
+	    ELSE
+	        #TiempoMaduracionRestante :=
+	        #ParametrosDeControlSlurry.SP_TiempoMaduracion - #MaturationElapsed;
+	    END_IF;
+	    #TimerMaduracion(
+	                     IN := (#Step = #STP_MADURACION)
+	                     AND ((#StateForEM = #ST_RUNNING) OR (#StateForEM = #ST_COMPLETED)),
+	                     PT := #TiempoMaduracionRestante);
+	    
+	    // --- Publicacion de estado de la Unidad ---
+	    #UM_State.State := #State;
+	    #UM_State.Idle := (#State = #ST_IDLE);
+	    #UM_State.Running := (#State = #ST_RUNNING);
+	    #UM_State.Completed := (#State = #ST_COMPLETED);
+	    #UM_State.Holding := (#State = #ST_HOLDING);
+	    #UM_State.Held := (#State = #ST_HELD);
+	    #UM_State.Stopping := (#State = #ST_STOPPING);
+	    #UM_State.Stopped := (#State = #ST_STOPPED);
+	    #UM_State.Aborting := (#State = #ST_ABORTING);
+	    #UM_State.Aborted := (#State = #ST_ABORTED);
+	    #UM_State.ModeMan := #ManualModeRequest;
+	    #UM_State.ModeAuto := #AutoModeRequest;
+	    #UM_State.ModeMaint := #MaintModeRequest;
+	    #UM_State.ModeConflict := #ModeCount > 1;
+	    #UM_State.Fault := #EMFault OR (#ConfigFault <> 0);
+	    #Seed_Advice := (#RecipeActiva = 1) AND (#Step = #STP_STRIKE)
+	    AND (#SobreSaturacion >= #ParametrosDeControlSlurry.SP_SS_Preaviso)
+	    AND ((#StateForEM = #ST_RUNNING) OR (#StateForEM = #ST_COMPLETED));
+	    
+	    // FaultCode de la Unidad: 100 = receta invalida, 101 = selector de meladura invalido,
+	    // 102 = parametros de siembra/maduracion invalidos
+	    #UM_State.FaultCode := 0;
+	    IF #ConfigFault <> 0 THEN
+	        #UM_State.FaultCode := 99 + #ConfigFault;
+	    ELSIF #EM01_Estado.Status.Fault THEN
+	        #UM_State.FaultCode := #EM01_Estado.Status.FaultCode;
+	    ELSIF #EM02_Estado.Status.Fault THEN
+	        #UM_State.FaultCode := #EM02_Estado.Status.FaultCode;
+	    ELSIF #EM03_Estado.Status.Fault THEN
+	        #UM_State.FaultCode := #EM03_Estado.Status.FaultCode;
+	    ELSIF #EM04_Estado.Status.Fault THEN
+	        #UM_State.FaultCode := #EM04_Estado.Status.FaultCode;
+	    ELSIF #EM05_Estado.Status.Fault THEN
+	        #UM_State.FaultCode := #EM05_Estado.Status.FaultCode;
+	    ELSIF #EM06_Estado.Status.Fault THEN
+	        #UM_State.FaultCode := #EM06_Estado.Status.FaultCode;
+	    END_IF;
+END_FUNCTION_BLOCK
+

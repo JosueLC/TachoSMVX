@@ -1,0 +1,358 @@
+﻿FUNCTION_BLOCK "EM03_Alimentacion"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+//MÃ³dulo de equipo de alimentaciÃ³n continua de materia prima y agua de diluciÃ³n/lavado al tacho.
+   VAR_INPUT 
+      In : "EM03_Input";
+      FeedPV : Real;   // Variable de proceso de la alimentaciÃ³n (nivel del tacho), rango 0..100 %
+   END_VAR
+
+   VAR_OUTPUT 
+      Out : "EM03_Output";
+      CM_PIC_MV : Real;   // Salida en porcentaje de la vÃ¡lvula proporcional
+      CM_Vlv_MP_Out : Array[1..#NUM_VLV] of Bool;   // Comandos a vÃ¡lvulas On/Off de materia prima
+      CM_Agua_Out : Real;   // Apertura de la vÃ¡lvula de agua en porcentaje
+      SensorAlarm : Bool;
+      CMAlarm : Bool;
+   END_VAR
+
+   VAR 
+      State : Int;
+      ActiveAction : Int;   // 1=PID local, 2=PID externo, 3=agua (pausa/lavado)
+      AlarmLatched : Bool;
+      FaultCode : Int;   // 1=selecciÃ³n/parÃ¡metro invÃ¡lido 2=sensor 4=alarma CM 5=MV externa
+      TimerStable {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TrigStart {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigStop {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigHold {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigAbort {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigReset {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      CM_PIC_Feed : "PidL";
+      CM_Vlv_MateriaPrima : Array[1..#NUM_VLV] of "VlvL";
+      CM_Vlv_Agua : "OpAn";
+   END_VAR
+
+   VAR_TEMP 
+      i : Int;
+      ModeCount : Int;
+      AutoModeRequest : Bool;
+      ManualModeRequest : Bool;
+      MaintModeRequest : Bool;
+      ActionValid : Bool;
+      ParamsValid : Bool;
+      Regulating : Bool;
+      PidActive : Bool;
+      ValveActive : Bool;
+      WaterActive : Bool;
+      WashActive : Bool;
+      SelectedValve : Bool;
+      AllValvesClosed : Bool;
+      SafeStopped : Bool;
+      InBand : Bool;
+      StableCond : Bool;
+      ResetAccepted : Bool;
+      StateForCM : Int;
+      FaultNew : Int;
+      ModeReq : Int;
+      SelIdx : Int;
+      WaterSP : Real;
+   END_VAR
+
+   VAR CONSTANT 
+      NUM_VLV : Int := 2;   // Cantidad de vÃ¡lvulas de materia prima
+      ST_IDLE : Int := 0;
+      ST_RUNNING : Int := 1;
+      ST_COMPLETED : Int := 2;
+      ST_HOLDING : Int := 3;
+      ST_HELD : Int := 4;
+      ST_STOPPING : Int := 5;
+      ST_STOPPED : Int := 6;
+      ST_ABORTING : Int := 7;
+      ST_ABORTED : Int := 8;
+   END_VAR
+
+
+BEGIN
+	
+	// --- Fase 1: captura de comandos y validaciÃ³n de selecciones ---
+	#TrigStart(CLK := #In.Cmds.Start);
+	#TrigStop(CLK := #In.Cmds.Stop);
+	#TrigHold(CLK := #In.Cmds.Hold);
+	#TrigAbort(CLK := #In.Cmds.Abort);
+	#TrigReset(CLK := #In.Cmds.Reset);
+	
+	#ModeCount := BOOL_TO_INT(#In.Cmds.Auto) + BOOL_TO_INT(#In.Cmds.Manual)
+	+ BOOL_TO_INT(#In.Cmds.Maintenance);
+	#AutoModeRequest := #In.Cmds.Auto AND (#ModeCount = 1);
+	#ManualModeRequest := #In.Cmds.Manual AND (#ModeCount = 1);
+	#MaintModeRequest := #In.Cmds.Maintenance AND (#ModeCount = 1);
+	#ModeReq := #In.CtrlMode;
+	#ActionValid := (#ModeReq >= 1) AND (#ModeReq <= 3);
+	#SelIdx := LIMIT(MN := 1, IN := #In.SelectedValveIndex, MX := #NUM_VLV);
+	
+	// ValidaciÃ³n de parÃ¡metros segÃºn el modo solicitado
+	#ParamsValid := #ActionValid AND (#In.StableTime > T#0s) AND (#In.StableBand >= 0.0);
+	IF #ParamsValid AND ((#ModeReq = 1) OR (#ModeReq = 2)) THEN
+	    #ParamsValid := (#In.SelectedValveIndex >= 1) AND (#In.SelectedValveIndex <= #NUM_VLV)
+	    AND (#In.CloseThreshold >= 0.0) AND (#In.OpenThreshold <= 100.0)
+	    AND (#In.OpenThreshold > #In.CloseThreshold);
+	END_IF;
+	IF #ParamsValid AND ((#ModeReq = 1) OR ((#ModeReq = 3) AND NOT #In.WashMode)) THEN
+	    #ParamsValid := (#In.FeedSP >= 0.0) AND (#In.FeedSP <= 100.0);
+	END_IF;
+	IF #ParamsValid AND (#ModeReq = 3) AND #In.WashMode THEN
+	    #ParamsValid := (#In.WashSP >= 0.0) AND (#In.WashSP <= 100.0);
+	END_IF;
+	#FaultNew := 0;
+	
+	// --- Fase 2: cÃ¡lculo de la secuencia de equipo antes de mandar Ã³rdenes ---
+	#StateForCM := #State;
+	#ResetAccepted := #TrigReset.Q AND ((#State = #ST_IDLE) OR (#State = #ST_STOPPED)
+	OR (#State = #ST_ABORTED));
+	
+	IF NOT #AutoModeRequest THEN
+	    #StateForCM := #ST_IDLE;
+	    #ActiveAction := 0;
+	ELSE
+	    IF #ResetAccepted THEN
+	        #StateForCM := #ST_IDLE;
+	        #ActiveAction := 0;
+	    END_IF;
+	    
+	    IF #TrigAbort.Q AND (#StateForCM <> #ST_ABORTING) AND (#StateForCM <> #ST_ABORTED) THEN
+	        #StateForCM := #ST_ABORTING;
+	    ELSIF #TrigStop.Q AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)
+	        OR (#StateForCM = #ST_HOLDING) OR (#StateForCM = #ST_HELD)) THEN
+	        #StateForCM := #ST_STOPPING;
+	    ELSIF #TrigHold.Q AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)) THEN
+	        #StateForCM := #ST_HOLDING;
+	    END_IF;
+	    
+	    CASE #StateForCM OF
+	        #ST_IDLE:
+	            IF #TrigStart.Q AND NOT #ResetAccepted THEN
+	                IF NOT #ParamsValid THEN
+	                    #FaultNew := 1;
+	                ELSE
+	                    #ActiveAction := #ModeReq;
+	                    #StateForCM := #ST_RUNNING;
+	                END_IF;
+	            END_IF;
+	            
+	        #ST_HELD:
+	            IF #TrigStart.Q THEN
+	                IF #ParamsValid THEN
+	                    #ActiveAction := #ModeReq;
+	                    #StateForCM := #ST_RUNNING;
+	                ELSE
+	                    #FaultNew := 1;
+	                END_IF;
+	            END_IF;
+	            
+	        #ST_RUNNING, #ST_COMPLETED:
+	            IF #ParamsValid THEN
+	                #ActiveAction := #ModeReq;
+	            ELSE
+	                #FaultNew := 1;
+	                #StateForCM := #ST_STOPPING;
+	            END_IF;
+	    END_CASE;
+	END_IF;
+	
+	#Regulating := #AutoModeRequest AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED));
+	#PidActive := #Regulating AND ((#ActiveAction = 1) OR (#ActiveAction = 2)
+	OR ((#ActiveAction = 3) AND NOT #In.WashMode));
+	#ValveActive := #Regulating AND ((#ActiveAction = 1) OR (#ActiveAction = 2));
+	#WashActive := #Regulating AND (#ActiveAction = 3) AND #In.WashMode;
+	#WaterActive := #Regulating AND (#ActiveAction = 3);
+	
+	// --- Fase 3: configuraciÃ³n y ejecuciÃ³n del PID de alimentaciÃ³n ---
+	#CM_PIC_Feed.ModLiOp := TRUE;
+	#CM_PIC_Feed.ManModLi := #ManualModeRequest OR #MaintModeRequest;
+	#CM_PIC_Feed.AutModLi := #PidActive;
+	#CM_PIC_Feed.OosModLi := NOT (#ManualModeRequest OR #MaintModeRequest OR #PidActive);
+	#CM_PIC_Feed.LocModLi := FALSE;
+	#CM_PIC_Feed.ResetLi := #In.Cmds.Reset;
+	#CM_PIC_Feed.SPModLiOp := NOT (#ManualModeRequest OR #MaintModeRequest);
+	#CM_PIC_Feed.IntModLi := TRUE;
+	#CM_PIC_Feed.ExtModLi := FALSE;
+	#CM_PIC_Feed.PV := LIMIT(MN := 0.0, IN := #FeedPV, MX := 100.0);
+	#CM_PIC_Feed.PV_Norm.High := 100.0;
+	#CM_PIC_Feed.PV_Norm.Low := 0.0;
+	#CM_PIC_Feed.PV_Scale.High := 100.0;
+	#CM_PIC_Feed.PV_Scale.Low := 0.0;
+	#CM_PIC_Feed.MV_Norm.High := 100.0;
+	#CM_PIC_Feed.MV_Norm.Low := 0.0;
+	#CM_PIC_Feed.SP_HiLim := 100.0;
+	#CM_PIC_Feed.SP_LoLim := 0.0;
+	#CM_PIC_Feed.MV_HiLim := 100.0;
+	#CM_PIC_Feed.MV_LoLim := 0.0;
+	IF (#ActiveAction = 1) OR ((#ActiveAction = 3) AND NOT #In.WashMode) THEN
+	    #CM_PIC_Feed.DataHMI.SpInt := #In.FeedSP;
+	ELSIF (#ActiveAction = 2) THEN
+	    #CM_PIC_Feed.DataHMI.SpInt := #CM_PIC_Feed.PV;
+	END_IF;
+	#CM_PIC_Feed.TrackOn := (#ActiveAction = 2) AND #PidActive;
+	#CM_PIC_Feed.TrackVal := LIMIT(MN := 0.0, IN := #In.FeedSMMV, MX := 100.0);
+	#CM_PIC_Feed.OosSafeMV := 0.0;
+	#CM_PIC_Feed.Permit := #MaintModeRequest OR #In.MinLevelPermit;
+	#CM_PIC_Feed.Intlock := #MaintModeRequest OR #In.MinLevelPermit;
+	#CM_PIC_Feed.Protect := TRUE;
+	#CM_PIC_Feed();
+	
+	// --- Fase 4: vÃ¡lvulas On/Off de materia prima con regla anti-filtraciÃ³n ---
+	#AllValvesClosed := TRUE;
+	FOR #i := 1 TO #NUM_VLV DO
+	    #SelectedValve := #ValveActive AND (#i = #In.SelectedValveIndex);
+	    #CM_Vlv_MateriaPrima[#i].ModLiOp := TRUE;
+	    #CM_Vlv_MateriaPrima[#i].ManModLi := #ManualModeRequest OR #MaintModeRequest;
+	    #CM_Vlv_MateriaPrima[#i].AutModLi := #AutoModeRequest;
+	    #CM_Vlv_MateriaPrima[#i].OosModLi := NOT (#ManualModeRequest OR #MaintModeRequest OR #AutoModeRequest);
+	    #CM_Vlv_MateriaPrima[#i].LocModLi := FALSE;
+	    #CM_Vlv_MateriaPrima[#i].ResetLi := #In.Cmds.Reset;
+	    // Entre umbrales no se emite orden y VlvL mantiene su posiciÃ³n (histÃ©resis)
+	    #CM_Vlv_MateriaPrima[#i].OpenAut := #SelectedValve AND (#CM_PIC_Feed.MV > #In.OpenThreshold);
+	    #CM_Vlv_MateriaPrima[#i].CloseAut := NOT #SelectedValve OR (#CM_PIC_Feed.MV < #In.CloseThreshold);
+	    #CM_Vlv_MateriaPrima[#i].SafePos := FALSE;
+	    #CM_Vlv_MateriaPrima[#i].Permit := TRUE;
+	    #CM_Vlv_MateriaPrima[#i].Intlock := TRUE;
+	    #CM_Vlv_MateriaPrima[#i].Protect := TRUE;
+	    #CM_Vlv_MateriaPrima[#i]();
+	    #CM_Vlv_MP_Out[#i] := #CM_Vlv_MateriaPrima[#i].cmd;
+	    #AllValvesClosed := #AllValvesClosed AND #CM_Vlv_MateriaPrima[#i].Closed;
+	END_FOR;
+	
+	// --- Fase 5: vÃ¡lvula de agua (Pausa: apertura del PidL; Lavado: apertura total) ---
+	IF #WashActive THEN
+	    #WaterSP := LIMIT(MN := 0.0,
+	                      IN := ((#In.WashSP - #FeedPV) / MAX(IN1 := #In.WashSP, IN2 := 1.0)) * 100.0,
+	                      MX := 100.0);
+	ELSIF #WaterActive THEN
+	    #WaterSP := #CM_PIC_Feed.MV;
+	ELSE
+	    #WaterSP := 0.0;
+	END_IF;
+	#CM_Vlv_Agua.ModLiOp := TRUE;
+	#CM_Vlv_Agua.ExtModLi := #AutoModeRequest;
+	#CM_Vlv_Agua.IntModLi := NOT #AutoModeRequest;
+	#CM_Vlv_Agua.SPExt := #WaterSP;
+	#CM_Vlv_Agua();
+	
+	// --- Fase 6: criterio de estabilizaciÃ³n y alarmas ---
+	#SafeStopped := #AllValvesClosed AND (#CM_PIC_Feed.MV <= 0.0) AND (#CM_Vlv_Agua.SP <= 0.0);
+	
+	IF #In.WashMode THEN
+	    #InBand := #In.StableBand >= ABS(#FeedPV - #In.WashSP);
+	ELSE
+	    #InBand := #In.StableBand >= ABS(#CM_PIC_Feed.PV - #CM_PIC_Feed.SP);
+	END_IF;
+	
+	CASE #ActiveAction OF
+	    1:
+	        #StableCond := #ValveActive AND #InBand;
+	    2:
+	        #StableCond := #ValveActive AND #CM_Vlv_MateriaPrima[#SelIdx].Opened;
+	    3:
+	        #StableCond := #WaterActive AND #InBand;
+	    ELSE
+	        #StableCond := FALSE;
+	END_CASE;
+	#TimerStable(IN := #StableCond,
+	             PT := #In.StableTime);
+	
+	#SensorAlarm := #PidActive AND ((#FeedPV < 0.0) OR (#FeedPV > 100.0));
+	#CMAlarm := #CM_PIC_Feed.AlarmError;
+	FOR #i := 1 TO #NUM_VLV DO
+	    #CMAlarm := #CMAlarm OR #CM_Vlv_MateriaPrima[#i].AlarmError;
+	END_FOR;
+	IF #PidActive AND (#ActiveAction = 2)
+	    AND ((#In.FeedSMMV < 0.0) OR (#In.FeedSMMV > 100.0)) THEN
+	    #FaultNew := 5;
+	END_IF;
+	
+	IF #TrigReset.Q THEN
+	    IF NOT #SensorAlarm AND NOT #CMAlarm THEN
+	        #AlarmLatched := FALSE;
+	        #FaultCode := 0;
+	    END_IF;
+	END_IF;
+	
+	IF #FaultNew <> 0 THEN
+	    #AlarmLatched := TRUE;
+	    #FaultCode := #FaultNew;
+	ELSIF #SensorAlarm OR #CMAlarm THEN
+	    #AlarmLatched := TRUE;
+	    IF #SensorAlarm THEN
+	        #FaultCode := 2;
+	    ELSE
+	        #FaultCode := 4;
+	    END_IF;
+	END_IF;
+	
+	// --- Fase 7: transiciones confirmadas por el resultado de los CMs ---
+	IF #AutoModeRequest THEN
+	    #State := #StateForCM;
+	    CASE #StateForCM OF
+	        #ST_RUNNING:
+	            IF #TimerStable.Q THEN
+	                // COMPLETED indica alimentaciÃ³n estabilizada; la regulaciÃ³n continÃºa
+	                #State := #ST_COMPLETED;
+	            END_IF;
+	            
+	        #ST_HOLDING:
+	            IF #SafeStopped THEN
+	                #State := #ST_HELD;
+	            END_IF;
+	            
+	        #ST_STOPPING:
+	            IF #SafeStopped THEN
+	                #State := #ST_STOPPED;
+	                #ActiveAction := 0;
+	            END_IF;
+	            
+	        #ST_ABORTING:
+	            IF #SafeStopped THEN
+	                #State := #ST_ABORTED;
+	                #ActiveAction := 0;
+	            END_IF;
+	    END_CASE;
+	ELSE
+	    #State := #ST_IDLE;
+	    #ActiveAction := 0;
+	END_IF;
+	
+	// --- Fase 8: publicaciÃ³n de comandos y estados del EM ---
+	IF (#ActiveAction = 3) THEN
+	    #CM_PIC_MV := 0.0;
+	ELSE
+	    #CM_PIC_MV := #CM_PIC_Feed.MV;
+	END_IF;
+	#CM_Agua_Out := #CM_Vlv_Agua.SP;
+	#Out.FeedActive := #Regulating;
+	#Out.LevelInterlock := #Regulating AND NOT #In.MinLevelPermit AND NOT #MaintModeRequest;
+	
+	#Out.Status.State := #State;
+	#Out.Status.Idle := (#State = #ST_IDLE);
+	#Out.Status.Running := (#State = #ST_RUNNING);
+	#Out.Status.Completed := (#State = #ST_COMPLETED);
+	#Out.Status.Holding := (#State = #ST_HOLDING);
+	#Out.Status.Held := (#State = #ST_HELD);
+	#Out.Status.Stopping := (#State = #ST_STOPPING);
+	#Out.Status.Stopped := (#State = #ST_STOPPED);
+	#Out.Status.Aborting := (#State = #ST_ABORTING);
+	#Out.Status.Aborted := (#State = #ST_ABORTED);
+	#Out.Status.Fault := #AlarmLatched OR #SensorAlarm OR #CMAlarm;
+	#Out.Status.FaultCode := #FaultCode;
+	
+	#Out.Status.ModeMan := #CM_PIC_Feed.ManAct;
+	#Out.Status.ModeAuto := #AutoModeRequest AND (#CM_PIC_Feed.AutAct OR #CM_PIC_Feed.OosAct);
+	#Out.Status.ModeMaint := #MaintModeRequest AND #CM_PIC_Feed.ManAct;
+	FOR #i := 1 TO #NUM_VLV DO
+	    #Out.Status.ModeMan := #Out.Status.ModeMan AND #CM_Vlv_MateriaPrima[#i].ManAct;
+	    #Out.Status.ModeAuto := #Out.Status.ModeAuto AND #CM_Vlv_MateriaPrima[#i].AutAct;
+	    #Out.Status.ModeMaint := #Out.Status.ModeMaint AND #CM_Vlv_MateriaPrima[#i].ManAct;
+	END_FOR;
+	#Out.Status.ModeConflict := (#ModeCount > 1) OR (#In.Cmds.Auto AND NOT #ActionValid);
+	
+END_FUNCTION_BLOCK
+

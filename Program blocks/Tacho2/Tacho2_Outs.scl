@@ -1,0 +1,91 @@
+﻿FUNCTION "Tacho2_Outs" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+      DCV_211_range : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+      PCV_210_range : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+      LCV_212_range : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+      XCV_107_range : Struct
+         High : Real;
+         Low : Real;
+      END_STRUCT;
+   END_VAR
+
+   VAR CONSTANT 
+      ID_SLURRY : Int := 1;
+      ID_SEMILLA : Int := 2;
+      ID_CORTE_T3 : Int := 3;
+      ID_MEL_CLARA : Int := 1;
+      ID_MEL_CRUD : Int := 2;
+   END_VAR
+
+
+BEGIN
+	    REGION Rangos de salidas analogicas
+	        // Válvula de control de densidad (Concentración de licor)
+	        #"DCV_211_range".High := 100.0;
+	        #"DCV_211_range".Low := 0.0;
+	        // Válvula de control de vacío
+	        #"PCV_210_range".High := 100.0;
+	        #"PCV_210_range".Low := 0.0;
+	        // Válvula de control de nivel (alimentación de meladura)
+	        #"LCV_212_range".High := 100.0;
+	        #"LCV_212_range".Low := 0.0;
+	        // Válvula de entrada de agua
+	        #"XCV_107_range".High := 100.0;
+	        #"XCV_107_range".Low := 0.0;
+	    END_REGION
+	    
+	    REGION Salidas analogicas
+	        "AnOutDrv"(PV := "Tacho2_Values".DCV_211,
+	                   PVRange := #"DCV_211_range",
+	                   Bipolar := FALSE,
+	                   Out => "DCV-211");
+	        "AnOutDrv"(PV := "Tacho2_Values".PCV_210,
+	                   PVRange := #"PCV_210_range",
+	                   Bipolar := FALSE,
+	                   Out => "PCV-210");
+	        "AnOutDrv"(PV := "Tacho2_Values".LCV_212,
+	                   PVRange := #"LCV_212_range",
+	                   Bipolar := FALSE,
+	                   Out => "LCV-212");
+	        "AnOutDrv"(PV := "Tacho2_Values".XCV_107,
+	                   PVRange := #"XCV_107_range",
+	                   Bipolar := FALSE,
+	                   Out => "XCV-107");
+	    END_REGION
+	    REGION Salidas digitales
+	        "YSH-000" := "Tacho2_Values".YSH_000; // Indicador de alarma
+	        "YSL-000" := "Tacho2_Values".YSL_000; // Indicador de advertencia
+	        "XSV-114" := "Tacho2_Values".XSV_114; // Válvula de lavado de sensores
+	        "TSV-102" := "Tacho2_Values".TSV_102; // Válvula de soplo (calentamiento)
+	        "XSV-112B" := "Tacho2_Values".XSV_112B; // Válvula de alimentación meladura cruda
+	        "XSV-112A" := "Tacho2_Values".XSV_112A; // Válvula de alimentación meladura clara
+	        "XSV-105" := "Tacho2_Values".XSV_105; // Válvula de entrada de semilla
+	        "PSV-103" := "Tacho2_Values".PSV_103; // Válvula de romper vacío
+	        "LSV-109" := "Tacho2_Values".LSV_109; // Válvula de descarga de masa al recibidor
+	        "XSV-104" := "Tacho2_Values".XSV_104; // Válvula de entrada de slurry
+	        "XSV-108" := "Tacho2_Values".XSV_108; // Válvula de entrada de masa desde Tacho 3 (corte)
+	        "M-101" := "Tacho2_Values".M_101; // Motor del agitador
+	        "XSV-113" := "Tacho2_Values".XSV_113; // Futura válvula de desagüe
+	        "M-102" := "Tacho2_Values".M_102; // Motor de la bomba de vacío
+	    END_REGION
+	    REGION Reenvio datos proceso al SM
+	        "Tacho2_Values".SM_Commands.Massecuite_Solids := "Tacho2_Values".AT_112;
+	        "Tacho2_Values".SM_Commands.Level := "Tacho2_Values".LT_112;
+	        "Tacho2_Values".SM_Commands.Absolute_Pressure := "Tacho2_Values".PT_110;
+	    END_REGION ;
+	    REGION Comandos al Seedmaster
+	        "Tacho2_SM_Output" := "Tacho2_Values".SM_Commands;
+	    END_REGION
+END_FUNCTION
+

@@ -1,0 +1,102 @@
+﻿FUNCTION "Tacho2Main" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+BEGIN
+	REGION Lectura de Entradas
+	    "Tacho2_Inputs"();
+	END_REGION
+	REGION Asignacion de Valores
+	    // Se asignan los valores de las entradas que están almacenados en Tacho2_Values y se escriben
+	    // en los parámetros de los módulos correspondientes.
+	    "Tacho2_EM01".TempPV := "Tacho2_Values".SM_Values.Temperature;
+	    "Tacho2_EM01".ConcPV := "Tacho2_Values".AT_112;
+	    
+	    "Tacho2_EM02".VacuumPV := "Tacho2_Values".PT_110;
+	    "Tacho2_EM02".PumpFbkRun := "Tacho2_Values".YI_102;
+	    
+	    "Tacho2_EM03".FeedPV := "Tacho2_Values".LT_112;
+	    
+	    "Tacho2_EM04".LevelPV := "Tacho2_Values".LT_112;
+	    
+	    "Tacho2_EM05".MotorFbkRun := "Tacho2_Values".YI_101;
+	    "Tacho2_EM05".MotorTrip := "Tacho2_Values".YT_101;
+	    
+	    "Tacho2_EM06".RecibidorLevelPV := "Tacho2_Values".LT_116;
+	    "Tacho2_EM06".TachoLevelPV := "Tacho2_Values".LT_112;
+	    
+	    "Tacho2_UM".NivelTacho := "Tacho2_Values".LT_112;
+	    "Tacho2_UM".SobreSaturacion := "Tacho2_Values".SM_Values.Supersaturation;
+	END_REGION
+	REGION Ejecucion de UM
+	    "Tacho2_UM"(
+	                ConcSMMV := "Tacho2_Values".SM_Values.Steam_Valve_Control,
+	                VaccumSMMV := "Tacho2_Values".SM_Values.Vacuum_Valve_Control,
+	                FeedSMMV := "Tacho2_Values".SM_Values.Syrup_Feed_Valve_Control,
+	                NivelTacho:= "Tacho2_Values".LT_112,
+	                BrixLicorActual:="Tacho2_Values".SM_Values.Concentration,
+	                BrixMasaActual:="Tacho2_Values".AT_112,
+	                SobreSaturacion:="Tacho2_Values".SM_Values.Supersaturation,
+	                EM01_Estado := "Tacho2_EM01".Out,
+	                EM02_Estado := "Tacho2_EM02".Out,
+	                EM03_Estado := "Tacho2_EM03".Out,
+	                EM04_Estado := "Tacho2_EM04".Out,
+	                EM05_Estado := "Tacho2_EM05".Out,
+	                EM06_Estado := "Tacho2_EM06".Out,
+	                EM01_Comandos => "Tacho2_EM01".In,
+	                EM02_Comandos => "Tacho2_EM02".In,
+	                EM03_Comandos => "Tacho2_EM03".In,
+	                EM04_Comandos => "Tacho2_EM04".In,
+	                EM05_Comandos => "Tacho2_EM05".In,
+	                EM06_Comandos => "Tacho2_EM06".In
+	    );
+	END_REGION
+	REGION Ejecucion de EMs
+	    "Tacho2_EM01"();
+	    "Tacho2_EM02"();
+	    "Tacho2_EM03"();
+	    "Tacho2_EM04"();
+	    "Tacho2_EM05"();
+	    "Tacho2_EM06"();
+	END_REGION
+	REGION Asignacion de Comandos
+	    // Los comandos generados por los EMs se escriben en Tacho2_Values para 
+	    // que puedan ser asignados a las salidas correspondientes.
+	    "Tacho2_Values".DCV_211 := "Tacho2_EM01".CM_Pid_MV;
+	    "Tacho2_Values".TSV_102 := "Tacho2_EM01".CM_Out;
+	    
+	    "Tacho2_Values".PCV_210 := "Tacho2_EM02".CM_PIC_MV;
+	    "Tacho2_Values".M_102 := "Tacho2_EM02".CM_MotL_Out;
+	    "Tacho2_Values".PSV_103 := "Tacho2_EM02".CM_Bk_Out;
+	    
+	    "Tacho2_Values".LCV_212 := "Tacho2_EM03".CM_PIC_MV;
+	    "Tacho2_Values".XCV_107 := "Tacho2_EM03".CM_Agua_Out;
+	    "Tacho2_Values".XSV_112A := "Tacho2_EM03".CM_Vlv_MP_Out[1];
+	    "Tacho2_Values".XSV_112B := "Tacho2_EM03".CM_Vlv_MP_Out[2];
+	    
+	    "Tacho2_Values".XSV_104 := "Tacho2_EM04".CM_Vlv_Cristal_Out[1];
+	    "Tacho2_Values".XSV_105 := "Tacho2_EM04".CM_Vlv_Cristal_Out[2];
+	    "Tacho2_Values".XSV_108 := "Tacho2_EM04".CM_Vlv_Cristal_Out[3];
+	    
+	    "Tacho2_Values".M_101 := "Tacho2_EM05".CM_Mot_Agitador_Out;
+	    
+	    "Tacho2_Values".LSV_109 := "Tacho2_EM06".CM_Vlv_Descarga_Out;
+	    "Tacho2_Values".XSV_113 := "Tacho2_EM06".CM_Vlv_Desague_Out;
+	    
+	    // External control commands
+	    "Tacho2_Values".SM_Commands.Purity_P1 := "Tacho2_UM".ExternalControlCmds.Purity_P1;
+	    "Tacho2_Values".SM_Commands.Purity_P2 := "Tacho2_UM".ExternalControlCmds.Purity_P2;
+	    "Tacho2_Values".SM_Commands.Purity_P3 := "Tacho2_UM".ExternalControlCmds.Purity_P3;
+	    "Tacho2_Values".SM_Commands.Purity_Selector := "Tacho2_UM".ExternalControlCmds.Purity_Selector;
+	    "Tacho2_Values".SM_Commands.Final_Mass_Solid_Prog1 := "Tacho2_UM".ExternalControlCmds.Final_Mass_Solid_Prog1;
+	    "Tacho2_Values".SM_Commands.Final_Mass_Solid_Prog2 := "Tacho2_UM".ExternalControlCmds.Final_Mass_Solid_Prog2;
+	    "Tacho2_Values".SM_Commands.Final_Mass_Solid_Prog3 := "Tacho2_UM".ExternalControlCmds.Final_Mass_Solid_Prog3;
+	    "Tacho2_Values".SM_Commands.Final_Mass_Solid_Selector := "Tacho2_UM".ExternalControlCmds.Final_Mass_Solid_Selector;
+	    "Tacho2_Values".SM_Commands.Strike_Active := "Tacho2_UM".ExternalControlCmds.Strike_Active;
+	    "Tacho2_Values".SM_Commands.Seeded := "Tacho2_UM".ExternalControlCmds.Seeded;
+	END_REGION
+	REGION Escritura de Salidas
+	    "Tacho2_Outs"();
+	END_REGION
+END_FUNCTION
+

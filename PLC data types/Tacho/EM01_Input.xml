@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Types.PlcStruct ID="0">
+    <AttributeList>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="None">
+    <Member Name="Cmds" Datatype="&quot;EM_Input&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="CtrlMode" Datatype="Int">
+      <Comment>
+        <MultiLanguageText Lang="en-US">0=Off, 1=Calentamiento por temperatura, 2=Local (concentraciÃ³n), 3=External (SeedMaster), 4=Limpieza/caldeo por tiempo, 5=Lavado por tiempo</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="TempSP" Datatype="Real" />
+    <Member Name="TempFilter" Datatype="Time">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Tiempo que PV &gt;= SP debe mantenerse para completar</MultiLanguageText>
+      </Comment>
+      <StartValue>T#3S</StartValue>
+    </Member>
+    <Member Name="TimeSP" Datatype="Time" />
+    <Member Name="Timeout" Datatype="Time">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Tiempo mÃ¡ximo para alcanzar la temperatura</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="ValveTime" Datatype="Time">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Tiempo mÃ¡ximo de confirmaciÃ³n de apertura/cierre de la vÃ¡lvula</MultiLanguageText>
+      </Comment>
+      <StartValue>T#10S</StartValue>
+    </Member>
+    <Member Name="ConcentrationSP" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">SP de concentraciÃ³n/Brix (0..100); objetivo en modos 2 y 3</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="ConcStableBand" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Banda de estabilizaciÃ³n de concentraciÃ³n (modos 2 y 3)</MultiLanguageText>
+      </Comment>
+      <StartValue>1.0</StartValue>
+    </Member>
+    <Member Name="ConcStableTime" Datatype="Time">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Tiempo dentro de banda para declarar COMPLETED (modos 2 y 3)</MultiLanguageText>
+      </Comment>
+      <StartValue>T#30S</StartValue>
+    </Member>
+    <Member Name="ConcSMMV" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">MV del SeedMaster en % (0..100), modo 3</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="HoldPosition" Datatype="Real">
+      <Comment>
+        <MultiLanguageText Lang="en-US">PosiciÃ³n fija del PID en Hold/Held, % (0..100), modos 2 y 3</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="MinLevelPermit" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">Nivel de tacho suficiente para cubrir la calandria</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="DischargeInterlock" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE durante la descarga: calandria forzada a 0 %</MultiLanguageText>
+      </Comment>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <Name>EM01_Input</Name>
+      <Namespace />
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Types.PlcStruct>
+</Document>

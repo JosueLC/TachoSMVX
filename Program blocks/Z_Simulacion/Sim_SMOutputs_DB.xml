@@ -1,0 +1,3045 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Blocks.InstanceDB ID="0">
+    <AttributeList>
+      <InstanceOfName>Sim_SMOutputs</InstanceOfName>
+      <InstanceOfType>FB</InstanceOfType>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input" />
+  <Section Name="Output" />
+  <Section Name="InOut" />
+  <Section Name="Static">
+    <Member Name="VaccumPID" Datatype="&quot;PidL&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="AutModLi" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="ManModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="LocModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="OosModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="ModLiOp" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="ResetLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="SPModLiOp" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="ExtModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="IntModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="PV" Datatype="Real">
+            <StartValue>950.0145</StartValue>
+          </Member>
+          <Member Name="PV_Norm" Datatype="Struct">
+            <Member Name="High" Datatype="Real">
+              <StartValue>2000.0</StartValue>
+            </Member>
+            <Member Name="Low" Datatype="Real">
+              <StartValue>0.0</StartValue>
+            </Member>
+          </Member>
+          <Member Name="MV_Norm" Datatype="Struct">
+            <Member Name="High" Datatype="Real">
+              <StartValue>100.0</StartValue>
+            </Member>
+            <Member Name="Low" Datatype="Real">
+              <StartValue>0.0</StartValue>
+            </Member>
+          </Member>
+          <Member Name="PV_Scale" Datatype="Struct">
+            <Member Name="High" Datatype="Real">
+              <StartValue>2000.0</StartValue>
+            </Member>
+            <Member Name="Low" Datatype="Real">
+              <StartValue>0.0</StartValue>
+            </Member>
+          </Member>
+          <Member Name="SPExt" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="SP_HiLim" Datatype="Real">
+            <StartValue>1000.0</StartValue>
+          </Member>
+          <Member Name="SP_LoLim" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="MV_HiLim" Datatype="Real">
+            <StartValue>100.0</StartValue>
+          </Member>
+          <Member Name="MV_LoLim" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="OosSafeMV" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="PV_unit" Datatype="Int">
+            <StartValue>1342</StartValue>
+          </Member>
+          <Member Name="MV_unit" Datatype="Int">
+            <StartValue>1342</StartValue>
+          </Member>
+          <Member Name="DataHMI" Datatype="&quot;PidL.HMI_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="identName" Datatype="String">
+                  <StartValue>''</StartValue>
+                </Member>
+                <Member Name="comment" Datatype="String">
+                  <StartValue>''</StartValue>
+                </Member>
+                <Member Name="AutModOp" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="ManModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="LocModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="OosModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="ResetOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="MonitorOn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="ExtModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="IntModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="SpInt" Datatype="Real">
+                  <StartValue>100.0</StartValue>
+                </Member>
+                <Member Name="Man" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="PermissionLog" Datatype="&quot;PidL.Permission_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="AutModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="ManModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LocModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="OosModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="ResetOpEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="ExtModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="IntModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="Alarms" Datatype="&quot;AnaMon.Permission_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="MsgSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiAlmSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiWrnSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="LoWrnSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="LoAlmSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Status" Datatype="&quot;PidL.Status_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="OosAct" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LocAct" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="ManAct" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="AutAct" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="SpExtAct" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="Protection" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="Intlock" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="Permit" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="TrackAct" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="SP" Datatype="Real">
+                        <StartValue>100.0</StartValue>
+                      </Member>
+                      <Member Name="PV" Datatype="Real">
+                        <StartValue>950.0145</StartValue>
+                      </Member>
+                      <Member Name="ER" Datatype="Real">
+                        <StartValue>-845.0145</StartValue>
+                      </Member>
+                      <Member Name="MV" Datatype="Real">
+                        <StartValue>0.0</StartValue>
+                      </Member>
+                      <Member Name="PVOpScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>2000.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="MVOpScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>100.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="SPIntLim" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="PV_unit" Datatype="Int">
+                        <StartValue>1342</StartValue>
+                      </Member>
+                      <Member Name="MV_unit" Datatype="Int">
+                        <StartValue>1342</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="PIDConfig" Datatype="&quot;PidL.PIDConfig_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="NegGain" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="P_Sel" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="I_Sel" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="D_Sel" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="Gain" Datatype="Real">
+                        <StartValue>-2.0</StartValue>
+                      </Member>
+                      <Member Name="Ti" Datatype="Real">
+                        <StartValue>80.0</StartValue>
+                      </Member>
+                      <Member Name="Td" Datatype="Real">
+                        <StartValue>0.0</StartValue>
+                      </Member>
+                      <Member Name="DeadBW" Datatype="Real">
+                        <StartValue>5.0</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Alarms" Datatype="&quot;AnaMon.HMI_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="identName" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="comment" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="MsgSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PVScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>2000.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="HiAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PermissionLog" Datatype="&quot;AnaMon.Permission_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="MsgSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="HiWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                      <Member Name="Status" Datatype="&quot;AnaMon.Status_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="PV" Datatype="Real">
+                              <StartValue>950.0145</StartValue>
+                            </Member>
+                            <Member Name="PV_unit" Datatype="Int">
+                              <StartValue>1342</StartValue>
+                            </Member>
+                            <Member Name="PV_HiAlm" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="PV_HiWrn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoWrn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoAlm" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="MsgSup" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Feature" Datatype="&quot;PidL.Feature_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Startup" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="MSSOff" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="FltOff" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="LocalMod" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Permission" Datatype="&quot;PidL.Permission_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="AutModOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="ManModOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="LocModOpEn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="OosModOpEn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="ResetOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="ExtModOpEn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="IntModOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="Alarms" Datatype="&quot;AnaMon.Permission_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="MsgSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="MSS" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Trip" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="Permit" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Intlock" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Protect" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="TrackOn" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Rbk" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="RbkHiTol" Datatype="Real">
+            <StartValue>3.0</StartValue>
+          </Member>
+          <Member Name="RbkLoTol" Datatype="Real">
+            <StartValue>3.0</StartValue>
+          </Member>
+          <Member Name="RbkMonTime" Datatype="Time">
+            <StartValue>T#3S</StartValue>
+          </Member>
+          <Member Name="TrackVal" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="RunUpCyc" Datatype="Int">
+            <StartValue>3</StartValue>
+          </Member>
+          <Member Name="DisV" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="HiAlm" Datatype="Real">
+            <StartValue>95.0</StartValue>
+          </Member>
+          <Member Name="HiWrn" Datatype="Real">
+            <StartValue>90.0</StartValue>
+          </Member>
+          <Member Name="LoWrn" Datatype="Real">
+            <StartValue>10.0</StartValue>
+          </Member>
+          <Member Name="LoAlm" Datatype="Real">
+            <StartValue>5.0</StartValue>
+          </Member>
+          <Member Name="Hyst" Datatype="Real">
+            <StartValue>5.0</StartValue>
+          </Member>
+        </Section>
+        <Section Name="Output">
+          <Member Name="AutAct" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="ManAct" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="LocAct" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="OosAct" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="MsgSup" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="AlarmError" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="MV" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="SPExtAct" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="SP" Datatype="Real">
+            <StartValue>100.0</StartValue>
+          </Member>
+          <Member Name="ER" Datatype="Real">
+            <StartValue>-845.0145</StartValue>
+          </Member>
+          <Member Name="PVH_Alm" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="PVH_Wrn" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="PVL_Wrn" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="PVL_Alm" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="controller" Datatype="CONT_C" Version="1.1">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="COM_RST" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="MAN_ON" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="PVPER_ON" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="P_SEL" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="I_SEL" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="INT_HOLD" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="I_ITL_ON" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="D_SEL" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="CYCLE" Datatype="Time">
+                  <StartValue>T#200MS</StartValue>
+                </Member>
+                <Member Name="SP_INT" Datatype="Real">
+                  <StartValue>5.0</StartValue>
+                </Member>
+                <Member Name="PV_IN" Datatype="Real">
+                  <StartValue>47.50072</StartValue>
+                </Member>
+                <Member Name="PV_PER" Datatype="Word">
+                  <StartValue>16#0000</StartValue>
+                </Member>
+                <Member Name="MAN" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="GAIN" Datatype="Real">
+                  <StartValue>-2.0</StartValue>
+                </Member>
+                <Member Name="TI" Datatype="Time">
+                  <StartValue>T#1M_20S</StartValue>
+                </Member>
+                <Member Name="TD" Datatype="Time">
+                  <StartValue>T#10S</StartValue>
+                </Member>
+                <Member Name="TM_LAG" Datatype="Time">
+                  <StartValue>T#2S</StartValue>
+                </Member>
+                <Member Name="DEADB_W" Datatype="Real">
+                  <StartValue>0.25</StartValue>
+                </Member>
+                <Member Name="LMN_HLM" Datatype="Real">
+                  <StartValue>100.0</StartValue>
+                </Member>
+                <Member Name="LMN_LLM" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="PV_FAC" Datatype="Real">
+                  <StartValue>1.0</StartValue>
+                </Member>
+                <Member Name="PV_OFF" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="LMN_FAC" Datatype="Real">
+                  <StartValue>1.0</StartValue>
+                </Member>
+                <Member Name="LMN_OFF" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="I_ITLVAL" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="DISV" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+              </Section>
+              <Section Name="Output">
+                <Member Name="LMN" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="LMN_PER" Datatype="Word">
+                  <StartValue>16#0000</StartValue>
+                </Member>
+                <Member Name="QLMN_HLM" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="QLMN_LLM" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="LMN_P" Datatype="Real">
+                  <StartValue>84.50145</StartValue>
+                </Member>
+                <Member Name="LMN_I" Datatype="Real">
+                  <StartValue>-84.50145</StartValue>
+                </Member>
+                <Member Name="LMN_D" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="PV" Datatype="Real">
+                  <StartValue>47.50072</StartValue>
+                </Member>
+                <Member Name="ER" Datatype="Real">
+                  <StartValue>-42.25072</StartValue>
+                </Member>
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static">
+                <Member Name="sInvAlt" Datatype="Real">
+                  <StartValue>84.50145</StartValue>
+                </Member>
+                <Member Name="sIanteilAlt" Datatype="Real">
+                  <StartValue>-84.50145</StartValue>
+                </Member>
+                <Member Name="sRestInt" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="sRestDif" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="sRueck" Datatype="Real">
+                  <StartValue>84.50145</StartValue>
+                </Member>
+                <Member Name="sLmn" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="sbArwHLmOn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="sbArwLLmOn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="sbILimOn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="ModSelInt" Datatype="Int">
+            <StartValue>2</StartValue>
+          </Member>
+          <Member Name="stRestart" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="ResetLiLogic" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="ResetResult" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stResetLiLogic" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stMonErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stTripErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stProtErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stMSS" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stProt" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stTrip" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stLockFault" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stRun" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stExtMod" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stAutoLogic" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="RuntimeMem" Datatype="LReal">
+            <StartValue>16#0000_07DF_2C3D_9711</StartValue>
+          </Member>
+          <Member Name="RuntimeS" Datatype="LReal">
+            <StartValue>0.200026255103497</StartValue>
+          </Member>
+          <Member Name="PVMon" Datatype="&quot;AnaMon&quot;">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="Feature" Datatype="&quot;AnaMon.Feature_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Startup" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Enable" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="Permission" Datatype="&quot;AnaMon.Permission_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="MsgSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="DataHMI" Datatype="&quot;AnaMon.HMI_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="identName" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="comment" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="MsgSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PVScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>2000.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="HiAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PermissionLog" Datatype="&quot;AnaMon.Permission_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="MsgSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="HiWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                      <Member Name="Status" Datatype="&quot;AnaMon.Status_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="PV" Datatype="Real">
+                              <StartValue>950.0145</StartValue>
+                            </Member>
+                            <Member Name="PV_unit" Datatype="Int">
+                              <StartValue>1342</StartValue>
+                            </Member>
+                            <Member Name="PV_HiAlm" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="PV_HiWrn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoWrn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoAlm" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="MsgSup" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="RunUpCyc" Datatype="Int">
+                  <StartValue>3</StartValue>
+                </Member>
+                <Member Name="PV" Datatype="Real">
+                  <StartValue>950.0145</StartValue>
+                </Member>
+                <Member Name="HiAlm" Datatype="Real">
+                  <StartValue>95.0</StartValue>
+                </Member>
+                <Member Name="HiWrn" Datatype="Real">
+                  <StartValue>90.0</StartValue>
+                </Member>
+                <Member Name="LoWrn" Datatype="Real">
+                  <StartValue>10.0</StartValue>
+                </Member>
+                <Member Name="LoAlm" Datatype="Real">
+                  <StartValue>5.0</StartValue>
+                </Member>
+                <Member Name="Hyst" Datatype="Real">
+                  <StartValue>5.0</StartValue>
+                </Member>
+                <Member Name="PV_unit" Datatype="Int">
+                  <StartValue>1342</StartValue>
+                </Member>
+              </Section>
+              <Section Name="Output">
+                <Member Name="MsgErr" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="MsgSup" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="PVH_Alm" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="PVH_Wrn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="PVL_Wrn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="PVL_Alm" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static">
+                <Member Name="stRestart" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="RunUpCounter" Datatype="Int">
+                  <StartValue>0</StartValue>
+                </Member>
+                <Member Name="pSIG1" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="pSIG2" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="pSIG3" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="pSIG4" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="pAlarm" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="RunUpCounter" Datatype="Int">
+            <StartValue>0</StartValue>
+          </Member>
+          <Member Name="pAlarm" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="stMSSErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="SPMod" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="SPSelInt" Datatype="Int">
+            <StartValue>0</StartValue>
+          </Member>
+          <Member Name="stErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stDivErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stNegGain" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="stGain" Datatype="Real">
+            <StartValue>-2.0</StartValue>
+          </Member>
+          <Member Name="stTi" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="stTd" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="stPIDConfig" Datatype="&quot;PidL.PIDConfig_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="NegGain" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="P_Sel" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="I_Sel" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="D_Sel" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="Gain" Datatype="Real">
+                  <StartValue>-2.0</StartValue>
+                </Member>
+                <Member Name="Ti" Datatype="Real">
+                  <StartValue>80.0</StartValue>
+                </Member>
+                <Member Name="Td" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="DeadBW" Datatype="Real">
+                  <StartValue>5.0</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="RbkMonitorTimer" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time">
+                  <StartValue>T#0MS</StartValue>
+                </Member>
+                <Member Name="IN" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="SteamPID" Datatype="&quot;PidL&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="AutModLi" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="ManModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="LocModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="OosModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="ModLiOp" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="ResetLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="SPModLiOp" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="ExtModLi" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="IntModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="PV" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="PV_Norm" Datatype="Struct">
+            <Member Name="High" Datatype="Real">
+              <StartValue>100.0</StartValue>
+            </Member>
+            <Member Name="Low" Datatype="Real">
+              <StartValue>0.0</StartValue>
+            </Member>
+          </Member>
+          <Member Name="MV_Norm" Datatype="Struct">
+            <Member Name="High" Datatype="Real">
+              <StartValue>100.0</StartValue>
+            </Member>
+            <Member Name="Low" Datatype="Real">
+              <StartValue>0.0</StartValue>
+            </Member>
+          </Member>
+          <Member Name="PV_Scale" Datatype="Struct">
+            <Member Name="High" Datatype="Real">
+              <StartValue>100.0</StartValue>
+            </Member>
+            <Member Name="Low" Datatype="Real">
+              <StartValue>0.0</StartValue>
+            </Member>
+          </Member>
+          <Member Name="SPExt" Datatype="Real">
+            <StartValue>80.0</StartValue>
+          </Member>
+          <Member Name="SP_HiLim" Datatype="Real">
+            <StartValue>100.0</StartValue>
+          </Member>
+          <Member Name="SP_LoLim" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="MV_HiLim" Datatype="Real">
+            <StartValue>100.0</StartValue>
+          </Member>
+          <Member Name="MV_LoLim" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="OosSafeMV" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="PV_unit" Datatype="Int">
+            <StartValue>1342</StartValue>
+          </Member>
+          <Member Name="MV_unit" Datatype="Int">
+            <StartValue>1342</StartValue>
+          </Member>
+          <Member Name="DataHMI" Datatype="&quot;PidL.HMI_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="identName" Datatype="String">
+                  <StartValue>''</StartValue>
+                </Member>
+                <Member Name="comment" Datatype="String">
+                  <StartValue>''</StartValue>
+                </Member>
+                <Member Name="AutModOp" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="ManModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="LocModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="OosModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="ResetOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="MonitorOn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="ExtModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="IntModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="SpInt" Datatype="Real">
+                  <StartValue>80.0</StartValue>
+                </Member>
+                <Member Name="Man" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="PermissionLog" Datatype="&quot;PidL.Permission_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="AutModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="ManModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LocModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="OosModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="ResetOpEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="ExtModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="IntModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="Alarms" Datatype="&quot;AnaMon.Permission_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="MsgSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiAlmSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiWrnSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="LoWrnSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="LoAlmSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Status" Datatype="&quot;PidL.Status_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="OosAct" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LocAct" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="ManAct" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="AutAct" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="SpExtAct" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="Protection" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="Intlock" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="Permit" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="TrackAct" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="SP" Datatype="Real">
+                        <StartValue>80.0</StartValue>
+                      </Member>
+                      <Member Name="PV" Datatype="Real">
+                        <StartValue>0.0</StartValue>
+                      </Member>
+                      <Member Name="ER" Datatype="Real">
+                        <StartValue>80.0</StartValue>
+                      </Member>
+                      <Member Name="MV" Datatype="Real">
+                        <StartValue>0.0</StartValue>
+                      </Member>
+                      <Member Name="PVOpScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>100.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="MVOpScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>100.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="SPIntLim" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="PV_unit" Datatype="Int">
+                        <StartValue>1342</StartValue>
+                      </Member>
+                      <Member Name="MV_unit" Datatype="Int">
+                        <StartValue>1342</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="PIDConfig" Datatype="&quot;PidL.PIDConfig_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="NegGain" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="P_Sel" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="I_Sel" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="D_Sel" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="Gain" Datatype="Real">
+                        <StartValue>2.0</StartValue>
+                      </Member>
+                      <Member Name="Ti" Datatype="Real">
+                        <StartValue>80.0</StartValue>
+                      </Member>
+                      <Member Name="Td" Datatype="Real">
+                        <StartValue>10.0</StartValue>
+                      </Member>
+                      <Member Name="DeadBW" Datatype="Real">
+                        <StartValue>0.0</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Alarms" Datatype="&quot;AnaMon.HMI_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="identName" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="comment" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="MsgSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PVScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>100.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="HiAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PermissionLog" Datatype="&quot;AnaMon.Permission_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="MsgSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="HiWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                      <Member Name="Status" Datatype="&quot;AnaMon.Status_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="PV" Datatype="Real">
+                              <StartValue>0.0</StartValue>
+                            </Member>
+                            <Member Name="PV_unit" Datatype="Int">
+                              <StartValue>1342</StartValue>
+                            </Member>
+                            <Member Name="PV_HiAlm" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="PV_HiWrn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoWrn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoAlm" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="MsgSup" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Feature" Datatype="&quot;PidL.Feature_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Startup" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="MSSOff" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="FltOff" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="LocalMod" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Permission" Datatype="&quot;PidL.Permission_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="AutModOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="ManModOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="LocModOpEn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="OosModOpEn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="ResetOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="ExtModOpEn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="IntModOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="Alarms" Datatype="&quot;AnaMon.Permission_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="MsgSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="MSS" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Trip" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="Permit" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Intlock" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Protect" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="TrackOn" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Rbk" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="RbkHiTol" Datatype="Real">
+            <StartValue>3.0</StartValue>
+          </Member>
+          <Member Name="RbkLoTol" Datatype="Real">
+            <StartValue>3.0</StartValue>
+          </Member>
+          <Member Name="RbkMonTime" Datatype="Time">
+            <StartValue>T#3S</StartValue>
+          </Member>
+          <Member Name="TrackVal" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="RunUpCyc" Datatype="Int">
+            <StartValue>3</StartValue>
+          </Member>
+          <Member Name="DisV" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="HiAlm" Datatype="Real">
+            <StartValue>95.0</StartValue>
+          </Member>
+          <Member Name="HiWrn" Datatype="Real">
+            <StartValue>90.0</StartValue>
+          </Member>
+          <Member Name="LoWrn" Datatype="Real">
+            <StartValue>10.0</StartValue>
+          </Member>
+          <Member Name="LoAlm" Datatype="Real">
+            <StartValue>5.0</StartValue>
+          </Member>
+          <Member Name="Hyst" Datatype="Real">
+            <StartValue>5.0</StartValue>
+          </Member>
+        </Section>
+        <Section Name="Output">
+          <Member Name="AutAct" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="ManAct" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="LocAct" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="OosAct" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="MsgSup" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="AlarmError" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="MV" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="SPExtAct" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="SP" Datatype="Real">
+            <StartValue>80.0</StartValue>
+          </Member>
+          <Member Name="ER" Datatype="Real">
+            <StartValue>80.0</StartValue>
+          </Member>
+          <Member Name="PVH_Alm" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="PVH_Wrn" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="PVL_Wrn" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="PVL_Alm" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="controller" Datatype="CONT_C" Version="1.1">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="COM_RST" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="MAN_ON" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="PVPER_ON" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="P_SEL" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="I_SEL" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="INT_HOLD" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="I_ITL_ON" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="D_SEL" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="CYCLE" Datatype="Time">
+                  <StartValue>T#200MS</StartValue>
+                </Member>
+                <Member Name="SP_INT" Datatype="Real">
+                  <StartValue>80.0</StartValue>
+                </Member>
+                <Member Name="PV_IN" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="PV_PER" Datatype="Word">
+                  <StartValue>16#0000</StartValue>
+                </Member>
+                <Member Name="MAN" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="GAIN" Datatype="Real">
+                  <StartValue>2.0</StartValue>
+                </Member>
+                <Member Name="TI" Datatype="Time">
+                  <StartValue>T#1M_20S</StartValue>
+                </Member>
+                <Member Name="TD" Datatype="Time">
+                  <StartValue>T#10S</StartValue>
+                </Member>
+                <Member Name="TM_LAG" Datatype="Time">
+                  <StartValue>T#2S</StartValue>
+                </Member>
+                <Member Name="DEADB_W" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="LMN_HLM" Datatype="Real">
+                  <StartValue>100.0</StartValue>
+                </Member>
+                <Member Name="LMN_LLM" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="PV_FAC" Datatype="Real">
+                  <StartValue>1.0</StartValue>
+                </Member>
+                <Member Name="PV_OFF" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="LMN_FAC" Datatype="Real">
+                  <StartValue>1.0</StartValue>
+                </Member>
+                <Member Name="LMN_OFF" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="I_ITLVAL" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="DISV" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+              </Section>
+              <Section Name="Output">
+                <Member Name="LMN" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="LMN_PER" Datatype="Word">
+                  <StartValue>16#0000</StartValue>
+                </Member>
+                <Member Name="QLMN_HLM" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="QLMN_LLM" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="LMN_P" Datatype="Real">
+                  <StartValue>160.0</StartValue>
+                </Member>
+                <Member Name="LMN_I" Datatype="Real">
+                  <StartValue>-160.0</StartValue>
+                </Member>
+                <Member Name="LMN_D" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="PV" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="ER" Datatype="Real">
+                  <StartValue>80.0</StartValue>
+                </Member>
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static">
+                <Member Name="sInvAlt" Datatype="Real">
+                  <StartValue>160.0</StartValue>
+                </Member>
+                <Member Name="sIanteilAlt" Datatype="Real">
+                  <StartValue>-160.0</StartValue>
+                </Member>
+                <Member Name="sRestInt" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="sRestDif" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="sRueck" Datatype="Real">
+                  <StartValue>160.0</StartValue>
+                </Member>
+                <Member Name="sLmn" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="sbArwHLmOn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="sbArwLLmOn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="sbILimOn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="ModSelInt" Datatype="Int">
+            <StartValue>2</StartValue>
+          </Member>
+          <Member Name="stRestart" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="ResetLiLogic" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="ResetResult" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stResetLiLogic" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stMonErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stTripErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stProtErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stMSS" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stProt" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stTrip" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stLockFault" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stRun" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stExtMod" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stAutoLogic" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="RuntimeMem" Datatype="LReal">
+            <StartValue>16#0000_07DF_2C3F_7F80</StartValue>
+          </Member>
+          <Member Name="RuntimeS" Datatype="LReal">
+            <StartValue>0.200023537350218</StartValue>
+          </Member>
+          <Member Name="PVMon" Datatype="&quot;AnaMon&quot;">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="Feature" Datatype="&quot;AnaMon.Feature_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Startup" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Enable" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="Permission" Datatype="&quot;AnaMon.Permission_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="MsgSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="DataHMI" Datatype="&quot;AnaMon.HMI_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="identName" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="comment" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="MsgSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PVScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>100.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="HiAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PermissionLog" Datatype="&quot;AnaMon.Permission_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="MsgSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="HiWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                      <Member Name="Status" Datatype="&quot;AnaMon.Status_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="PV" Datatype="Real">
+                              <StartValue>0.0</StartValue>
+                            </Member>
+                            <Member Name="PV_unit" Datatype="Int">
+                              <StartValue>1342</StartValue>
+                            </Member>
+                            <Member Name="PV_HiAlm" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="PV_HiWrn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoWrn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoAlm" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="MsgSup" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="RunUpCyc" Datatype="Int">
+                  <StartValue>3</StartValue>
+                </Member>
+                <Member Name="PV" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="HiAlm" Datatype="Real">
+                  <StartValue>95.0</StartValue>
+                </Member>
+                <Member Name="HiWrn" Datatype="Real">
+                  <StartValue>90.0</StartValue>
+                </Member>
+                <Member Name="LoWrn" Datatype="Real">
+                  <StartValue>10.0</StartValue>
+                </Member>
+                <Member Name="LoAlm" Datatype="Real">
+                  <StartValue>5.0</StartValue>
+                </Member>
+                <Member Name="Hyst" Datatype="Real">
+                  <StartValue>5.0</StartValue>
+                </Member>
+                <Member Name="PV_unit" Datatype="Int">
+                  <StartValue>1342</StartValue>
+                </Member>
+              </Section>
+              <Section Name="Output">
+                <Member Name="MsgErr" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="MsgSup" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="PVH_Alm" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="PVH_Wrn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="PVL_Wrn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="PVL_Alm" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static">
+                <Member Name="stRestart" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="RunUpCounter" Datatype="Int">
+                  <StartValue>0</StartValue>
+                </Member>
+                <Member Name="pSIG1" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="pSIG2" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="pSIG3" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="pSIG4" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="pAlarm" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="RunUpCounter" Datatype="Int">
+            <StartValue>0</StartValue>
+          </Member>
+          <Member Name="pAlarm" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="stMSSErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="SPMod" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="SPSelInt" Datatype="Int">
+            <StartValue>2</StartValue>
+          </Member>
+          <Member Name="stErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stDivErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stNegGain" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stGain" Datatype="Real">
+            <StartValue>2.0</StartValue>
+          </Member>
+          <Member Name="stTi" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="stTd" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="stPIDConfig" Datatype="&quot;PidL.PIDConfig_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="NegGain" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="P_Sel" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="I_Sel" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="D_Sel" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="Gain" Datatype="Real">
+                  <StartValue>2.0</StartValue>
+                </Member>
+                <Member Name="Ti" Datatype="Real">
+                  <StartValue>80.0</StartValue>
+                </Member>
+                <Member Name="Td" Datatype="Real">
+                  <StartValue>10.0</StartValue>
+                </Member>
+                <Member Name="DeadBW" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="RbkMonitorTimer" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time">
+                  <StartValue>T#0MS</StartValue>
+                </Member>
+                <Member Name="IN" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="SimularDelay" Datatype="TON_TIME" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time">
+            <StartValue>T#2S</StartValue>
+          </Member>
+          <Member Name="IN" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="FeedPID" Datatype="&quot;PidL&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="AutModLi" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="ManModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="LocModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="OosModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="ModLiOp" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="ResetLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="SPModLiOp" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="ExtModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="IntModLi" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="PV" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="PV_Norm" Datatype="Struct">
+            <Member Name="High" Datatype="Real">
+              <StartValue>100.0</StartValue>
+            </Member>
+            <Member Name="Low" Datatype="Real">
+              <StartValue>0.0</StartValue>
+            </Member>
+          </Member>
+          <Member Name="MV_Norm" Datatype="Struct">
+            <Member Name="High" Datatype="Real">
+              <StartValue>100.0</StartValue>
+            </Member>
+            <Member Name="Low" Datatype="Real">
+              <StartValue>0.0</StartValue>
+            </Member>
+          </Member>
+          <Member Name="PV_Scale" Datatype="Struct">
+            <Member Name="High" Datatype="Real">
+              <StartValue>100.0</StartValue>
+            </Member>
+            <Member Name="Low" Datatype="Real">
+              <StartValue>0.0</StartValue>
+            </Member>
+          </Member>
+          <Member Name="SPExt" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="SP_HiLim" Datatype="Real">
+            <StartValue>100.0</StartValue>
+          </Member>
+          <Member Name="SP_LoLim" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="MV_HiLim" Datatype="Real">
+            <StartValue>100.0</StartValue>
+          </Member>
+          <Member Name="MV_LoLim" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="OosSafeMV" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="PV_unit" Datatype="Int">
+            <StartValue>1342</StartValue>
+          </Member>
+          <Member Name="MV_unit" Datatype="Int">
+            <StartValue>1342</StartValue>
+          </Member>
+          <Member Name="DataHMI" Datatype="&quot;PidL.HMI_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="identName" Datatype="String">
+                  <StartValue>''</StartValue>
+                </Member>
+                <Member Name="comment" Datatype="String">
+                  <StartValue>''</StartValue>
+                </Member>
+                <Member Name="AutModOp" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="ManModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="LocModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="OosModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="ResetOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="MonitorOn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="ExtModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="IntModOp" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="SpInt" Datatype="Real">
+                  <StartValue>85.2033</StartValue>
+                </Member>
+                <Member Name="Man" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="PermissionLog" Datatype="&quot;PidL.Permission_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="AutModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="ManModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LocModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="OosModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="ResetOpEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="ExtModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="IntModOpEn" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="Alarms" Datatype="&quot;AnaMon.Permission_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="MsgSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiAlmSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiWrnSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="LoWrnSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="LoAlmSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Status" Datatype="&quot;PidL.Status_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="OosAct" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LocAct" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="ManAct" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="AutAct" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="SpExtAct" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="Protection" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="Intlock" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="Permit" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="TrackAct" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="SP" Datatype="Real">
+                        <StartValue>85.2033</StartValue>
+                      </Member>
+                      <Member Name="PV" Datatype="Real">
+                        <StartValue>0.0</StartValue>
+                      </Member>
+                      <Member Name="ER" Datatype="Real">
+                        <StartValue>85.2033</StartValue>
+                      </Member>
+                      <Member Name="MV" Datatype="Real">
+                        <StartValue>0.0</StartValue>
+                      </Member>
+                      <Member Name="PVOpScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>100.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="MVOpScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>100.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="SPIntLim" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="PV_unit" Datatype="Int">
+                        <StartValue>1342</StartValue>
+                      </Member>
+                      <Member Name="MV_unit" Datatype="Int">
+                        <StartValue>1342</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="PIDConfig" Datatype="&quot;PidL.PIDConfig_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="NegGain" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="P_Sel" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="I_Sel" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="D_Sel" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="Gain" Datatype="Real">
+                        <StartValue>2.0</StartValue>
+                      </Member>
+                      <Member Name="Ti" Datatype="Real">
+                        <StartValue>20.0</StartValue>
+                      </Member>
+                      <Member Name="Td" Datatype="Real">
+                        <StartValue>10.0</StartValue>
+                      </Member>
+                      <Member Name="DeadBW" Datatype="Real">
+                        <StartValue>0.0</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Alarms" Datatype="&quot;AnaMon.HMI_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="identName" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="comment" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="MsgSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PVScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>100.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="HiAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PermissionLog" Datatype="&quot;AnaMon.Permission_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="MsgSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="HiWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                      <Member Name="Status" Datatype="&quot;AnaMon.Status_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="PV" Datatype="Real">
+                              <StartValue>0.0</StartValue>
+                            </Member>
+                            <Member Name="PV_unit" Datatype="Int">
+                              <StartValue>1342</StartValue>
+                            </Member>
+                            <Member Name="PV_HiAlm" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="PV_HiWrn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoWrn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoAlm" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="MsgSup" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Feature" Datatype="&quot;PidL.Feature_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Startup" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="MSSOff" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="FltOff" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="LocalMod" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Permission" Datatype="&quot;PidL.Permission_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="AutModOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="ManModOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="LocModOpEn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="OosModOpEn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="ResetOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="ExtModOpEn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="IntModOpEn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="Alarms" Datatype="&quot;AnaMon.Permission_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="MsgSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="MSS" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Trip" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="Permit" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Intlock" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Protect" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="TrackOn" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="Rbk" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="RbkHiTol" Datatype="Real">
+            <StartValue>3.0</StartValue>
+          </Member>
+          <Member Name="RbkLoTol" Datatype="Real">
+            <StartValue>3.0</StartValue>
+          </Member>
+          <Member Name="RbkMonTime" Datatype="Time">
+            <StartValue>T#3S</StartValue>
+          </Member>
+          <Member Name="TrackVal" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="RunUpCyc" Datatype="Int">
+            <StartValue>3</StartValue>
+          </Member>
+          <Member Name="DisV" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="HiAlm" Datatype="Real">
+            <StartValue>95.0</StartValue>
+          </Member>
+          <Member Name="HiWrn" Datatype="Real">
+            <StartValue>90.0</StartValue>
+          </Member>
+          <Member Name="LoWrn" Datatype="Real">
+            <StartValue>10.0</StartValue>
+          </Member>
+          <Member Name="LoAlm" Datatype="Real">
+            <StartValue>5.0</StartValue>
+          </Member>
+          <Member Name="Hyst" Datatype="Real">
+            <StartValue>5.0</StartValue>
+          </Member>
+        </Section>
+        <Section Name="Output">
+          <Member Name="AutAct" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="ManAct" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="LocAct" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="OosAct" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="MsgSup" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="AlarmError" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="MV" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="SPExtAct" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="SP" Datatype="Real">
+            <StartValue>85.2033</StartValue>
+          </Member>
+          <Member Name="ER" Datatype="Real">
+            <StartValue>85.2033</StartValue>
+          </Member>
+          <Member Name="PVH_Alm" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="PVH_Wrn" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="PVL_Wrn" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="PVL_Alm" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="controller" Datatype="CONT_C" Version="1.1">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="COM_RST" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="MAN_ON" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="PVPER_ON" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="P_SEL" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="I_SEL" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="INT_HOLD" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="I_ITL_ON" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="D_SEL" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="CYCLE" Datatype="Time">
+                  <StartValue>T#200MS</StartValue>
+                </Member>
+                <Member Name="SP_INT" Datatype="Real">
+                  <StartValue>85.2033</StartValue>
+                </Member>
+                <Member Name="PV_IN" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="PV_PER" Datatype="Word">
+                  <StartValue>16#0000</StartValue>
+                </Member>
+                <Member Name="MAN" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="GAIN" Datatype="Real">
+                  <StartValue>2.0</StartValue>
+                </Member>
+                <Member Name="TI" Datatype="Time">
+                  <StartValue>T#20S</StartValue>
+                </Member>
+                <Member Name="TD" Datatype="Time">
+                  <StartValue>T#10S</StartValue>
+                </Member>
+                <Member Name="TM_LAG" Datatype="Time">
+                  <StartValue>T#2S</StartValue>
+                </Member>
+                <Member Name="DEADB_W" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="LMN_HLM" Datatype="Real">
+                  <StartValue>100.0</StartValue>
+                </Member>
+                <Member Name="LMN_LLM" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="PV_FAC" Datatype="Real">
+                  <StartValue>1.0</StartValue>
+                </Member>
+                <Member Name="PV_OFF" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="LMN_FAC" Datatype="Real">
+                  <StartValue>1.0</StartValue>
+                </Member>
+                <Member Name="LMN_OFF" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="I_ITLVAL" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="DISV" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+              </Section>
+              <Section Name="Output">
+                <Member Name="LMN" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="LMN_PER" Datatype="Word">
+                  <StartValue>16#0000</StartValue>
+                </Member>
+                <Member Name="QLMN_HLM" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="QLMN_LLM" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="LMN_P" Datatype="Real">
+                  <StartValue>170.4066</StartValue>
+                </Member>
+                <Member Name="LMN_I" Datatype="Real">
+                  <StartValue>-170.4066</StartValue>
+                </Member>
+                <Member Name="LMN_D" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="PV" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="ER" Datatype="Real">
+                  <StartValue>85.2033</StartValue>
+                </Member>
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static">
+                <Member Name="sInvAlt" Datatype="Real">
+                  <StartValue>170.4066</StartValue>
+                </Member>
+                <Member Name="sIanteilAlt" Datatype="Real">
+                  <StartValue>-170.4066</StartValue>
+                </Member>
+                <Member Name="sRestInt" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="sRestDif" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="sRueck" Datatype="Real">
+                  <StartValue>170.4066</StartValue>
+                </Member>
+                <Member Name="sLmn" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="sbArwHLmOn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="sbArwLLmOn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="sbILimOn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="ModSelInt" Datatype="Int">
+            <StartValue>2</StartValue>
+          </Member>
+          <Member Name="stRestart" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="ResetLiLogic" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="ResetResult" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stResetLiLogic" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stMonErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stTripErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stProtErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stMSS" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stProt" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stTrip" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stLockFault" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stRun" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stExtMod" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stAutoLogic" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="RuntimeMem" Datatype="LReal">
+            <StartValue>16#0000_07DF_2C40_BF76</StartValue>
+          </Member>
+          <Member Name="RuntimeS" Datatype="LReal">
+            <StartValue>0.200024909247694</StartValue>
+          </Member>
+          <Member Name="PVMon" Datatype="&quot;AnaMon&quot;">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="Feature" Datatype="&quot;AnaMon.Feature_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Startup" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Enable" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="Permission" Datatype="&quot;AnaMon.Permission_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="MsgSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupEn" Datatype="Bool">
+                        <StartValue>TRUE</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="DataHMI" Datatype="&quot;AnaMon.HMI_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="identName" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="comment" Datatype="String">
+                        <StartValue>''</StartValue>
+                      </Member>
+                      <Member Name="MsgSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PVScale" Datatype="Struct">
+                        <Member Name="High" Datatype="Real">
+                          <StartValue>100.0</StartValue>
+                        </Member>
+                        <Member Name="Low" Datatype="Real">
+                          <StartValue>0.0</StartValue>
+                        </Member>
+                      </Member>
+                      <Member Name="HiAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="HiWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoWrnSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="LoAlmSupOp" Datatype="Bool">
+                        <StartValue>FALSE</StartValue>
+                      </Member>
+                      <Member Name="PermissionLog" Datatype="&quot;AnaMon.Permission_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="MsgSupEn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="HiAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="HiWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoWrnSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="LoAlmSupEn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                      <Member Name="Status" Datatype="&quot;AnaMon.Status_1&quot;">
+                        <Sections>
+                          <Section Name="None">
+                            <Member Name="PV" Datatype="Real">
+                              <StartValue>0.0</StartValue>
+                            </Member>
+                            <Member Name="PV_unit" Datatype="Int">
+                              <StartValue>1342</StartValue>
+                            </Member>
+                            <Member Name="PV_HiAlm" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="PV_HiWrn" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoWrn" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="PV_LoAlm" Datatype="Bool">
+                              <StartValue>TRUE</StartValue>
+                            </Member>
+                            <Member Name="MsgSup" Datatype="Bool">
+                              <StartValue>FALSE</StartValue>
+                            </Member>
+                          </Section>
+                        </Sections>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="RunUpCyc" Datatype="Int">
+                  <StartValue>3</StartValue>
+                </Member>
+                <Member Name="PV" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+                <Member Name="HiAlm" Datatype="Real">
+                  <StartValue>95.0</StartValue>
+                </Member>
+                <Member Name="HiWrn" Datatype="Real">
+                  <StartValue>90.0</StartValue>
+                </Member>
+                <Member Name="LoWrn" Datatype="Real">
+                  <StartValue>10.0</StartValue>
+                </Member>
+                <Member Name="LoAlm" Datatype="Real">
+                  <StartValue>5.0</StartValue>
+                </Member>
+                <Member Name="Hyst" Datatype="Real">
+                  <StartValue>5.0</StartValue>
+                </Member>
+                <Member Name="PV_unit" Datatype="Int">
+                  <StartValue>1342</StartValue>
+                </Member>
+              </Section>
+              <Section Name="Output">
+                <Member Name="MsgErr" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="MsgSup" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="PVH_Alm" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="PVH_Wrn" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="PVL_Wrn" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="PVL_Alm" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static">
+                <Member Name="stRestart" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="RunUpCounter" Datatype="Int">
+                  <StartValue>0</StartValue>
+                </Member>
+                <Member Name="pSIG1" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="pSIG2" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="pSIG3" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="pSIG4" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="pAlarm" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="RunUpCounter" Datatype="Int">
+            <StartValue>0</StartValue>
+          </Member>
+          <Member Name="pAlarm" Datatype="Bool">
+            <StartValue>TRUE</StartValue>
+          </Member>
+          <Member Name="stMSSErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="SPMod" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="SPSelInt" Datatype="Int">
+            <StartValue>0</StartValue>
+          </Member>
+          <Member Name="stErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stDivErr" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stNegGain" Datatype="Bool">
+            <StartValue>FALSE</StartValue>
+          </Member>
+          <Member Name="stGain" Datatype="Real">
+            <StartValue>2.0</StartValue>
+          </Member>
+          <Member Name="stTi" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="stTd" Datatype="Real">
+            <StartValue>0.0</StartValue>
+          </Member>
+          <Member Name="stPIDConfig" Datatype="&quot;PidL.PIDConfig_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="NegGain" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="P_Sel" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="I_Sel" Datatype="Bool">
+                  <StartValue>TRUE</StartValue>
+                </Member>
+                <Member Name="D_Sel" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+                <Member Name="Gain" Datatype="Real">
+                  <StartValue>2.0</StartValue>
+                </Member>
+                <Member Name="Ti" Datatype="Real">
+                  <StartValue>20.0</StartValue>
+                </Member>
+                <Member Name="Td" Datatype="Real">
+                  <StartValue>10.0</StartValue>
+                </Member>
+                <Member Name="DeadBW" Datatype="Real">
+                  <StartValue>0.0</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="RbkMonitorTimer" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time">
+                  <StartValue>T#0MS</StartValue>
+                </Member>
+                <Member Name="IN" Datatype="Bool">
+                  <StartValue>FALSE</StartValue>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="LiSet" Datatype="Bool">
+      <StartValue>FALSE</StartValue>
+    </Member>
+    <Member Name="LiSetM" Datatype="Bool">
+      <StartValue>FALSE</StartValue>
+    </Member>
+    <Member Name="LevelInit" Datatype="Real">
+      <StartValue>0.0</StartValue>
+    </Member>
+    <Member Name="BrixInit" Datatype="Real">
+      <StartValue>0.0</StartValue>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <Name>Sim_SMOutputs_DB</Name>
+      <Namespace />
+      <Number>9</Number>
+      <ProgrammingLanguage>DB</ProgrammingLanguage>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.InstanceDB>
+</Document>

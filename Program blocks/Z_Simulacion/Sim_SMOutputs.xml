@@ -1,0 +1,1611 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Blocks.FB ID="0">
+    <AttributeList>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input" />
+  <Section Name="Output" />
+  <Section Name="InOut" />
+  <Section Name="Static">
+    <Member Name="VaccumPID" Datatype="&quot;PidL&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="AutModLi" Datatype="Bool">
+            <StartValue>true</StartValue>
+          </Member>
+          <Member Name="ModLiOp" Datatype="Bool">
+            <StartValue>true</StartValue>
+          </Member>
+          <Member Name="PV_Norm" Datatype="Struct">
+            <Member Name="High" Datatype="Real">
+              <StartValue>2000.0</StartValue>
+            </Member>
+          </Member>
+          <Member Name="PV_Scale" Datatype="Struct">
+            <Member Name="High" Datatype="Real">
+              <StartValue>2000.0</StartValue>
+            </Member>
+          </Member>
+          <Member Name="DataHMI" Datatype="&quot;PidL.HMI_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="SpInt" Datatype="Real">
+                  <StartValue>200.0</StartValue>
+                </Member>
+                <Member Name="PIDConfig" Datatype="&quot;PidL.PIDConfig_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="NegGain" Datatype="Bool">
+                        <StartValue>true</StartValue>
+                      </Member>
+                      <Member Name="Ti" Datatype="Real">
+                        <StartValue>80.0</StartValue>
+                      </Member>
+                      <Member Name="Td" Datatype="Real">
+                        <StartValue>0.0</StartValue>
+                      </Member>
+                      <Member Name="DeadBW" Datatype="Real">
+                        <StartValue>5.0</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+        <Section Name="Output" />
+        <Section Name="InOut" />
+        <Section Name="Static" />
+      </Sections>
+    </Member>
+    <Member Name="SteamPID" Datatype="&quot;PidL&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="AutModLi" Datatype="Bool">
+            <StartValue>true</StartValue>
+          </Member>
+          <Member Name="ModLiOp" Datatype="Bool">
+            <StartValue>true</StartValue>
+          </Member>
+          <Member Name="SPModLiOp" Datatype="Bool">
+            <StartValue>true</StartValue>
+          </Member>
+          <Member Name="ExtModLi" Datatype="Bool">
+            <StartValue>true</StartValue>
+          </Member>
+          <Member Name="SPExt" Datatype="Real">
+            <StartValue>80.0</StartValue>
+          </Member>
+          <Member Name="DataHMI" Datatype="&quot;PidL.HMI_1&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PIDConfig" Datatype="&quot;PidL.PIDConfig_1&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Ti" Datatype="Real">
+                        <StartValue>80.0</StartValue>
+                      </Member>
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+        <Section Name="Output" />
+        <Section Name="InOut" />
+        <Section Name="Static" />
+      </Sections>
+    </Member>
+    <Member Name="SimularDelay" Datatype="TON_TIME" Version="1.0">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="FeedPID" Datatype="&quot;PidL&quot;">
+      <AttributeList>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="AutModLi" Datatype="Bool">
+            <StartValue>true</StartValue>
+          </Member>
+          <Member Name="ModLiOp" Datatype="Bool">
+            <StartValue>true</StartValue>
+          </Member>
+        </Section>
+        <Section Name="Output" />
+        <Section Name="InOut" />
+        <Section Name="Static" />
+      </Sections>
+    </Member>
+    <Member Name="LiSet" Datatype="Bool" />
+    <Member Name="LiSetM" Datatype="Bool" />
+    <Member Name="LevelInit" Datatype="Real" />
+    <Member Name="BrixInit" Datatype="Real" />
+  </Section>
+  <Section Name="Temp" />
+  <Section Name="Constant" />
+</Sections></Interface>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <MemoryReserve>100</MemoryReserve>
+      <Name>Sim_SMOutputs</Name>
+      <Namespace />
+      <Number>6</Number>
+      <ProgrammingLanguage>FBD</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+  <Parts>
+    <Access Scope="GlobalVariable" UId="21">
+      <Symbol>
+        <Component Name="Simular" />
+      </Symbol>
+    </Access>
+    <Access Scope="TypedConstant" UId="22">
+      <Constant>
+        <ConstantValue>T#2s</ConstantValue>
+      </Constant>
+    </Access>
+    <Part Name="TON" Version="1.0" UId="23">
+      <Instance Scope="LocalVariable" UId="24">
+        <Component Name="SimularDelay" />
+      </Instance>
+      <TemplateValue Name="time_type" Type="Type">Time</TemplateValue>
+    </Part>
+  </Parts>
+  <Wires>
+    <Wire UId="26">
+      <IdentCon UId="21" />
+      <NameCon UId="23" Name="IN" />
+    </Wire>
+    <Wire UId="27">
+      <IdentCon UId="22" />
+      <NameCon UId="23" Name="PT" />
+    </Wire>
+    <Wire UId="28">
+      <NameCon UId="23" Name="ET" />
+      <OpenCon UId="25" />
+    </Wire>
+  </Wires>
+</FlgNet></NetworkSource>
+          <ProgrammingLanguage>FBD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>delay</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="8" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+  <Parts>
+    <Access Scope="GlobalVariable" UId="21">
+      <Symbol>
+        <Component Name="Simular" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="22">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Absolute_Pressure" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="23">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Strike_Active" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="24">
+      <Symbol>
+        <Component Name="Tacho2_SM_Input" />
+        <Component Name="Vacuum_Valve_Control" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="25">
+      <Symbol>
+        <Component Name="Tacho2_SM_Input" />
+        <Component Name="Vacuum_Valve_Control" />
+      </Symbol>
+    </Access>
+    <Call UId="26">
+      <CallInfo Name="PidL" BlockType="FB">
+        <Instance Scope="LocalVariable" UId="27">
+          <Component Name="VaccumPID" />
+        </Instance>
+        <Parameter Name="AutModLi" Section="Input" Type="Bool" />
+        <Parameter Name="ManModLi" Section="Input" Type="Bool" />
+        <Parameter Name="LocModLi" Section="Input" Type="Bool" />
+        <Parameter Name="OosModLi" Section="Input" Type="Bool" />
+        <Parameter Name="ModLiOp" Section="Input" Type="Bool" />
+        <Parameter Name="ResetLi" Section="Input" Type="Bool" />
+        <Parameter Name="SPModLiOp" Section="Input" Type="Bool" />
+        <Parameter Name="ExtModLi" Section="Input" Type="Bool" />
+        <Parameter Name="IntModLi" Section="Input" Type="Bool" />
+        <Parameter Name="PV" Section="Input" Type="Real" />
+        <Parameter Name="PV_Norm" Section="Input" Type="Struct" />
+        <Parameter Name="MV_Norm" Section="Input" Type="Struct" />
+        <Parameter Name="PV_Scale" Section="Input" Type="Struct" />
+        <Parameter Name="SPExt" Section="Input" Type="Real" />
+        <Parameter Name="SP_HiLim" Section="Input" Type="Real" />
+        <Parameter Name="SP_LoLim" Section="Input" Type="Real" />
+        <Parameter Name="MV_HiLim" Section="Input" Type="Real" />
+        <Parameter Name="MV_LoLim" Section="Input" Type="Real" />
+        <Parameter Name="OosSafeMV" Section="Input" Type="Real" />
+        <Parameter Name="PV_unit" Section="Input" Type="Int" />
+        <Parameter Name="MV_unit" Section="Input" Type="Int" />
+        <Parameter Name="DataHMI" Section="Input" Type="&quot;PidL.HMI_1&quot;" />
+        <Parameter Name="Feature" Section="Input" Type="&quot;PidL.Feature_1&quot;" />
+        <Parameter Name="Permission" Section="Input" Type="&quot;PidL.Permission_1&quot;" />
+        <Parameter Name="MSS" Section="Input" Type="Bool" />
+        <Parameter Name="Trip" Section="Input" Type="Bool" />
+        <Parameter Name="Permit" Section="Input" Type="Bool" />
+        <Parameter Name="Intlock" Section="Input" Type="Bool" />
+        <Parameter Name="Protect" Section="Input" Type="Bool" />
+        <Parameter Name="TrackOn" Section="Input" Type="Bool" />
+        <Parameter Name="Rbk" Section="Input" Type="Real" />
+        <Parameter Name="RbkHiTol" Section="Input" Type="Real" />
+        <Parameter Name="RbkLoTol" Section="Input" Type="Real" />
+        <Parameter Name="RbkMonTime" Section="Input" Type="Time" />
+        <Parameter Name="TrackVal" Section="Input" Type="Real" />
+        <Parameter Name="RunUpCyc" Section="Input" Type="Int" />
+        <Parameter Name="DisV" Section="Input" Type="Real" />
+        <Parameter Name="HiAlm" Section="Input" Type="Real" />
+        <Parameter Name="HiWrn" Section="Input" Type="Real" />
+        <Parameter Name="LoWrn" Section="Input" Type="Real" />
+        <Parameter Name="LoAlm" Section="Input" Type="Real" />
+        <Parameter Name="Hyst" Section="Input" Type="Real" />
+        <Parameter Name="AutAct" Section="Output" Type="Bool" />
+        <Parameter Name="ManAct" Section="Output" Type="Bool" />
+        <Parameter Name="LocAct" Section="Output" Type="Bool" />
+        <Parameter Name="OosAct" Section="Output" Type="Bool" />
+        <Parameter Name="MsgSup" Section="Output" Type="Bool" />
+        <Parameter Name="AlarmError" Section="Output" Type="Bool" />
+        <Parameter Name="MV" Section="Output" Type="Real" />
+        <Parameter Name="SPExtAct" Section="Output" Type="Bool" />
+        <Parameter Name="SP" Section="Output" Type="Real" />
+        <Parameter Name="ER" Section="Output" Type="Real" />
+        <Parameter Name="PVH_Alm" Section="Output" Type="Bool" />
+        <Parameter Name="PVH_Wrn" Section="Output" Type="Bool" />
+        <Parameter Name="PVL_Wrn" Section="Output" Type="Bool" />
+        <Parameter Name="PVL_Alm" Section="Output" Type="Bool" />
+      </CallInfo>
+      <Negated Name="TrackOn" />
+    </Call>
+  </Parts>
+  <Wires>
+    <Wire UId="80">
+      <IdentCon UId="21" />
+      <NameCon UId="26" Name="en" />
+    </Wire>
+    <Wire UId="81">
+      <OpenCon UId="28" />
+      <NameCon UId="26" Name="AutModLi" />
+    </Wire>
+    <Wire UId="82">
+      <OpenCon UId="29" />
+      <NameCon UId="26" Name="ManModLi" />
+    </Wire>
+    <Wire UId="83">
+      <OpenCon UId="30" />
+      <NameCon UId="26" Name="LocModLi" />
+    </Wire>
+    <Wire UId="84">
+      <OpenCon UId="31" />
+      <NameCon UId="26" Name="OosModLi" />
+    </Wire>
+    <Wire UId="85">
+      <OpenCon UId="32" />
+      <NameCon UId="26" Name="ModLiOp" />
+    </Wire>
+    <Wire UId="86">
+      <OpenCon UId="33" />
+      <NameCon UId="26" Name="ResetLi" />
+    </Wire>
+    <Wire UId="87">
+      <OpenCon UId="34" />
+      <NameCon UId="26" Name="SPModLiOp" />
+    </Wire>
+    <Wire UId="88">
+      <OpenCon UId="35" />
+      <NameCon UId="26" Name="ExtModLi" />
+    </Wire>
+    <Wire UId="89">
+      <OpenCon UId="36" />
+      <NameCon UId="26" Name="IntModLi" />
+    </Wire>
+    <Wire UId="90">
+      <IdentCon UId="22" />
+      <NameCon UId="26" Name="PV" />
+    </Wire>
+    <Wire UId="91">
+      <OpenCon UId="37" />
+      <NameCon UId="26" Name="PV_Norm" />
+    </Wire>
+    <Wire UId="92">
+      <OpenCon UId="38" />
+      <NameCon UId="26" Name="MV_Norm" />
+    </Wire>
+    <Wire UId="93">
+      <OpenCon UId="39" />
+      <NameCon UId="26" Name="PV_Scale" />
+    </Wire>
+    <Wire UId="94">
+      <OpenCon UId="40" />
+      <NameCon UId="26" Name="SPExt" />
+    </Wire>
+    <Wire UId="95">
+      <OpenCon UId="41" />
+      <NameCon UId="26" Name="SP_HiLim" />
+    </Wire>
+    <Wire UId="96">
+      <OpenCon UId="42" />
+      <NameCon UId="26" Name="SP_LoLim" />
+    </Wire>
+    <Wire UId="97">
+      <OpenCon UId="43" />
+      <NameCon UId="26" Name="MV_HiLim" />
+    </Wire>
+    <Wire UId="98">
+      <OpenCon UId="44" />
+      <NameCon UId="26" Name="MV_LoLim" />
+    </Wire>
+    <Wire UId="99">
+      <OpenCon UId="45" />
+      <NameCon UId="26" Name="OosSafeMV" />
+    </Wire>
+    <Wire UId="100">
+      <OpenCon UId="46" />
+      <NameCon UId="26" Name="PV_unit" />
+    </Wire>
+    <Wire UId="101">
+      <OpenCon UId="47" />
+      <NameCon UId="26" Name="MV_unit" />
+    </Wire>
+    <Wire UId="102">
+      <OpenCon UId="48" />
+      <NameCon UId="26" Name="DataHMI" />
+    </Wire>
+    <Wire UId="103">
+      <OpenCon UId="49" />
+      <NameCon UId="26" Name="Feature" />
+    </Wire>
+    <Wire UId="104">
+      <OpenCon UId="50" />
+      <NameCon UId="26" Name="Permission" />
+    </Wire>
+    <Wire UId="105">
+      <OpenCon UId="51" />
+      <NameCon UId="26" Name="MSS" />
+    </Wire>
+    <Wire UId="106">
+      <OpenCon UId="52" />
+      <NameCon UId="26" Name="Trip" />
+    </Wire>
+    <Wire UId="107">
+      <OpenCon UId="53" />
+      <NameCon UId="26" Name="Permit" />
+    </Wire>
+    <Wire UId="108">
+      <OpenCon UId="54" />
+      <NameCon UId="26" Name="Intlock" />
+    </Wire>
+    <Wire UId="109">
+      <OpenCon UId="55" />
+      <NameCon UId="26" Name="Protect" />
+    </Wire>
+    <Wire UId="110">
+      <IdentCon UId="23" />
+      <NameCon UId="26" Name="TrackOn" />
+    </Wire>
+    <Wire UId="111">
+      <IdentCon UId="24" />
+      <NameCon UId="26" Name="Rbk" />
+    </Wire>
+    <Wire UId="112">
+      <OpenCon UId="56" />
+      <NameCon UId="26" Name="RbkHiTol" />
+    </Wire>
+    <Wire UId="113">
+      <OpenCon UId="57" />
+      <NameCon UId="26" Name="RbkLoTol" />
+    </Wire>
+    <Wire UId="114">
+      <OpenCon UId="58" />
+      <NameCon UId="26" Name="RbkMonTime" />
+    </Wire>
+    <Wire UId="115">
+      <OpenCon UId="59" />
+      <NameCon UId="26" Name="TrackVal" />
+    </Wire>
+    <Wire UId="116">
+      <OpenCon UId="60" />
+      <NameCon UId="26" Name="RunUpCyc" />
+    </Wire>
+    <Wire UId="117">
+      <OpenCon UId="61" />
+      <NameCon UId="26" Name="DisV" />
+    </Wire>
+    <Wire UId="118">
+      <OpenCon UId="62" />
+      <NameCon UId="26" Name="HiAlm" />
+    </Wire>
+    <Wire UId="119">
+      <OpenCon UId="63" />
+      <NameCon UId="26" Name="HiWrn" />
+    </Wire>
+    <Wire UId="120">
+      <OpenCon UId="64" />
+      <NameCon UId="26" Name="LoWrn" />
+    </Wire>
+    <Wire UId="121">
+      <OpenCon UId="65" />
+      <NameCon UId="26" Name="LoAlm" />
+    </Wire>
+    <Wire UId="122">
+      <OpenCon UId="66" />
+      <NameCon UId="26" Name="Hyst" />
+    </Wire>
+    <Wire UId="123">
+      <NameCon UId="26" Name="AutAct" />
+      <OpenCon UId="67" />
+    </Wire>
+    <Wire UId="124">
+      <NameCon UId="26" Name="ManAct" />
+      <OpenCon UId="68" />
+    </Wire>
+    <Wire UId="125">
+      <NameCon UId="26" Name="LocAct" />
+      <OpenCon UId="69" />
+    </Wire>
+    <Wire UId="126">
+      <NameCon UId="26" Name="OosAct" />
+      <OpenCon UId="70" />
+    </Wire>
+    <Wire UId="127">
+      <NameCon UId="26" Name="MsgSup" />
+      <OpenCon UId="71" />
+    </Wire>
+    <Wire UId="128">
+      <NameCon UId="26" Name="AlarmError" />
+      <OpenCon UId="72" />
+    </Wire>
+    <Wire UId="129">
+      <NameCon UId="26" Name="MV" />
+      <IdentCon UId="25" />
+    </Wire>
+    <Wire UId="130">
+      <NameCon UId="26" Name="SPExtAct" />
+      <OpenCon UId="73" />
+    </Wire>
+    <Wire UId="131">
+      <NameCon UId="26" Name="SP" />
+      <OpenCon UId="74" />
+    </Wire>
+    <Wire UId="132">
+      <NameCon UId="26" Name="ER" />
+      <OpenCon UId="75" />
+    </Wire>
+    <Wire UId="133">
+      <NameCon UId="26" Name="PVH_Alm" />
+      <OpenCon UId="76" />
+    </Wire>
+    <Wire UId="134">
+      <NameCon UId="26" Name="PVH_Wrn" />
+      <OpenCon UId="77" />
+    </Wire>
+    <Wire UId="135">
+      <NameCon UId="26" Name="PVL_Wrn" />
+      <OpenCon UId="78" />
+    </Wire>
+    <Wire UId="136">
+      <NameCon UId="26" Name="PVL_Alm" />
+      <OpenCon UId="79" />
+    </Wire>
+  </Wires>
+</FlgNet></NetworkSource>
+          <ProgrammingLanguage>FBD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="9" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="A" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="B" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="C" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Vaccum</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="D" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+  <Parts>
+    <Access Scope="GlobalVariable" UId="21">
+      <Symbol>
+        <Component Name="Simular" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="22">
+      <Symbol>
+        <Component Name="Tacho2_SM_Input" />
+        <Component Name="Concentration" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="23">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Strike_Active" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="24">
+      <Symbol>
+        <Component Name="Tacho2_SM_Input" />
+        <Component Name="Steam_Valve_Control" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="25">
+      <Symbol>
+        <Component Name="Tacho2_SM_Input" />
+        <Component Name="Steam_Valve_Control" />
+      </Symbol>
+    </Access>
+    <Call UId="26">
+      <CallInfo Name="PidL" BlockType="FB">
+        <Instance Scope="LocalVariable" UId="27">
+          <Component Name="SteamPID" />
+        </Instance>
+        <Parameter Name="AutModLi" Section="Input" Type="Bool" />
+        <Parameter Name="ManModLi" Section="Input" Type="Bool" />
+        <Parameter Name="LocModLi" Section="Input" Type="Bool" />
+        <Parameter Name="OosModLi" Section="Input" Type="Bool" />
+        <Parameter Name="ModLiOp" Section="Input" Type="Bool" />
+        <Parameter Name="ResetLi" Section="Input" Type="Bool" />
+        <Parameter Name="SPModLiOp" Section="Input" Type="Bool" />
+        <Parameter Name="ExtModLi" Section="Input" Type="Bool" />
+        <Parameter Name="IntModLi" Section="Input" Type="Bool" />
+        <Parameter Name="PV" Section="Input" Type="Real" />
+        <Parameter Name="PV_Norm" Section="Input" Type="Struct" />
+        <Parameter Name="MV_Norm" Section="Input" Type="Struct" />
+        <Parameter Name="PV_Scale" Section="Input" Type="Struct" />
+        <Parameter Name="SPExt" Section="Input" Type="Real" />
+        <Parameter Name="SP_HiLim" Section="Input" Type="Real" />
+        <Parameter Name="SP_LoLim" Section="Input" Type="Real" />
+        <Parameter Name="MV_HiLim" Section="Input" Type="Real" />
+        <Parameter Name="MV_LoLim" Section="Input" Type="Real" />
+        <Parameter Name="OosSafeMV" Section="Input" Type="Real" />
+        <Parameter Name="PV_unit" Section="Input" Type="Int" />
+        <Parameter Name="MV_unit" Section="Input" Type="Int" />
+        <Parameter Name="DataHMI" Section="Input" Type="&quot;PidL.HMI_1&quot;" />
+        <Parameter Name="Feature" Section="Input" Type="&quot;PidL.Feature_1&quot;" />
+        <Parameter Name="Permission" Section="Input" Type="&quot;PidL.Permission_1&quot;" />
+        <Parameter Name="MSS" Section="Input" Type="Bool" />
+        <Parameter Name="Trip" Section="Input" Type="Bool" />
+        <Parameter Name="Permit" Section="Input" Type="Bool" />
+        <Parameter Name="Intlock" Section="Input" Type="Bool" />
+        <Parameter Name="Protect" Section="Input" Type="Bool" />
+        <Parameter Name="TrackOn" Section="Input" Type="Bool" />
+        <Parameter Name="Rbk" Section="Input" Type="Real" />
+        <Parameter Name="RbkHiTol" Section="Input" Type="Real" />
+        <Parameter Name="RbkLoTol" Section="Input" Type="Real" />
+        <Parameter Name="RbkMonTime" Section="Input" Type="Time" />
+        <Parameter Name="TrackVal" Section="Input" Type="Real" />
+        <Parameter Name="RunUpCyc" Section="Input" Type="Int" />
+        <Parameter Name="DisV" Section="Input" Type="Real" />
+        <Parameter Name="HiAlm" Section="Input" Type="Real" />
+        <Parameter Name="HiWrn" Section="Input" Type="Real" />
+        <Parameter Name="LoWrn" Section="Input" Type="Real" />
+        <Parameter Name="LoAlm" Section="Input" Type="Real" />
+        <Parameter Name="Hyst" Section="Input" Type="Real" />
+        <Parameter Name="AutAct" Section="Output" Type="Bool" />
+        <Parameter Name="ManAct" Section="Output" Type="Bool" />
+        <Parameter Name="LocAct" Section="Output" Type="Bool" />
+        <Parameter Name="OosAct" Section="Output" Type="Bool" />
+        <Parameter Name="MsgSup" Section="Output" Type="Bool" />
+        <Parameter Name="AlarmError" Section="Output" Type="Bool" />
+        <Parameter Name="MV" Section="Output" Type="Real" />
+        <Parameter Name="SPExtAct" Section="Output" Type="Bool" />
+        <Parameter Name="SP" Section="Output" Type="Real" />
+        <Parameter Name="ER" Section="Output" Type="Real" />
+        <Parameter Name="PVH_Alm" Section="Output" Type="Bool" />
+        <Parameter Name="PVH_Wrn" Section="Output" Type="Bool" />
+        <Parameter Name="PVL_Wrn" Section="Output" Type="Bool" />
+        <Parameter Name="PVL_Alm" Section="Output" Type="Bool" />
+      </CallInfo>
+      <Negated Name="TrackOn" />
+    </Call>
+  </Parts>
+  <Wires>
+    <Wire UId="80">
+      <IdentCon UId="21" />
+      <NameCon UId="26" Name="en" />
+    </Wire>
+    <Wire UId="81">
+      <OpenCon UId="28" />
+      <NameCon UId="26" Name="AutModLi" />
+    </Wire>
+    <Wire UId="82">
+      <OpenCon UId="29" />
+      <NameCon UId="26" Name="ManModLi" />
+    </Wire>
+    <Wire UId="83">
+      <OpenCon UId="30" />
+      <NameCon UId="26" Name="LocModLi" />
+    </Wire>
+    <Wire UId="84">
+      <OpenCon UId="31" />
+      <NameCon UId="26" Name="OosModLi" />
+    </Wire>
+    <Wire UId="85">
+      <OpenCon UId="32" />
+      <NameCon UId="26" Name="ModLiOp" />
+    </Wire>
+    <Wire UId="86">
+      <OpenCon UId="33" />
+      <NameCon UId="26" Name="ResetLi" />
+    </Wire>
+    <Wire UId="87">
+      <OpenCon UId="34" />
+      <NameCon UId="26" Name="SPModLiOp" />
+    </Wire>
+    <Wire UId="88">
+      <OpenCon UId="35" />
+      <NameCon UId="26" Name="ExtModLi" />
+    </Wire>
+    <Wire UId="89">
+      <OpenCon UId="36" />
+      <NameCon UId="26" Name="IntModLi" />
+    </Wire>
+    <Wire UId="90">
+      <IdentCon UId="22" />
+      <NameCon UId="26" Name="PV" />
+    </Wire>
+    <Wire UId="91">
+      <OpenCon UId="37" />
+      <NameCon UId="26" Name="PV_Norm" />
+    </Wire>
+    <Wire UId="92">
+      <OpenCon UId="38" />
+      <NameCon UId="26" Name="MV_Norm" />
+    </Wire>
+    <Wire UId="93">
+      <OpenCon UId="39" />
+      <NameCon UId="26" Name="PV_Scale" />
+    </Wire>
+    <Wire UId="94">
+      <OpenCon UId="40" />
+      <NameCon UId="26" Name="SPExt" />
+    </Wire>
+    <Wire UId="95">
+      <OpenCon UId="41" />
+      <NameCon UId="26" Name="SP_HiLim" />
+    </Wire>
+    <Wire UId="96">
+      <OpenCon UId="42" />
+      <NameCon UId="26" Name="SP_LoLim" />
+    </Wire>
+    <Wire UId="97">
+      <OpenCon UId="43" />
+      <NameCon UId="26" Name="MV_HiLim" />
+    </Wire>
+    <Wire UId="98">
+      <OpenCon UId="44" />
+      <NameCon UId="26" Name="MV_LoLim" />
+    </Wire>
+    <Wire UId="99">
+      <OpenCon UId="45" />
+      <NameCon UId="26" Name="OosSafeMV" />
+    </Wire>
+    <Wire UId="100">
+      <OpenCon UId="46" />
+      <NameCon UId="26" Name="PV_unit" />
+    </Wire>
+    <Wire UId="101">
+      <OpenCon UId="47" />
+      <NameCon UId="26" Name="MV_unit" />
+    </Wire>
+    <Wire UId="102">
+      <OpenCon UId="48" />
+      <NameCon UId="26" Name="DataHMI" />
+    </Wire>
+    <Wire UId="103">
+      <OpenCon UId="49" />
+      <NameCon UId="26" Name="Feature" />
+    </Wire>
+    <Wire UId="104">
+      <OpenCon UId="50" />
+      <NameCon UId="26" Name="Permission" />
+    </Wire>
+    <Wire UId="105">
+      <OpenCon UId="51" />
+      <NameCon UId="26" Name="MSS" />
+    </Wire>
+    <Wire UId="106">
+      <OpenCon UId="52" />
+      <NameCon UId="26" Name="Trip" />
+    </Wire>
+    <Wire UId="107">
+      <OpenCon UId="53" />
+      <NameCon UId="26" Name="Permit" />
+    </Wire>
+    <Wire UId="108">
+      <OpenCon UId="54" />
+      <NameCon UId="26" Name="Intlock" />
+    </Wire>
+    <Wire UId="109">
+      <OpenCon UId="55" />
+      <NameCon UId="26" Name="Protect" />
+    </Wire>
+    <Wire UId="110">
+      <IdentCon UId="23" />
+      <NameCon UId="26" Name="TrackOn" />
+    </Wire>
+    <Wire UId="111">
+      <IdentCon UId="24" />
+      <NameCon UId="26" Name="Rbk" />
+    </Wire>
+    <Wire UId="112">
+      <OpenCon UId="56" />
+      <NameCon UId="26" Name="RbkHiTol" />
+    </Wire>
+    <Wire UId="113">
+      <OpenCon UId="57" />
+      <NameCon UId="26" Name="RbkLoTol" />
+    </Wire>
+    <Wire UId="114">
+      <OpenCon UId="58" />
+      <NameCon UId="26" Name="RbkMonTime" />
+    </Wire>
+    <Wire UId="115">
+      <OpenCon UId="59" />
+      <NameCon UId="26" Name="TrackVal" />
+    </Wire>
+    <Wire UId="116">
+      <OpenCon UId="60" />
+      <NameCon UId="26" Name="RunUpCyc" />
+    </Wire>
+    <Wire UId="117">
+      <OpenCon UId="61" />
+      <NameCon UId="26" Name="DisV" />
+    </Wire>
+    <Wire UId="118">
+      <OpenCon UId="62" />
+      <NameCon UId="26" Name="HiAlm" />
+    </Wire>
+    <Wire UId="119">
+      <OpenCon UId="63" />
+      <NameCon UId="26" Name="HiWrn" />
+    </Wire>
+    <Wire UId="120">
+      <OpenCon UId="64" />
+      <NameCon UId="26" Name="LoWrn" />
+    </Wire>
+    <Wire UId="121">
+      <OpenCon UId="65" />
+      <NameCon UId="26" Name="LoAlm" />
+    </Wire>
+    <Wire UId="122">
+      <OpenCon UId="66" />
+      <NameCon UId="26" Name="Hyst" />
+    </Wire>
+    <Wire UId="123">
+      <NameCon UId="26" Name="AutAct" />
+      <OpenCon UId="67" />
+    </Wire>
+    <Wire UId="124">
+      <NameCon UId="26" Name="ManAct" />
+      <OpenCon UId="68" />
+    </Wire>
+    <Wire UId="125">
+      <NameCon UId="26" Name="LocAct" />
+      <OpenCon UId="69" />
+    </Wire>
+    <Wire UId="126">
+      <NameCon UId="26" Name="OosAct" />
+      <OpenCon UId="70" />
+    </Wire>
+    <Wire UId="127">
+      <NameCon UId="26" Name="MsgSup" />
+      <OpenCon UId="71" />
+    </Wire>
+    <Wire UId="128">
+      <NameCon UId="26" Name="AlarmError" />
+      <OpenCon UId="72" />
+    </Wire>
+    <Wire UId="129">
+      <NameCon UId="26" Name="MV" />
+      <IdentCon UId="25" />
+    </Wire>
+    <Wire UId="130">
+      <NameCon UId="26" Name="SPExtAct" />
+      <OpenCon UId="73" />
+    </Wire>
+    <Wire UId="131">
+      <NameCon UId="26" Name="SP" />
+      <OpenCon UId="74" />
+    </Wire>
+    <Wire UId="132">
+      <NameCon UId="26" Name="ER" />
+      <OpenCon UId="75" />
+    </Wire>
+    <Wire UId="133">
+      <NameCon UId="26" Name="PVH_Alm" />
+      <OpenCon UId="76" />
+    </Wire>
+    <Wire UId="134">
+      <NameCon UId="26" Name="PVH_Wrn" />
+      <OpenCon UId="77" />
+    </Wire>
+    <Wire UId="135">
+      <NameCon UId="26" Name="PVL_Wrn" />
+      <OpenCon UId="78" />
+    </Wire>
+    <Wire UId="136">
+      <NameCon UId="26" Name="PVL_Alm" />
+      <OpenCon UId="79" />
+    </Wire>
+  </Wires>
+</FlgNet></NetworkSource>
+          <ProgrammingLanguage>FBD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="E" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="F" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="10" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="11" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text>Steam</Text>
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="12" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+  <Parts>
+    <Access Scope="GlobalVariable" UId="21">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Strike_Active" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="22">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Seeded" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="23">
+      <Symbol>
+        <Component Name="Simular" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="24">
+      <Constant>
+        <ConstantType>Real</ConstantType>
+        <ConstantValue>50.0</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="25">
+      <Symbol>
+        <Component Name="FeedPID" />
+        <Component Name="DataHMI" />
+        <Component Name="SpInt" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="26">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Strike_Active" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="27">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Seeded" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="28">
+      <Symbol>
+        <Component Name="LiSetM" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="29">
+      <Symbol>
+        <Component Name="LiSet" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="30">
+      <Symbol>
+        <Component Name="LiSet" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="31">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Level" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="32">
+      <Symbol>
+        <Component Name="LevelInit" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="33">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Massecuite_Solids" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="34">
+      <Symbol>
+        <Component Name="BrixInit" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="35">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Strike_Active" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="36">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Seeded" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="37">
+      <Symbol>
+        <Component Name="LevelInit" />
+      </Symbol>
+    </Access>
+    <Access Scope="LiteralConstant" UId="38">
+      <Constant>
+        <ConstantType>Real</ConstantType>
+        <ConstantValue>95.0</ConstantValue>
+      </Constant>
+    </Access>
+    <Access Scope="LocalVariable" UId="39">
+      <Symbol>
+        <Component Name="BrixInit" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="40">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Final_Mass_Solid_Prog1" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="41">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Massecuite_Solids" />
+      </Symbol>
+    </Access>
+    <Access Scope="LocalVariable" UId="42">
+      <Symbol>
+        <Component Name="FeedPID" />
+        <Component Name="DataHMI" />
+        <Component Name="SpInt" />
+      </Symbol>
+    </Access>
+    <Part Name="A" UId="43">
+      <TemplateValue Name="Card" Type="Cardinality">3</TemplateValue>
+      <Negated Name="in2" />
+    </Part>
+    <Part Name="Move" UId="44" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+    <Part Name="A" UId="45">
+      <TemplateValue Name="Card" Type="Cardinality">2</TemplateValue>
+    </Part>
+    <Part Name="PCoil" UId="46" />
+    <Part Name="Move" UId="47" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+    <Part Name="Move" UId="48" DisabledENO="true">
+      <TemplateValue Name="Card" Type="Cardinality">1</TemplateValue>
+    </Part>
+    <Part Name="A" UId="49">
+      <TemplateValue Name="Card" Type="Cardinality">2</TemplateValue>
+    </Part>
+    <Part Name="Calc" UId="50" DisabledENO="true">
+      <Equation>IN1 + ((IN2 - IN1)*((IN5-IN3)/(IN4-IN3)))</Equation>
+      <TemplateValue Name="Card" Type="Cardinality">5</TemplateValue>
+      <TemplateValue Name="SrcType" Type="Type">Real</TemplateValue>
+    </Part>
+  </Parts>
+  <Wires>
+    <Wire UId="51">
+      <IdentCon UId="21" />
+      <NameCon UId="43" Name="in1" />
+    </Wire>
+    <Wire UId="52">
+      <IdentCon UId="22" />
+      <NameCon UId="43" Name="in2" />
+    </Wire>
+    <Wire UId="53">
+      <IdentCon UId="23" />
+      <NameCon UId="43" Name="in3" />
+    </Wire>
+    <Wire UId="54">
+      <NameCon UId="43" Name="out" />
+      <NameCon UId="44" Name="en" />
+    </Wire>
+    <Wire UId="55">
+      <IdentCon UId="24" />
+      <NameCon UId="44" Name="in" />
+    </Wire>
+    <Wire UId="56">
+      <NameCon UId="44" Name="out1" />
+      <IdentCon UId="25" />
+    </Wire>
+    <Wire UId="57">
+      <IdentCon UId="26" />
+      <NameCon UId="45" Name="in1" />
+    </Wire>
+    <Wire UId="58">
+      <IdentCon UId="27" />
+      <NameCon UId="45" Name="in2" />
+    </Wire>
+    <Wire UId="59">
+      <NameCon UId="45" Name="out" />
+      <NameCon UId="46" Name="in" />
+    </Wire>
+    <Wire UId="60">
+      <IdentCon UId="28" />
+      <NameCon UId="46" Name="bit" />
+    </Wire>
+    <Wire UId="61">
+      <IdentCon UId="29" />
+      <NameCon UId="46" Name="operand" />
+    </Wire>
+    <Wire UId="62">
+      <IdentCon UId="30" />
+      <NameCon UId="47" Name="en" />
+    </Wire>
+    <Wire UId="63">
+      <IdentCon UId="31" />
+      <NameCon UId="47" Name="in" />
+    </Wire>
+    <Wire UId="64">
+      <NameCon UId="47" Name="out1" />
+      <IdentCon UId="32" />
+    </Wire>
+    <Wire UId="65">
+      <NameCon UId="47" Name="eno" />
+      <NameCon UId="48" Name="en" />
+    </Wire>
+    <Wire UId="66">
+      <IdentCon UId="33" />
+      <NameCon UId="48" Name="in" />
+    </Wire>
+    <Wire UId="67">
+      <NameCon UId="48" Name="out1" />
+      <IdentCon UId="34" />
+    </Wire>
+    <Wire UId="68">
+      <IdentCon UId="35" />
+      <NameCon UId="49" Name="in1" />
+    </Wire>
+    <Wire UId="69">
+      <IdentCon UId="36" />
+      <NameCon UId="49" Name="in2" />
+    </Wire>
+    <Wire UId="70">
+      <NameCon UId="49" Name="out" />
+      <NameCon UId="50" Name="en" />
+    </Wire>
+    <Wire UId="71">
+      <IdentCon UId="37" />
+      <NameCon UId="50" Name="in1" />
+    </Wire>
+    <Wire UId="72">
+      <IdentCon UId="38" />
+      <NameCon UId="50" Name="in2" />
+    </Wire>
+    <Wire UId="73">
+      <IdentCon UId="39" />
+      <NameCon UId="50" Name="in3" />
+    </Wire>
+    <Wire UId="74">
+      <IdentCon UId="40" />
+      <NameCon UId="50" Name="in4" />
+    </Wire>
+    <Wire UId="75">
+      <IdentCon UId="41" />
+      <NameCon UId="50" Name="in5" />
+    </Wire>
+    <Wire UId="76">
+      <NameCon UId="50" Name="out" />
+      <IdentCon UId="42" />
+    </Wire>
+  </Wires>
+</FlgNet></NetworkSource>
+          <ProgrammingLanguage>FBD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="13" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="14" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="15" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="16" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="17" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v5">
+  <Parts>
+    <Access Scope="GlobalVariable" UId="21">
+      <Symbol>
+        <Component Name="Simular" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="22">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Level" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="23">
+      <Symbol>
+        <Component Name="Tacho2_SM_Output" />
+        <Component Name="Strike_Active" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="24">
+      <Symbol>
+        <Component Name="Tacho2_SM_Input" />
+        <Component Name="Syrup_Feed_Valve_Control" />
+      </Symbol>
+    </Access>
+    <Access Scope="GlobalVariable" UId="25">
+      <Symbol>
+        <Component Name="Tacho2_SM_Input" />
+        <Component Name="Syrup_Feed_Valve_Control" />
+      </Symbol>
+    </Access>
+    <Call UId="26">
+      <CallInfo Name="PidL" BlockType="FB">
+        <Instance Scope="LocalVariable" UId="27">
+          <Component Name="FeedPID" />
+        </Instance>
+        <Parameter Name="AutModLi" Section="Input" Type="Bool" />
+        <Parameter Name="ManModLi" Section="Input" Type="Bool" />
+        <Parameter Name="LocModLi" Section="Input" Type="Bool" />
+        <Parameter Name="OosModLi" Section="Input" Type="Bool" />
+        <Parameter Name="ModLiOp" Section="Input" Type="Bool" />
+        <Parameter Name="ResetLi" Section="Input" Type="Bool" />
+        <Parameter Name="SPModLiOp" Section="Input" Type="Bool" />
+        <Parameter Name="ExtModLi" Section="Input" Type="Bool" />
+        <Parameter Name="IntModLi" Section="Input" Type="Bool" />
+        <Parameter Name="PV" Section="Input" Type="Real" />
+        <Parameter Name="PV_Norm" Section="Input" Type="Struct" />
+        <Parameter Name="MV_Norm" Section="Input" Type="Struct" />
+        <Parameter Name="PV_Scale" Section="Input" Type="Struct" />
+        <Parameter Name="SPExt" Section="Input" Type="Real" />
+        <Parameter Name="SP_HiLim" Section="Input" Type="Real" />
+        <Parameter Name="SP_LoLim" Section="Input" Type="Real" />
+        <Parameter Name="MV_HiLim" Section="Input" Type="Real" />
+        <Parameter Name="MV_LoLim" Section="Input" Type="Real" />
+        <Parameter Name="OosSafeMV" Section="Input" Type="Real" />
+        <Parameter Name="PV_unit" Section="Input" Type="Int" />
+        <Parameter Name="MV_unit" Section="Input" Type="Int" />
+        <Parameter Name="DataHMI" Section="Input" Type="&quot;PidL.HMI_1&quot;" />
+        <Parameter Name="Feature" Section="Input" Type="&quot;PidL.Feature_1&quot;" />
+        <Parameter Name="Permission" Section="Input" Type="&quot;PidL.Permission_1&quot;" />
+        <Parameter Name="MSS" Section="Input" Type="Bool" />
+        <Parameter Name="Trip" Section="Input" Type="Bool" />
+        <Parameter Name="Permit" Section="Input" Type="Bool" />
+        <Parameter Name="Intlock" Section="Input" Type="Bool" />
+        <Parameter Name="Protect" Section="Input" Type="Bool" />
+        <Parameter Name="TrackOn" Section="Input" Type="Bool" />
+        <Parameter Name="Rbk" Section="Input" Type="Real" />
+        <Parameter Name="RbkHiTol" Section="Input" Type="Real" />
+        <Parameter Name="RbkLoTol" Section="Input" Type="Real" />
+        <Parameter Name="RbkMonTime" Section="Input" Type="Time" />
+        <Parameter Name="TrackVal" Section="Input" Type="Real" />
+        <Parameter Name="RunUpCyc" Section="Input" Type="Int" />
+        <Parameter Name="DisV" Section="Input" Type="Real" />
+        <Parameter Name="HiAlm" Section="Input" Type="Real" />
+        <Parameter Name="HiWrn" Section="Input" Type="Real" />
+        <Parameter Name="LoWrn" Section="Input" Type="Real" />
+        <Parameter Name="LoAlm" Section="Input" Type="Real" />
+        <Parameter Name="Hyst" Section="Input" Type="Real" />
+        <Parameter Name="AutAct" Section="Output" Type="Bool" />
+        <Parameter Name="ManAct" Section="Output" Type="Bool" />
+        <Parameter Name="LocAct" Section="Output" Type="Bool" />
+        <Parameter Name="OosAct" Section="Output" Type="Bool" />
+        <Parameter Name="MsgSup" Section="Output" Type="Bool" />
+        <Parameter Name="AlarmError" Section="Output" Type="Bool" />
+        <Parameter Name="MV" Section="Output" Type="Real" />
+        <Parameter Name="SPExtAct" Section="Output" Type="Bool" />
+        <Parameter Name="SP" Section="Output" Type="Real" />
+        <Parameter Name="ER" Section="Output" Type="Real" />
+        <Parameter Name="PVH_Alm" Section="Output" Type="Bool" />
+        <Parameter Name="PVH_Wrn" Section="Output" Type="Bool" />
+        <Parameter Name="PVL_Wrn" Section="Output" Type="Bool" />
+        <Parameter Name="PVL_Alm" Section="Output" Type="Bool" />
+      </CallInfo>
+      <Negated Name="TrackOn" />
+    </Call>
+  </Parts>
+  <Wires>
+    <Wire UId="80">
+      <IdentCon UId="21" />
+      <NameCon UId="26" Name="en" />
+    </Wire>
+    <Wire UId="81">
+      <OpenCon UId="28" />
+      <NameCon UId="26" Name="AutModLi" />
+    </Wire>
+    <Wire UId="82">
+      <OpenCon UId="29" />
+      <NameCon UId="26" Name="ManModLi" />
+    </Wire>
+    <Wire UId="83">
+      <OpenCon UId="30" />
+      <NameCon UId="26" Name="LocModLi" />
+    </Wire>
+    <Wire UId="84">
+      <OpenCon UId="31" />
+      <NameCon UId="26" Name="OosModLi" />
+    </Wire>
+    <Wire UId="85">
+      <OpenCon UId="32" />
+      <NameCon UId="26" Name="ModLiOp" />
+    </Wire>
+    <Wire UId="86">
+      <OpenCon UId="33" />
+      <NameCon UId="26" Name="ResetLi" />
+    </Wire>
+    <Wire UId="87">
+      <OpenCon UId="34" />
+      <NameCon UId="26" Name="SPModLiOp" />
+    </Wire>
+    <Wire UId="88">
+      <OpenCon UId="35" />
+      <NameCon UId="26" Name="ExtModLi" />
+    </Wire>
+    <Wire UId="89">
+      <OpenCon UId="36" />
+      <NameCon UId="26" Name="IntModLi" />
+    </Wire>
+    <Wire UId="90">
+      <IdentCon UId="22" />
+      <NameCon UId="26" Name="PV" />
+    </Wire>
+    <Wire UId="91">
+      <OpenCon UId="37" />
+      <NameCon UId="26" Name="PV_Norm" />
+    </Wire>
+    <Wire UId="92">
+      <OpenCon UId="38" />
+      <NameCon UId="26" Name="MV_Norm" />
+    </Wire>
+    <Wire UId="93">
+      <OpenCon UId="39" />
+      <NameCon UId="26" Name="PV_Scale" />
+    </Wire>
+    <Wire UId="94">
+      <OpenCon UId="40" />
+      <NameCon UId="26" Name="SPExt" />
+    </Wire>
+    <Wire UId="95">
+      <OpenCon UId="41" />
+      <NameCon UId="26" Name="SP_HiLim" />
+    </Wire>
+    <Wire UId="96">
+      <OpenCon UId="42" />
+      <NameCon UId="26" Name="SP_LoLim" />
+    </Wire>
+    <Wire UId="97">
+      <OpenCon UId="43" />
+      <NameCon UId="26" Name="MV_HiLim" />
+    </Wire>
+    <Wire UId="98">
+      <OpenCon UId="44" />
+      <NameCon UId="26" Name="MV_LoLim" />
+    </Wire>
+    <Wire UId="99">
+      <OpenCon UId="45" />
+      <NameCon UId="26" Name="OosSafeMV" />
+    </Wire>
+    <Wire UId="100">
+      <OpenCon UId="46" />
+      <NameCon UId="26" Name="PV_unit" />
+    </Wire>
+    <Wire UId="101">
+      <OpenCon UId="47" />
+      <NameCon UId="26" Name="MV_unit" />
+    </Wire>
+    <Wire UId="102">
+      <OpenCon UId="48" />
+      <NameCon UId="26" Name="DataHMI" />
+    </Wire>
+    <Wire UId="103">
+      <OpenCon UId="49" />
+      <NameCon UId="26" Name="Feature" />
+    </Wire>
+    <Wire UId="104">
+      <OpenCon UId="50" />
+      <NameCon UId="26" Name="Permission" />
+    </Wire>
+    <Wire UId="105">
+      <OpenCon UId="51" />
+      <NameCon UId="26" Name="MSS" />
+    </Wire>
+    <Wire UId="106">
+      <OpenCon UId="52" />
+      <NameCon UId="26" Name="Trip" />
+    </Wire>
+    <Wire UId="107">
+      <OpenCon UId="53" />
+      <NameCon UId="26" Name="Permit" />
+    </Wire>
+    <Wire UId="108">
+      <OpenCon UId="54" />
+      <NameCon UId="26" Name="Intlock" />
+    </Wire>
+    <Wire UId="109">
+      <OpenCon UId="55" />
+      <NameCon UId="26" Name="Protect" />
+    </Wire>
+    <Wire UId="110">
+      <IdentCon UId="23" />
+      <NameCon UId="26" Name="TrackOn" />
+    </Wire>
+    <Wire UId="111">
+      <IdentCon UId="24" />
+      <NameCon UId="26" Name="Rbk" />
+    </Wire>
+    <Wire UId="112">
+      <OpenCon UId="56" />
+      <NameCon UId="26" Name="RbkHiTol" />
+    </Wire>
+    <Wire UId="113">
+      <OpenCon UId="57" />
+      <NameCon UId="26" Name="RbkLoTol" />
+    </Wire>
+    <Wire UId="114">
+      <OpenCon UId="58" />
+      <NameCon UId="26" Name="RbkMonTime" />
+    </Wire>
+    <Wire UId="115">
+      <OpenCon UId="59" />
+      <NameCon UId="26" Name="TrackVal" />
+    </Wire>
+    <Wire UId="116">
+      <OpenCon UId="60" />
+      <NameCon UId="26" Name="RunUpCyc" />
+    </Wire>
+    <Wire UId="117">
+      <OpenCon UId="61" />
+      <NameCon UId="26" Name="DisV" />
+    </Wire>
+    <Wire UId="118">
+      <OpenCon UId="62" />
+      <NameCon UId="26" Name="HiAlm" />
+    </Wire>
+    <Wire UId="119">
+      <OpenCon UId="63" />
+      <NameCon UId="26" Name="HiWrn" />
+    </Wire>
+    <Wire UId="120">
+      <OpenCon UId="64" />
+      <NameCon UId="26" Name="LoWrn" />
+    </Wire>
+    <Wire UId="121">
+      <OpenCon UId="65" />
+      <NameCon UId="26" Name="LoAlm" />
+    </Wire>
+    <Wire UId="122">
+      <OpenCon UId="66" />
+      <NameCon UId="26" Name="Hyst" />
+    </Wire>
+    <Wire UId="123">
+      <NameCon UId="26" Name="AutAct" />
+      <OpenCon UId="67" />
+    </Wire>
+    <Wire UId="124">
+      <NameCon UId="26" Name="ManAct" />
+      <OpenCon UId="68" />
+    </Wire>
+    <Wire UId="125">
+      <NameCon UId="26" Name="LocAct" />
+      <OpenCon UId="69" />
+    </Wire>
+    <Wire UId="126">
+      <NameCon UId="26" Name="OosAct" />
+      <OpenCon UId="70" />
+    </Wire>
+    <Wire UId="127">
+      <NameCon UId="26" Name="MsgSup" />
+      <OpenCon UId="71" />
+    </Wire>
+    <Wire UId="128">
+      <NameCon UId="26" Name="AlarmError" />
+      <OpenCon UId="72" />
+    </Wire>
+    <Wire UId="129">
+      <NameCon UId="26" Name="MV" />
+      <IdentCon UId="25" />
+    </Wire>
+    <Wire UId="130">
+      <NameCon UId="26" Name="SPExtAct" />
+      <OpenCon UId="73" />
+    </Wire>
+    <Wire UId="131">
+      <NameCon UId="26" Name="SP" />
+      <OpenCon UId="74" />
+    </Wire>
+    <Wire UId="132">
+      <NameCon UId="26" Name="ER" />
+      <OpenCon UId="75" />
+    </Wire>
+    <Wire UId="133">
+      <NameCon UId="26" Name="PVH_Alm" />
+      <OpenCon UId="76" />
+    </Wire>
+    <Wire UId="134">
+      <NameCon UId="26" Name="PVH_Wrn" />
+      <OpenCon UId="77" />
+    </Wire>
+    <Wire UId="135">
+      <NameCon UId="26" Name="PVL_Wrn" />
+      <OpenCon UId="78" />
+    </Wire>
+    <Wire UId="136">
+      <NameCon UId="26" Name="PVL_Alm" />
+      <OpenCon UId="79" />
+    </Wire>
+  </Wires>
+</FlgNet></NetworkSource>
+          <ProgrammingLanguage>FBD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="18" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="19" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="1A" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="1B" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <SW.Blocks.CompileUnit ID="1C" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource />
+          <ProgrammingLanguage>FBD</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="1D" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="1E" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="1F" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="20" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="21" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="22" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FB>
+</Document>

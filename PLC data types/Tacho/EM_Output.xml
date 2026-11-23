@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V19" />
+  <SW.Types.PlcStruct ID="0">
+    <AttributeList>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="None">
+    <Member Name="ModeMan" Datatype="Bool" />
+    <Member Name="ModeAuto" Datatype="Bool" />
+    <Member Name="ModeMaint" Datatype="Bool" />
+    <Member Name="ModeConflict" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">MÃ¡s de un modo solicitado a la vez</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Idle" Datatype="Bool" />
+    <Member Name="Running" Datatype="Bool" />
+    <Member Name="Completed" Datatype="Bool" />
+    <Member Name="Holding" Datatype="Bool" />
+    <Member Name="Held" Datatype="Bool" />
+    <Member Name="Stopping" Datatype="Bool" />
+    <Member Name="Stopped" Datatype="Bool" />
+    <Member Name="Aborting" Datatype="Bool" />
+    <Member Name="Aborted" Datatype="Bool" />
+    <Member Name="Fault" Datatype="Bool" />
+    <Member Name="State" Datatype="Int">
+      <Comment>
+        <MultiLanguageText Lang="en-US">0=Idle 1=Running 2=Completed 3=Holding 4=Held 5=Stopping 6=Stopped 7=Aborting 8=Aborted</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="FaultCode" Datatype="Int">
+      <Comment>
+        <MultiLanguageText Lang="en-US">0=Sin fallo 1=ParÃ¡metros invÃ¡lidos 2=Sensor de temperatura invÃ¡lido 3=Timeout de temperatura 4=VÃ¡lvula no abre 5=Alarma del CM 6=VÃ¡lvula no cierra 7=ConcSMMV fuera de rango (0..100)</MultiLanguageText>
+      </Comment>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <Name>EM_Output</Name>
+      <Namespace />
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Types.PlcStruct>
+</Document>

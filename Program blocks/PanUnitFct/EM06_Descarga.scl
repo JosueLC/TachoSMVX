@@ -1,0 +1,284 @@
+﻿FUNCTION_BLOCK "EM06_Descarga"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+// Modulo ISA-88 para descarga de masa cocida y evacuacion de agua de lavado.
+   VAR_INPUT 
+      In : "EM06_Input";
+      RecibidorLevelPV : Real;
+      TachoLevelPV : Real;
+   END_VAR
+
+   VAR_OUTPUT 
+      Out : "EM06_Output";
+      CM_Vlv_Descarga_Out : Bool;
+      CM_Vlv_Desague_Out : Bool;
+      CMAlarm : Bool;
+   END_VAR
+
+   VAR 
+      State : Int;
+      ActiveMode : Int;
+      DrainElapsed : Time;
+      AlarmLatched : Bool;
+      FaultCode : Int;
+      TimerEmpty {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TimerDrain {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      TrigStart {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigStop {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigHold {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigAbort {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      TrigReset {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      CM_Vlv_Descarga : "VlvL";
+      CM_Vlv_Desague : "VlvL";
+   END_VAR
+
+   VAR_TEMP 
+      ModeCount : Int;
+      AutoModeRequest : Bool;
+      ManualModeRequest : Bool;
+      MaintModeRequest : Bool;
+      CtrlModeValid : Bool;
+      ParamsValid : Bool;
+      ResetAccepted : Bool;
+      DischargeOpenRequest : Bool;
+      DischargeCloseRequest : Bool;
+      DrainOpenRequest : Bool;
+      BothValvesClosed : Bool;
+      EmptyReached : Bool;
+      DrainRemaining : Time;
+      StateForCM : Int;
+      FaultNew : Int;
+   END_VAR
+
+   VAR CONSTANT 
+      ST_IDLE : Int := 0;
+      ST_RUNNING : Int := 1;
+      ST_COMPLETED : Int := 2;
+      ST_HOLDING : Int := 3;
+      ST_HELD : Int := 4;
+      ST_STOPPING : Int := 5;
+      ST_STOPPED : Int := 6;
+      ST_ABORTING : Int := 7;
+      ST_ABORTED : Int := 8;
+   END_VAR
+
+
+BEGIN
+	// --- Fase 1: captura de comandos y validacion de configuracion ---
+	#TrigStart(CLK := #In.Cmds.Start);
+	#TrigStop(CLK := #In.Cmds.Stop);
+	#TrigHold(CLK := #In.Cmds.Hold);
+	#TrigAbort(CLK := #In.Cmds.Abort);
+	#TrigReset(CLK := #In.Cmds.Reset);
+	
+	#ModeCount := BOOL_TO_INT(#In.Cmds.Auto) + BOOL_TO_INT(#In.Cmds.Manual)
+	+ BOOL_TO_INT(#In.Cmds.Maintenance);
+	#AutoModeRequest := #In.Cmds.Auto AND (#ModeCount = 1);
+	#ManualModeRequest := #In.Cmds.Manual AND (#ModeCount = 1);
+	#MaintModeRequest := #In.Cmds.Maintenance AND (#ModeCount = 1);
+	#CtrlModeValid := (#In.CtrlMode = 1) OR (#In.CtrlMode = 2);
+	#ParamsValid := #CtrlModeValid;
+	IF #ParamsValid AND (#In.CtrlMode = 1) THEN
+	    #ParamsValid := (#In.NivelDescargaOn < #In.NivelDescargaOff)
+	    AND (#In.EmptyFilter > T#0s);
+	ELSIF #ParamsValid AND (#In.CtrlMode = 2) THEN
+	    #ParamsValid := #In.DrainTime > T#0s;
+	END_IF;
+	#FaultNew := 0;
+	
+	// --- Fase 2: secuencia ISA-88 ---
+	#StateForCM := #State;
+	#ResetAccepted := #TrigReset.Q AND ((#State = #ST_IDLE) OR (#State = #ST_STOPPED)
+	OR (#State = #ST_ABORTED));
+	
+	IF NOT #AutoModeRequest THEN
+	    #StateForCM := #ST_IDLE;
+	    #ActiveMode := 0;
+	    #DrainElapsed := T#0s;
+	ELSE
+	    IF #ResetAccepted THEN
+	        #StateForCM := #ST_IDLE;
+	        #ActiveMode := 0;
+	        #DrainElapsed := T#0s;
+	    END_IF;
+	    
+	    IF #TrigAbort.Q AND (#StateForCM <> #ST_ABORTING) AND (#StateForCM <> #ST_ABORTED) THEN
+	        #StateForCM := #ST_ABORTING;
+	    ELSIF #TrigStop.Q AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)
+	        OR (#StateForCM = #ST_HOLDING) OR (#StateForCM = #ST_HELD)) THEN
+	        #StateForCM := #ST_STOPPING;
+	    ELSIF #TrigHold.Q AND ((#StateForCM = #ST_RUNNING) OR (#StateForCM = #ST_COMPLETED)) THEN
+	        IF (#ActiveMode = 2) AND (#StateForCM = #ST_RUNNING) THEN
+	            #DrainElapsed := #DrainElapsed + #TimerDrain.ET;
+	        END_IF;
+	        #StateForCM := #ST_HOLDING;
+	    END_IF;
+	    
+	    CASE #StateForCM OF
+	        #ST_IDLE:
+	            IF #TrigStart.Q AND NOT #ResetAccepted THEN
+	                IF NOT #ParamsValid THEN
+	                    #FaultNew := 1;
+	                ELSIF (#In.CtrlMode = 1) AND NOT #In.VacuumBrokenPermit THEN
+	                    #StateForCM := #ST_HOLDING;
+	                ELSE
+	                    #ActiveMode := #In.CtrlMode;
+	                    #DrainElapsed := T#0s;
+	                    #StateForCM := #ST_RUNNING;
+	                END_IF;
+	            END_IF;
+	            
+	        #ST_HELD:
+	            IF #TrigStart.Q THEN
+	                IF #ParamsValid AND (#In.CtrlMode = #ActiveMode)
+	                    AND ((#ActiveMode <> 1) OR #In.VacuumBrokenPermit) THEN
+	                    #StateForCM := #ST_RUNNING;
+	                ELSE
+	                    #FaultNew := 1;
+	                END_IF;
+	            END_IF;
+	            
+	        #ST_RUNNING, #ST_COMPLETED:
+	            IF NOT #ParamsValid OR (#In.CtrlMode <> #ActiveMode) THEN
+	                #FaultNew := 1;
+	                #StateForCM := #ST_STOPPING;
+	            ELSIF (#ActiveMode = 1) AND NOT #In.VacuumBrokenPermit THEN
+	                #StateForCM := #ST_HOLDING;
+	            END_IF;
+	    END_CASE;
+	END_IF;
+	
+	// --- Fase 3: control mutuamente excluyente de las valvulas ---
+	#DischargeOpenRequest := #AutoModeRequest AND (#StateForCM = #ST_RUNNING)
+	AND (#ActiveMode = 1) AND (#In.CtrlMode = 1)
+	AND #In.VacuumBrokenPermit AND NOT #TimerEmpty.Q
+	AND #CM_Vlv_Desague.Closed
+	AND (#RecibidorLevelPV < #In.NivelDescargaOn);
+	#DischargeCloseRequest := NOT (#AutoModeRequest AND (#StateForCM = #ST_RUNNING)
+	AND (#ActiveMode = 1) AND (#In.CtrlMode = 1)
+	AND #In.VacuumBrokenPermit AND NOT #TimerEmpty.Q)
+	OR (#RecibidorLevelPV > #In.NivelDescargaOff)
+	OR #TimerEmpty.Q;
+	#DrainOpenRequest := #AutoModeRequest AND (#StateForCM = #ST_RUNNING)
+	AND (#ActiveMode = 2) AND (#In.CtrlMode = 2)
+	AND NOT #TimerDrain.Q AND #CM_Vlv_Descarga.Closed;
+	
+	#CM_Vlv_Descarga.ModLiOp := TRUE;
+	#CM_Vlv_Descarga.ManModLi := #ManualModeRequest OR #MaintModeRequest;
+	#CM_Vlv_Descarga.AutModLi := #AutoModeRequest;
+	#CM_Vlv_Descarga.OosModLi := NOT (#ManualModeRequest OR #MaintModeRequest
+	OR #AutoModeRequest);
+	#CM_Vlv_Descarga.LocModLi := FALSE;
+	#CM_Vlv_Descarga.ResetLi := #In.Cmds.Reset;
+	#CM_Vlv_Descarga.OpenAut := #DischargeOpenRequest;
+	#CM_Vlv_Descarga.CloseAut := #DischargeCloseRequest;
+	#CM_Vlv_Descarga.Permit := ((#In.CtrlMode = 1) AND #In.VacuumBrokenPermit
+	AND #CM_Vlv_Desague.Closed) OR #MaintModeRequest;
+	#CM_Vlv_Descarga.Intlock := ((#In.CtrlMode = 1) AND #In.VacuumBrokenPermit
+	AND #CM_Vlv_Desague.Closed) OR #MaintModeRequest;
+	#CM_Vlv_Descarga.Protect := TRUE;
+	#CM_Vlv_Descarga.SafePos := FALSE;
+	#CM_Vlv_Descarga();
+	
+	#CM_Vlv_Desague.ModLiOp := TRUE;
+	#CM_Vlv_Desague.ManModLi := #ManualModeRequest OR #MaintModeRequest;
+	#CM_Vlv_Desague.AutModLi := #AutoModeRequest;
+	#CM_Vlv_Desague.OosModLi := NOT (#ManualModeRequest OR #MaintModeRequest
+	OR #AutoModeRequest);
+	#CM_Vlv_Desague.LocModLi := FALSE;
+	#CM_Vlv_Desague.ResetLi := #In.Cmds.Reset;
+	#CM_Vlv_Desague.OpenAut := #DrainOpenRequest;
+	#CM_Vlv_Desague.CloseAut := NOT #DrainOpenRequest;
+	#CM_Vlv_Desague.Permit := ((#In.CtrlMode = 2) AND #CM_Vlv_Descarga.Closed) OR #MaintModeRequest;
+	#CM_Vlv_Desague.Intlock := ((#In.CtrlMode = 2) AND #CM_Vlv_Descarga.Closed) OR #MaintModeRequest;
+	#CM_Vlv_Desague.Protect := TRUE;
+	#CM_Vlv_Desague.SafePos := FALSE;
+	#CM_Vlv_Desague();
+	
+	// --- Fase 4: filtro de tacho vacio, tiempo de desague y alarmas ---
+	#EmptyReached := #AutoModeRequest AND (#StateForCM = #ST_RUNNING)
+	AND (#ActiveMode = 1)
+	AND (#TachoLevelPV < #In.NivelDescargaFin);
+	#TimerEmpty(IN := #EmptyReached,
+	            PT := #In.EmptyFilter);
+	
+	IF #DrainElapsed >= #In.DrainTime THEN
+	    #DrainRemaining := T#0s;
+	ELSE
+	    #DrainRemaining := #In.DrainTime - #DrainElapsed;
+	END_IF;
+	#TimerDrain(IN := #AutoModeRequest AND (#StateForCM = #ST_RUNNING)
+	            AND (#ActiveMode = 2),
+	            PT := #DrainRemaining);
+	
+	#CMAlarm := #CM_Vlv_Descarga.AlarmError OR #CM_Vlv_Desague.AlarmError;
+	IF #CMAlarm THEN
+	    #AlarmLatched := TRUE;
+	    #FaultCode := 4;
+	    #StateForCM := #ST_ABORTING;
+	ELSIF #FaultNew <> 0 THEN
+	    #AlarmLatched := TRUE;
+	    #FaultCode := #FaultNew;
+	ELSIF #TrigReset.Q THEN
+	    #AlarmLatched := FALSE;
+	    #FaultCode := 0;
+	END_IF;
+	
+	// --- Fase 5: estados completados y parada confirmada por ambos CMs ---
+	#BothValvesClosed := #CM_Vlv_Descarga.Closed AND #CM_Vlv_Desague.Closed;
+	IF #AutoModeRequest THEN
+	    #State := #StateForCM;
+	    CASE #StateForCM OF
+	        #ST_RUNNING:
+	            IF (((#ActiveMode = 1) AND #TimerEmpty.Q)
+	                OR ((#ActiveMode = 2) AND #TimerDrain.Q)) AND #BothValvesClosed THEN
+	                #State := #ST_COMPLETED;
+	            END_IF;
+	        #ST_HOLDING:
+	            IF #BothValvesClosed THEN
+	                #State := #ST_HELD;
+	            END_IF;
+	        #ST_STOPPING:
+	            IF #BothValvesClosed THEN
+	                #State := #ST_STOPPED;
+	                #ActiveMode := 0;
+	                #DrainElapsed := T#0s;
+	            END_IF;
+	        #ST_ABORTING:
+	            IF #BothValvesClosed THEN
+	                #State := #ST_ABORTED;
+	                #ActiveMode := 0;
+	                #DrainElapsed := T#0s;
+	            END_IF;
+	    END_CASE;
+	ELSE
+	    #State := #ST_IDLE;
+	END_IF;
+	
+	// --- Fase 6: publicacion de estados, interbloqueos y comandos ---
+	#CM_Vlv_Descarga_Out := #CM_Vlv_Descarga.cmd;
+	#CM_Vlv_Desague_Out := #CM_Vlv_Desague.cmd;
+	#Out.DischargeActive := #CM_Vlv_Descarga.cmd;
+	#Out.DrainActive := #CM_Vlv_Desague.cmd;
+	#Out.VacuumInterlock := (#In.CtrlMode = 1) AND NOT #In.VacuumBrokenPermit;
+	
+	#Out.Status.State := #State;
+	#Out.Status.Idle := (#State = #ST_IDLE);
+	#Out.Status.Running := (#State = #ST_RUNNING);
+	#Out.Status.Completed := (#State = #ST_COMPLETED);
+	#Out.Status.Holding := (#State = #ST_HOLDING);
+	#Out.Status.Held := (#State = #ST_HELD);
+	#Out.Status.Stopping := (#State = #ST_STOPPING);
+	#Out.Status.Stopped := (#State = #ST_STOPPED);
+	#Out.Status.Aborting := (#State = #ST_ABORTING);
+	#Out.Status.Aborted := (#State = #ST_ABORTED);
+	#Out.Status.Fault := #AlarmLatched OR #CMAlarm OR (#FaultNew <> 0);
+	#Out.Status.FaultCode := #FaultCode;
+	#Out.Status.ModeMan := #CM_Vlv_Descarga.ManAct AND #CM_Vlv_Desague.ManAct;
+	#Out.Status.ModeAuto := #AutoModeRequest AND #CM_Vlv_Descarga.AutAct
+	AND #CM_Vlv_Desague.AutAct;
+	#Out.Status.ModeMaint := #MaintModeRequest AND #CM_Vlv_Descarga.ManAct
+	AND #CM_Vlv_Desague.ManAct;
+	#Out.Status.ModeConflict := (#ModeCount > 1) OR (#In.Cmds.Auto AND NOT #CtrlModeValid);
+END_FUNCTION_BLOCK
+
