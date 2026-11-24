@@ -19,11 +19,13 @@ VERSION : 1.0
    END_VAR
 
    VAR 
+      // Estado y memoria persistente entre ciclos
       State : Int;
       FaultLatched : Bool;
       FaultCode : Int;
       ActiveMode : Int;   // CtrlMode activo; 0 = sin ejecuciÃ³n
       ElapsedPrev : Time;
+      // Instancias de temporizacion y flancos
       TimerConc {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
       TimerTemp {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
       TimerTime {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
@@ -35,11 +37,13 @@ VERSION : 1.0
       TrigHold {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
       TrigAbort {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
       TrigReset {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      // Modulos de control
       CM_Vlv_Cal : "VlvL";
       CM_Pid_CalandriaVapor : "PidL";
    END_VAR
 
    VAR_TEMP 
+      // Calculos del ciclo actual
       ContPrev : Bool;
       ContMode : Bool;
       OnOffMode : Bool;
@@ -64,6 +68,7 @@ VERSION : 1.0
    END_VAR
 
    VAR CONSTANT 
+      // Estados de la secuencia
       ST_IDLE : Int := 0;
       ST_RUNNING : Int := 1;
       ST_COMPLETED : Int := 2;

@@ -19,19 +19,23 @@ VERSION : 1.0
    END_VAR
 
    VAR 
+      // Estado y memoria persistente entre ciclos
       State : Int;
       ActiveAgitatorType : Int;
       AlarmLatched : Bool;
       FaultCode : Int;
+      // Instancias de flancos
       TrigStart {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
       TrigStop {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
       TrigHold {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
       TrigAbort {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
       TrigReset {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      // Modulo de control
       CM_Mot_Agitador : "MotL";
    END_VAR
 
    VAR_TEMP 
+      // Calculos del ciclo actual
       ModeCount : Int;
       AutoModeRequest : Bool;
       ManualModeRequest : Bool;
@@ -44,6 +48,7 @@ VERSION : 1.0
    END_VAR
 
    VAR CONSTANT 
+      // Estados de la secuencia
       ST_IDLE : Int := 0;
       ST_RUNNING : Int := 1;
       ST_COMPLETED : Int := 2;
@@ -65,7 +70,7 @@ BEGIN
 	#TrigReset(CLK := #In.Cmds.Reset);
 	
 	#ModeCount := BOOL_TO_INT(#In.Cmds.Auto) + BOOL_TO_INT(#In.Cmds.Manual)
-	+ BOOL_TO_INT(#In.Cmds.Maintenance);
+	    + BOOL_TO_INT(#In.Cmds.Maintenance);
 	#AutoModeRequest := #In.Cmds.Auto AND (#ModeCount = 1);
 	#ManualModeRequest := #In.Cmds.Manual AND (#ModeCount = 1);
 	#MaintModeRequest := #In.Cmds.Maintenance AND (#ModeCount = 1);

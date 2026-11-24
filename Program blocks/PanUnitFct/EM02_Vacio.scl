@@ -19,10 +19,12 @@ VERSION : 1.0
    END_VAR
 
    VAR 
+      // Estado y memoria persistente entre ciclos
       State : Int;
       ActiveAction : Int;   // 1=PID local, 2=PID externo, 3=rompe-vacÃ­o
       AlarmLatched : Bool;
       FaultCode : Int;   // 1=selecciÃ³n/parÃ¡metro invÃ¡lido 2=sensor 3=timeout 4=alarma CM 5=MV externa
+      // Instancias de temporizacion y flancos
       TimerReachedSP {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
       TimerTimeout {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
       TrigStart {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
@@ -30,12 +32,14 @@ VERSION : 1.0
       TrigHold {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
       TrigAbort {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
       TrigReset {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      // Modulos de control
       CM_PIC_Vacuum : "PidL";
       CM_MotL : "MotL";
       CM_Vlv_Break : "VlvL";
    END_VAR
 
    VAR_TEMP 
+      // Calculos del ciclo actual
       ModeCount : Int;
       AutoModeRequest : Bool;
       ManualModeRequest : Bool;
@@ -50,6 +54,7 @@ VERSION : 1.0
    END_VAR
 
    VAR CONSTANT 
+      // Estados de la secuencia
       ST_IDLE : Int := 0;
       ST_RUNNING : Int := 1;
       ST_COMPLETED : Int := 2;
@@ -71,7 +76,7 @@ BEGIN
 	        #TrigReset(CLK := #In.Cmds.Reset);
 	        
 	        #ModeCount := BOOL_TO_INT(#In.Cmds.Auto) + BOOL_TO_INT(#In.Cmds.Manual)
-	        + BOOL_TO_INT(#In.Cmds.Maintenance);
+	            + BOOL_TO_INT(#In.Cmds.Maintenance);
 	        #AutoModeRequest := #In.Cmds.Auto AND (#ModeCount = 1);
 	        #ManualModeRequest := #In.Cmds.Manual AND (#ModeCount = 1);
 	        #MaintModeRequest := #In.Cmds.Maintenance AND (#ModeCount = 1);
@@ -177,6 +182,7 @@ BEGIN
 	        #CM_PIC_Vacuum.TrackOn := (#ActiveAction = 2) AND #VacuumActive;
 	        #CM_PIC_Vacuum.TrackVal := LIMIT(MN := 0.0, IN := #In.VaccumSMMV, MX := 100.0);
 	        #CM_PIC_Vacuum.OosSafeMV := 0.0;
+	        // La rompe-vacio se ejecuta despues: Closed corresponde al ciclo anterior.
 	        #CM_PIC_Vacuum.Permit := #MaintModeRequest OR #CM_Vlv_Break.Closed;
 	        #CM_PIC_Vacuum.Intlock := #MaintModeRequest OR #CM_Vlv_Break.Closed;
 	        #CM_PIC_Vacuum.Protect := TRUE;
@@ -198,6 +204,7 @@ BEGIN
 	        #CM_MotL();
 	        
 	        // --- Fase 5: ejecuciÃ³n de la rompe-vacÃ­o con enclavamiento mutuo ---
+	        // El permiso usa los resultados actuales del PID y de la bomba.
 	        #BreakPermit := NOT #VacuumActive AND #CM_MotL.Stop AND NOT #CM_MotL.Start
 	        AND (#CM_PIC_Vacuum.MV <= 0.0);
 	        #CM_Vlv_Break.ModLiOp := TRUE;
